@@ -69,9 +69,6 @@ use App\Http\Controllers\Group\GroupUpdateController;
 |
 */
 
-require __DIR__.'/auth.php';
-
-Auth::routes();
 
 // Route::get('/homer', [ClientIndexController::class])->name('homer');
 
