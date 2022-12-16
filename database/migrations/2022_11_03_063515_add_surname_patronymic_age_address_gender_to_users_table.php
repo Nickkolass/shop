@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('age')->nullable();
             $table->string('address')->nullable();
             $table->integer('gender')->nullable();
-            $table->string('role')->default('user');
+            $table->string('role')->default('client');
 
         });
     }

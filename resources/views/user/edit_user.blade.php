@@ -9,7 +9,7 @@
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-        <a href="{{ route('main.index_main') }}">Главная</a>
+          <a href="{{ route('main.index_main') }}">Главная</a>
         </ol>
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -25,25 +25,46 @@
       <form action="{{ route('user.update_user', $user->id) }}" method="post">
         @csrf
         @method('patch')
-        
-        <div class="form-group">
-          <input type="text" value="{{ old('surname') }}" name="surname" class="form-control" placeholder="Фамилия">
-        </div> 
-        <div class="form-group">
-          <input type="text" value="{{ old('name') }}" name="name" class="form-control" placeholder="Имя">
-        </div> 
-        <div class="form-group">
-          <input type="text" value="{{ old('patronymic') }}" name="patronymic" class="form-control" placeholder="Отчество">
-        </div> 
-        <div class="form-group">
-          <input type="text" value="{{ old('age') }}" name="age" class="form-control" placeholder="Возраст">
-        </div> 
-        <div class="form-group">
-          <input type="text" value="{{ old('address') }}" name="address" class="form-control" placeholder="Адрес">
-        </div> 
+        <div>
+          <div class="row mb-3">
+            <label for="surname" class="col-md-4 col-form-label text-md-end">{{ __('Фамилия') }}</label>
+            <div class="col-md-6">
+              <input type="text" value="{{ $user->surname }}" name="surname" class="form-control" placeholder="Фамилия">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Имя') }}</label>
+            <div class="col-md-6">
+              <input type="text" value="{{ $user->name }}" name="name" class="form-control" placeholder="Имя">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="patronymic" class="col-md-4 col-form-label text-md-end">{{ __('отчество') }}</label>
+            <div class="col-md-6">
+              <input type="text" value="{{ $user->patronymic }}" name="patronymic" class="form-control" placeholder="Отчество">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="age" class="col-md-4 col-form-label text-md-end">{{ __('Возраст') }}</label>
+            <div class="col-md-6">
+              <input type="text" value="{{ $user->age }}" name="age" class="form-control" placeholder="Возраст">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="address" class="col-md-4 col-form-label text-md-end">{{ __('Адрес') }}</label>
+            <div class="col-md-6">
+              <input type="text" value="{{ $user->address }}" name="address" class="form-control" placeholder="Адрес">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <input type="submit" class="btn-btn-primary" value="Редактировать">
+          </div>
+        </div>
       </form>
+    </div>
+  </div>
 
-    </div><!-- /.container-fluid -->
+  <!-- /.container-fluid -->
 </section>
 <!-- /.content -->
 @endsection

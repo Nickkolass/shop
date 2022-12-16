@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClientIndexController extends Controller
 {
     public function __invoke () {
-        return view('client.main.index_main');   
+        $cients = Auth::user();
+        return view('cient.index_cient', compact('cients'));   
     }
 }

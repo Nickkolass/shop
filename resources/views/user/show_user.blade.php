@@ -46,7 +46,7 @@
                   <td>{{ $user->id }}</td>
                 </tr>
                 <tr>
-                  <td>email</td>
+                  <td>Email</td>
                   <td>{{ $user->email }}</td>
                 </tr>                <tr>
                   <td>Фамилия</td>

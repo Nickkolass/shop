@@ -19,14 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->get('/user', function (Request $request) {
+Route::middleware(['client'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
 
-Route::middleware('auth')->group(function () {
-        Route::get('/get', GetController::class);
+Route::middleware('client')->group(function () {
+        Route::get('/get', GetController::class)->name('get');
     Route::post('/products', ApiIndexController::class);
     Route::post('/orders', StoreController::class);
     Route::get('/products/filters', FilterListController::class);

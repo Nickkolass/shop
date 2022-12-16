@@ -17,7 +17,7 @@ class AdminPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->role === 'admin';
     }
 
     /**
@@ -29,7 +29,7 @@ class AdminPolicy
      */
     public function view(User $user, User $model)
     {
-       return $model->role === 'admin';
+
     }
 
     /**
@@ -40,7 +40,6 @@ class AdminPolicy
      */
     public function create(User $user)
     {
-        return $user->role === 'admin';
     }
 
     /**
@@ -52,7 +51,6 @@ class AdminPolicy
      */
     public function update(User $user, User $model)
     {
-        return $model->role === 'admin';
     }
 
     /**
@@ -64,7 +62,6 @@ class AdminPolicy
      */
     public function delete(User $user, User $model)
     {
-        return $model->role === 'admin';
     }
 
     /**
@@ -76,7 +73,6 @@ class AdminPolicy
      */
     public function restore(User $user, User $model)
     {
-        return $model->role === 'admin';
     }
 
     /**

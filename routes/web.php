@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Client\ClientIndexController;
-use App\Http\Controllers\ProfileController;
 
 
 
@@ -57,7 +56,6 @@ use App\Http\Controllers\Group\GroupShowController;
 use App\Http\Controllers\Group\GroupStoreController;
 use App\Http\Controllers\Group\GroupUpdateController;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,21 +67,12 @@ use App\Http\Controllers\Group\GroupUpdateController;
 |
 */
 
+Auth::routes();
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 
 // Route::get('/homer', [ClientIndexController::class])->name('homer');
-
-
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
@@ -99,18 +88,17 @@ Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
     });
 });
 
+Route::group(['prefix' => 'users', 'middleware' => 'client'], function () {
+    Route::get('/', UserIndexController::class)->name('user.index_user');
+    Route::get('/create', UserCreateController::class)->name('user.create_user');
+    Route::post('/', UserStoreController::class)->name('user.store_user');
+    Route::get('/{user}', UserShowController::class)->name('user.show_user');
+    Route::get('/{user}/edit', UserEditController::class)->name('user.edit_user');
+    Route::patch('/{user}', UserUpdateController::class)->name('user.update_user');
+    Route::delete('/{user}', UserDeleteController::class)->name('user.delete_user');
+});
+
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
-
-    Route::group(['prefix' => 'users'], function () {
-        Route::get('/', UserIndexController::class)->name('user.index_user');
-        Route::get('/create', UserCreateController::class)->name('user.create_user');
-        Route::post('/', UserStoreController::class)->name('user.store_user');
-        Route::get('/{user}', UserShowController::class)->name('user.show_user');
-        Route::get('/{user}/edit', UserEditController::class)->name('user.edit_user');
-        Route::patch('/{user}', UserUpdateController::class)->name('user.update_user');
-        Route::delete('/{user}', UserDeleteController::class)->name('user.delete_user');
-    });
-
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', CategoryIndexController::class)->name('category.index_category');
         Route::get('/create', CategoryCreateController::class)->name('category.create_category');
