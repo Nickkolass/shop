@@ -28,7 +28,6 @@
           <div class="card-header d-flex p-3">
             <div class="mr-3">
               <a href="{{ route('user.edit_user', $user->id) }}" class="btn btn-primary">Редактировать</a>
-
             </div>
             <form action="{{route('user.delete_user', $user->id) }}" method="post">
               @csrf
@@ -71,6 +70,12 @@
                   <td>Адрес</td>
                   <td>{{ $user->address }}</td>
                 </tr>
+                @if (auth()->user()->role == 'saler')
+                <tr>
+                  <td>Продукты</td>
+                  <td><a href="{{ route('product.index_product') }}">{{ $user->products()->count() }} шт.</a></td>
+                </tr>
+                @endif
             </table>
           </div>
 

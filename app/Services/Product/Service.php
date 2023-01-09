@@ -12,6 +12,7 @@ class Service
 {
     public function store($data)
     {
+        $data['saler_id'] = auth()->user()->id;
         DB::beginTransaction();
         try {
             $productImages = $data['product_images'];

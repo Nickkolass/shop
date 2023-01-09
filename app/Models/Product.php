@@ -34,4 +34,8 @@ class Product extends Model
         return $this->beLongsTo(Group::class, 'group_id', 'id');
     }
 
+    public function saler(){
+        return $this->beLongsTo(User::class, 'saler_id', 'id');
+    }
+
 }

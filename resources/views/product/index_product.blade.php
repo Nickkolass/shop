@@ -9,7 +9,7 @@
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-        <a href="{{ route('main.index_main') }}">Главная</a>
+          <a href="{{ route('main.index_main') }}">Главная</a>
         </ol>
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -36,6 +36,9 @@
                   <th>ID</th>
                   <th>Наименование</th>
                   <th>Заставка</th>
+                  @if (auth()->user()->role == 'admin')
+                  <th>Продавец</th>
+                  @endif
                 </tr>
               </thead>
               <tbody>
@@ -44,6 +47,9 @@
                   <td>{{ $product->id }}</td>
                   <td><a href="{{ route('product.show_product', $product->id) }}">{{ $product->title }}</a></td>
                   <td><img src="{{ asset('storage/'.$product->preview_image) }}" width='50' height='50' class="img img-responsive"></td>
+                  @if (auth()->user()->role == 'admin')
+                  <td><a href="{{ route('user.show_user', $user = $product->saler_id) }}">{{ $product->saler_id }}</a></td>
+                  @endif
                 </tr>
                 @endforeach
               </tbody>

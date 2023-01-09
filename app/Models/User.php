@@ -25,6 +25,9 @@ class User extends Authenticatable
         ];
     }
 
+    public function products(){
+        return $this->hasMany(Product::class, 'saler_id', 'id');
+    }
 
     public function getGenderTitleAttribute(){
         return self::getGenders()[$this->gender];

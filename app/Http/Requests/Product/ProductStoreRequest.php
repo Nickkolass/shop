@@ -36,7 +36,8 @@ class ProductStoreRequest extends FormRequest
             'tags' => 'nullable|array',
             'colors' => 'nullable|array',
             'product_images' => 'nullable|array',
-            
+            'saler_id' => '',
+
         ];
     }
 }

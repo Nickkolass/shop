@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->unsignedInteger('group_id')->nullable();
+            $table->unsignedInteger('saler_id')->nullable();
         });
     }
 
@@ -27,6 +28,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn('group_id');
+            $table->dropColumn('saler_id');
         });
     }
 };

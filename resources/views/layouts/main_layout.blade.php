@@ -205,7 +205,7 @@
 
             <li class="nav-item">
               <a href="{{ route('group.index_group') }}" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
+                <i class="fas fa-bars"></i>
                 <p>Группы</p>
               </a>
             </li>
