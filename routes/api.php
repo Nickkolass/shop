@@ -19,13 +19,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['client'])->get('/user', function (Request $request) {
+Route::middleware(['guest'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
 
-Route::middleware('client')->group(function () {
+Route::middleware('guest')->group(function () {
         Route::get('/get', GetController::class)->name('get');
     Route::post('/products', ApiIndexController::class);
     Route::post('/orders', StoreController::class);

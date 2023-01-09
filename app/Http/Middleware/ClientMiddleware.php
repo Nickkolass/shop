@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,15 +17,15 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        dd('поправить clientMiddleware');
-        $role = auth()->user()->role;
+        $role = Auth::user()->role;
+
         if ($role == 'admin') {
             return $next($request);
-        } elseif ($request->REQUEST_URI == '/users/'.Auth::user()->id) {
+        } elseif ($_SERVER['REQUEST_URI'] == '/users/' . Auth::user()->id) {
             return $next($request);
-        } {
-            return back()->withInput();;
+        } elseif (str_starts_with($_SERVER['REQUEST_URI'], '/api/')) {
+            return $next($request);
         }
+        return back()->withInput();;
     }
 }
-

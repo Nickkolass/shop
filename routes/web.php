@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Client\ClientIndexController;
 
 
 
@@ -71,9 +70,15 @@ Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-
-// Route::get('/homer', [ClientIndexController::class])->name('homer');
-
+Route::group(['prefix' => 'users', 'middleware' => 'client'], function () {
+    Route::get('/', UserIndexController::class)->name('user.index_user')->middleware('admin');
+    Route::get('/create', UserCreateController::class)->name('user.create_user')->middleware('admin');
+    Route::post('/', UserStoreController::class)->name('user.store_user')->middleware('admin');
+    Route::get('/{user}', UserShowController::class)->name('user.show_user');
+    Route::get('/{user}/edit', UserEditController::class)->name('user.edit_user');
+    Route::patch('/{user}', UserUpdateController::class)->name('user.update_user');
+    Route::delete('/{user}', UserDeleteController::class)->name('user.delete_user');
+});
 
 Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
     Route::get('/', MainIndexController::class)->name('main.index_main');
@@ -86,16 +91,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
         Route::patch('/{product}', ProductUpdateController::class)->name('product.update_product');
         Route::delete('/{product}', ProductDeleteController::class)->name('product.delete_product');
     });
-});
-
-Route::group(['prefix' => 'users', 'middleware' => 'client'], function () {
-    Route::get('/', UserIndexController::class)->name('user.index_user');
-    Route::get('/create', UserCreateController::class)->name('user.create_user');
-    Route::post('/', UserStoreController::class)->name('user.store_user');
-    Route::get('/{user}', UserShowController::class)->name('user.show_user');
-    Route::get('/{user}/edit', UserEditController::class)->name('user.edit_user');
-    Route::patch('/{user}', UserUpdateController::class)->name('user.update_user');
-    Route::delete('/{user}', UserDeleteController::class)->name('user.delete_user');
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
