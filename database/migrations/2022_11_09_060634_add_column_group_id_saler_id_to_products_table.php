@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->unsignedInteger('group_id')->nullable();
-            $table->unsignedInteger('saler_id')->nullable();
+            $table->unsignedInteger('group_id');
+            $table->unsignedInteger('saler_id');
         });
     }
 

@@ -14,8 +14,7 @@ class ProductShowController extends Controller
         $group = $product->group()->get()['0']->title;
         $category = $product->category()->get()['0']->title;
         $images = $product->productImages()->get();
-        $product->preview_image = '/storage/' . $product->preview_image;
-
+        $product->preview_image = $product->preview_image;
         return view('product.show_product', compact('product', 'tags', 'colors', 'group', 'category', 'images'));
     }
 }

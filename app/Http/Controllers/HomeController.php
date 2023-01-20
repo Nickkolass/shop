@@ -13,7 +13,10 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('saler');
+        if(!isset(auth()->user()->role)) {
+            $this->middleware('auth');
+        }
+        else $this->middleware('saler') ;
     }
 
     /**
@@ -23,6 +26,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if(auth()->user()->role !== 'client') {
         return view('main.index_main');
+        }
+        else return redirect()->route('client.index_client');
+
     }
 }

@@ -70,8 +70,7 @@
                   <td>Адрес</td>
                   <td>{{ $user->address }}</td>
                 </tr>
-                @if (auth()->user()->role == 'saler')
-                <tr>
+                @if ((auth()->user()->role == 'saler') || (auth()->user()->role == 'admin'))
                   <td>Продукты</td>
                   <td><a href="{{ route('product.index_product') }}">{{ $user->products()->count() }} шт.</a></td>
                 </tr>

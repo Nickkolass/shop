@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
+    use HasFactory;
+
     protected $table = 'product_images';
     protected $guarded = false;
 
-    public function product(){
+    public function products(){
         return $this->beLongsTo(Product::class, 'product_id', 'id');
     }
        

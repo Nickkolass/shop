@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Http\Resources\Product;
-
-use App\Http\Resources\Category\CategoryResource;
-use App\Http\Resources\Color\ColorResource;
-use App\Models\Product;
+use App\Http\Resources\Product\ProductImageResource;
+use App\Http\Resources\Group\GroupResource;
+use App\Http\Resources\Saler\SalerResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -17,20 +16,20 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-        $products = Product::where('group_id', $this->group_id)->get();
-        return [
+        return (
+         [
             'id' => $this->id,
             'title' => $this->title, 
             'descriprion' => $this->descriprion, 
             'content' => $this->content, 
-            'preview_image' => $this->preview_image, 
+            'preview_image' => '/storage/'.$this->preview_image, 
             'price' => $this->price, 
             'count' => $this->count, 
             'is_published' => $this->is_published, 
-            'category' => new CategoryResource($this->category), 
+            'saler' => new SalerResource($this->saler),
+            'group' => new GroupResource($this->group), 
             'product_images' => ProductImageResource::collection($this->productImages), 
-            'group_products' => ProductMiniResource::collection($products), 
-        ];
-           
+        ]);
     }
 }
+            // 'group_products' => ProductMiniResource::collection($products), 

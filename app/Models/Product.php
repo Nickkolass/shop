@@ -10,6 +10,7 @@ class Product extends Model
 {
 
     use Filterable;
+    use HasFactory;
 
     protected $table = 'products';
     protected $guarded = false;
@@ -34,8 +35,8 @@ class Product extends Model
         return $this->beLongsTo(Group::class, 'group_id', 'id');
     }
 
-    public function saler(){
+    public function salers(){
         return $this->beLongsTo(User::class, 'saler_id', 'id');
     }
-
+      
 }

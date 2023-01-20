@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-
-
 use App\Http\Controllers\Main\MainIndexController;
 
 use App\Http\Controllers\Category\CategoryCreateController;
@@ -14,7 +12,6 @@ use App\Http\Controllers\Category\CategoryShowController;
 use App\Http\Controllers\Category\CategoryStoreController;
 use App\Http\Controllers\Category\CategoryUpdateController;
 use App\Http\Controllers\Category\CategoryIndexController;
-
 use App\Http\Controllers\Color\ColorCreateController;
 use App\Http\Controllers\Color\ColorDeleteController;
 use App\Http\Controllers\Color\ColorEditController;
@@ -68,6 +65,8 @@ use App\Http\Controllers\Group\GroupUpdateController;
 
 Auth::routes();
 
+
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['prefix' => 'users', 'middleware' => 'client'], function () {
@@ -82,6 +81,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'client'], function () {
 
 Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
     Route::get('/', MainIndexController::class)->name('main.index_main');
+      
     Route::group(['prefix' => '/products'], function () {
         Route::get('/', ProductIndexController::class)->name('product.index_product');
         Route::get('/create', ProductCreateController::class)->name('product.create_product');

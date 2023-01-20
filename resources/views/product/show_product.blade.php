@@ -65,7 +65,7 @@
                 <tr>
                   <td>Заставка</td>
                   <td>
-                    <img src="{{ asset($product->preview_image) }}" width='50' height='50' class="img img-responsive">
+                    <img src="{{ asset('/storage/'.$product->preview_image) }}" width='50' height='50' class="img img-responsive">
                   </td>
                 </tr>
 

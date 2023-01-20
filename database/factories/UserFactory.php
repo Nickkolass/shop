@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -18,11 +17,17 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'password' => md5($this->faker->password(8,20)), // password
+            'remember_token' => '',
+            'surname'=> $this->faker->lastName(),
+            'patronymic'=> $this->faker->name(),
+            'age'=> $this->faker->numberBetween(20, 70),
+            'address'=> $this->faker->address(),
+            'gender'=> $this->faker->numberBetween(1, 2),
+            'role' => 'saler',
         ];
     }
 

@@ -25,7 +25,7 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'descriprion' => '',
+            'description' => '',
             'content' => '',
             'preview_image' => '',
             'price' => '',

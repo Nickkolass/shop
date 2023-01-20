@@ -16,7 +16,7 @@ class ProductEditController extends Controller
         $productTags = $product->tags()->get();
         $colorProducts = $product->colors()->get();
         $productImages = $product->productImages()->get('file_path');
-        $product->preview_image = '/storage/'.$product->preview_image;
+        $product->preview_image = $product->preview_image;
 
         return view('product.edit_product', compact('tags', 'colors', 'groups', 'categories', 'product', 'productTags', 'colorProducts', 'productImages'));   
     }

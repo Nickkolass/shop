@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Dashboard</title>
+  <title>Lumos</title>
 
   <link rel="dns-prefetch" href="//fonts.gstatic.com">
   <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -20,7 +20,7 @@
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
   <!-- Image -->
-  @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js'])
+  <!-- @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js']) -->
 
 </head>
 
@@ -29,7 +29,7 @@
 
     <!-- Preloader -->
     <div class="preloader flex-column justify-content-center align-items-center">
-      <p class="animation__shake">Магазинчик</p>
+      <p class="animation__shake">Lumos</p>
     </div>
 
     <!-- Navbar -->
@@ -173,7 +173,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="{{ route('main.index_main') }}" class="brand-link">
-        <span class="brand-text font-weight-light">Магазинчик</span>
+        <span class="brand-text font-weight-light">Lumos</span>
       </a>
       <!-- Sidebar -->
       <div class="sidebar">
@@ -249,7 +249,7 @@
 
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-      <strong>Copyright &copy; 2014-{{ now()->year }} <a href="{{ route('main.index_main') }}">Главная</a>.</strong>
+      <strong>Copyright &copy; 2022-{{ now()->year }} <a href="{{ route('main.index_main') }}">Главная</a>.</strong>
       Все права защищены.
     </footer>
 

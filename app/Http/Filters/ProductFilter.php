@@ -8,44 +8,54 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ProductFilter extends AbstractFilter
 {
-    const CATEGORIES = 'categories';
+
+    const CATEGORY = 'category';
     const COLORS = 'colors';
     const PRICES = 'prices';
     const TAGS = 'tags';
+    const SALERS = 'salers';
 
 
     protected function getCallbacks(): array
     {
-        return [
-            self::CATEGORIES => [$this, 'categories'],
+        return ([
+            self::CATEGORY => [$this, 'category'],
             self::COLORS => [$this, 'colors'],
             self::PRICES => [$this, 'prices'],
             self::TAGS => [$this, 'tags'],
-        ];
+            self::SALERS => [$this, 'salers'],
+
+        ]);
     }
 
-    public function categories(Builder $builder, $value)
+    public function category(Builder $builder, $value)
     {
-        $builder->whereIn('category_id', $value);
+        $builder->where('category_id', $value);
     }
 
     public function colors(Builder $builder, $value)
     {
-        $builder->whereHas('colors', function($b) use ($value){
+        $builder->whereHas('colors', function ($b) use ($value) {
             $b->whereIn('color_id', $value);
         });
-
     }
 
-    public function prices (Builder $builder, $value)
+    public function prices(Builder $builder, $value)
     {
         $builder->whereBetween('price', $value);
     }
 
-     public function tags(Builder $builder, $value)
+    public function tags(Builder $builder, $value)
     {
-        $builder->whereHas('tags', function($b) use ($value){
+        $builder->whereHas('tags', function ($b) use ($value) {
             $b->whereIn('tag_id', $value);
+        });
+    }
+
+    public function salers(Builder $builder, $value)
+    {
+        $builder->whereHas('salers', function ($b) use ($value) {
+            $b->whereIn('saler_id', $value);
         });
     }
 }
