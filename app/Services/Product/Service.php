@@ -12,14 +12,13 @@ class Service
 {
     public function store($data)
     {
-        $data['saler_id'] = auth()->user()->id;
+        $data['saler_id'] = auth()->id();
         DB::beginTransaction();
         try {
             $productImages = $data['product_images'];
             $tagsIds = $data['tags'];
             $colorsIds = $data['colors'];
             unset($data['tags'], $data['colors'], $data['product_images']);
-
             $data['preview_image'] = $data['preview_image']->storePublicly('preview_images', 'public');
             $product = Product::firstOrCreate([
                 'title' => $data['title']
@@ -29,10 +28,9 @@ class Service
             $product->colors()->attach($colorsIds);
 
             foreach ($productImages as $productImage) {
-                $filePath = $productImage->storePublicly('images', 'public');
+                $filePath = $productImage->storePublicly('product_images', 'public');
                 ProductImage::create([
                     'file_path' => $filePath,
-                    'url' => url('/storage/' . $filePath),
                     'size' => $productImage->getSize(),
                     'product_id' => $product->id,
                 ]);
@@ -56,17 +54,16 @@ class Service
             }
 
             if (isset($data['product_images'])) {
-                $oldproductImages = $product->productImages()->get('file_path');
-                foreach ($oldproductImages as $oldproductImage){
-                    Storage::disk('public')->delete($oldproductImage->file_path);
+                $oldproductImages = $product->productImages()->pluck('file_path');
+                foreach ($oldproductImages as $oldproductImage) {
+                    Storage::disk('public')->delete($oldproductImage);
                 }
                 $product->productImages()->delete();
 
                 foreach ($data['product_images'] as $productImage) {
-                    $filePath = $productImage->storePublicly('images', 'public');
+                    $filePath = $productImage->storePublicly('product_images', 'public');
                     ProductImage::create([
                         'file_path' => $filePath,
-                        'url' => url('/storage/' . $filePath),
                         'size' => $productImage->getSize(),
                         'product_id' => $product->id,
                     ]);
@@ -90,21 +87,30 @@ class Service
     }
 
 
-    public function delete($product)
+    public static function delete($product)
     {
         DB::beginTransaction();
         try {
-            $productImages = $product->productImages()->get();
-            foreach ($productImages as $productImage){
-                Storage::disk('public')->delete($productImage->file_path);
+            $productImages = $product->productImages()->pluck('file_path');
+            foreach ($productImages as $productImage) {
+                Storage::disk('public')->delete($productImage);
             }
             Storage::disk('public')->delete($product->preview_image);
 
             $product->productImages()->delete();
             $product->tags()->detach();
             $product->colors()->detach();
-            $product->delete();
 
+            if (isset($product->group_id)) {
+                if (Product::where('group_id', $product->group_id)->count() == 1) {
+                    $product->delete();
+                    $product->group()->delete();
+                } else {
+                    $product->delete();
+                }
+            } else {
+                $product->delete();
+            }
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

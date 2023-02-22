@@ -25,6 +25,11 @@ class GroupUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
+            'category_id' => 'required|int',
+            'products'=>'nullable|array',
+            'saler_id' => 'nullable',
+
+
         ];
     }
 }

@@ -16,12 +16,12 @@ class SalerMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $role = auth()->user()->role;
-
-        if ($role == 'admin' || $role == 'saler') {
-            return $next($request);
-        } else {
-            return back()->withInput();;
+        if (auth()->check()) {
+            $role = auth()->user()->role;
+            if ($role == 'admin' || $role == 'saler') {
+                return $next($request);
+            }
         }
+        abort(404);
     }
 }

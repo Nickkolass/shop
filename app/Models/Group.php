@@ -10,11 +10,18 @@ class Group extends Model
 {
     use HasFactory;
 
-        protected $table = 'groups';
+    protected $table = 'groups';
     protected $guarded = false;
 
     public function products(){
         return $this->hasMany(Product::class, 'group_id', 'id');
     }
+    
+    public function saler(){
+        return $this->beLongsTo(User::class, 'saler_id', 'id');
+    }
 
+    public function category(){
+        return $this->beLongsTo(Category::class, 'category_id', 'id');
+    }
 }

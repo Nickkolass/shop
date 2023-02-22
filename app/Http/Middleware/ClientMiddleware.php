@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ClientMiddleware
 {
@@ -17,15 +16,15 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $role = Auth::user()->role;
-
-        if ($role == 'admin') {
-            return $next($request);
-        } elseif ($_SERVER['REQUEST_URI'] == '/users/' . Auth::user()->id) {
-            return $next($request);
-        } elseif (str_starts_with($_SERVER['REQUEST_URI'], '/api/')) {
-            return $next($request);
+        if (auth()->check()) {
+            $uri = explode('/', $_SERVER['REQUEST_URI']);
+            $user = auth()->user();
+            if ($user->role == 'admin') {
+                return $next($request);
+            } elseif (($uri['1'] == 'ordering') || ($uri['2'] == $user->id)) {
+                return $next($request);
+            }
         }
-        return back()->withInput();;
+        abort(404);
     }
 }

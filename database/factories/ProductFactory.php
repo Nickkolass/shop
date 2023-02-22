@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use App\Models\Group;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,9 +25,9 @@ class ProductFactory extends Factory
             'price' => $this->faker->numberBetween(0, 3000),
             'count' => $this->faker->numberBetween(1, 20),
             'is_published' => $this->faker->boolean(),
-            'category_id' => Category::get()->random()->id,
-            'group_id' => Group::get()->random()->id,
-            'saler_id' => User::get()->random()->id,
+            'category_id' => Group::latest('id')->first()->category_id,
+            'group_id' => Group::latest('id')->first()->id,
+            'saler_id' => Group::latest('id')->first()->saler_id,
         ];
     }
 }

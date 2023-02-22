@@ -22,7 +22,9 @@ return new class extends Migration
             $table->integer('price');
             $table->integer('count');
             $table->boolean('is_published')->default(true);
-            $table->foreignId('category_id')->nullable()->constrained('categories');
+            $table->foreignId('group_id')->nullable()->constrained('groups');
+            $table->foreignId('saler_id')->nullable()->constrained('users');
+            $table->foreignId('category_id')->required()->constrained('categories');
             $table->timestamps();
         });
     }

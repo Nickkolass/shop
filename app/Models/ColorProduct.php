@@ -9,4 +9,5 @@ class ColorProduct extends Model
 {
     protected $table = 'color_products';
     protected $guarded = false;
+
 }

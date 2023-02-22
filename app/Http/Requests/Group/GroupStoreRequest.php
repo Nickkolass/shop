@@ -24,7 +24,10 @@ class GroupStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
+            'title' => 'required|unique:groups|string',
+            'category_id' => 'required|int',
+            'user_id' => 'nullable',
+            'products'=>'nullable|array',
         ];
     }
 }

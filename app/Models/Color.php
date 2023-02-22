@@ -12,7 +12,8 @@ class Color extends Model
 
     protected $table = 'colors';
     protected $guarded = false;
-   
+    protected $hidden = array('pivot');
+    
     public function products(){
         return $this->beLongsToMany(Product::class, 'color_products', 'color_id','product_id');
     }

@@ -20,13 +20,12 @@ class ProductImageFactory extends Factory
 
         $filesPath = Storage::files('/public/fact/');
         $filePath = $filesPath[random_int(0, count($filesPath)-1)];
-        $productImagePath = str_replace('public/fact/', 'images/', $filePath);
+        $productImagePath = str_replace('public/fact/', 'product_images/', $filePath);
 
         Storage::move($filePath, 'public/'.$productImagePath);
 
         return [
             'file_path' => $productImagePath,
-            'url' => url($productImagePath),
             'size' => random_int(1, 10000),
             'product_id' => '0',
         ];

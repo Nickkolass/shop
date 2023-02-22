@@ -54,8 +54,6 @@ class ProductFilter extends AbstractFilter
 
     public function salers(Builder $builder, $value)
     {
-        $builder->whereHas('salers', function ($b) use ($value) {
-            $b->whereIn('saler_id', $value);
-        });
+        $builder->where('saler_id', $value);
     }
 }

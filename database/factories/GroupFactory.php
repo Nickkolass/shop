@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +20,8 @@ class GroupFactory extends Factory
     {
         return [
             'title' => $this->faker->unique()->word(),
+            'saler_id' => User::latest('id')->first()->id,
+            'category_id' => Category::latest('id')->first()->id,
         ];
     }
 }

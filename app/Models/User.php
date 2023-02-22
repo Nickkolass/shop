@@ -25,12 +25,35 @@ class User extends Authenticatable
         ];
     }
 
-    public function products(){
+    public function getGenderTitleAttribute(){
+        return self::getGenders()[$this->gender];
+    }
+
+    public function groups(){
+        return $this->hasMany(Group::class, 'saler_id', 'id');
+    }
+
+    public function products()
+    {
         return $this->hasMany(Product::class, 'saler_id', 'id');
     }
 
-    public function getGenderTitleAttribute(){
-        return self::getGenders()[$this->gender];
+    public function productsThrough()
+    {
+        return $this->hasManyThrough(Product::class, Group::class);
+    }
+
+    public function categoriesThrough()
+    {
+        return $this->beLongsToMany(Category::class, 'products', 'saler_id', 'category_id');
+    }
+
+    public function orders(){
+        return $this->hasMany(Order::class, 'user_id', 'id');
+    }
+
+    public function OrderPerformers(){
+        return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
     }
     /**
      * The attributes that are mass assignable.
@@ -46,6 +69,11 @@ class User extends Authenticatable
         'age',
         'address',
         'gender',
+        'card',
+        'postcode',
+        'address',
+        'INN',
+        'registredOffice',
     ];
 
     /**

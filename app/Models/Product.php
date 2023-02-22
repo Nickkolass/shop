@@ -14,11 +14,11 @@ class Product extends Model
 
     protected $table = 'products';
     protected $guarded = false;
+    protected $hidden = array('pivot');
 
-    public function category(){
-        return $this->beLongsTo(Category::class, 'category_id', 'id');
-    }
 
+
+    
     public function colors(){
         return $this->beLongsToMany(Color::class, 'color_products', 'product_id', 'color_id');
     }
@@ -35,8 +35,23 @@ class Product extends Model
         return $this->beLongsTo(Group::class, 'group_id', 'id');
     }
 
-    public function salers(){
+    public function saler()
+    {
         return $this->beLongsTo(User::class, 'saler_id', 'id');
     }
-      
+
+    public function salerThrough()
+    {
+        return $this->hasOneThrough(User::class, Group::class);
+    }
+    
+    public function categoryThrough()
+    {
+        return $this->hasOneThrough(Category::class, Group::class);
+    }
+
+    public function category()
+    {
+        return $this->beLongsTo(Category::class, 'category_id', 'id');
+    }
 }

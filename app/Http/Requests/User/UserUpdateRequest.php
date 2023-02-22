@@ -25,10 +25,13 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'surname'=> 'nullable|string',
-            'patronymic'=> 'nullable|string',
-            'age'=> 'nullable|integer',
-            'address'=> 'nullable|string',
+            'surname' => 'required|string',
+            'patronymic' => 'nullable|string',
+            'age' => 'required|integer',
+            'postcode' => 'nullable|integer',
+            'address' => 'nullable|string',
+            'INN' => 'nullable|integer',
+            'registredOffice' => 'nullable|string',
         ];
     }
 }
