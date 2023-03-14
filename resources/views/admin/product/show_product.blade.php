@@ -93,8 +93,8 @@
 
 
                 <tr>
-                  <td>Цвета</td>
-                  <td>@foreach ($product['colors'] as $color){{ $color['title'] }} <br> @endforeach</td>
+                  <td>Цвет</td>
+                  <td>@foreach ($product['color'] as $color){{ $color['title'] }} <br> @endforeach</td>
                 </tr>
 
                 <tr>

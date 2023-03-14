@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\API\FrontController;
+use App\Http\Controllers\API\FrontOrderController;
+
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\GroupController;
@@ -18,9 +20,6 @@ use App\Http\Controllers\Admin\Product\ProductIndexController;
 use App\Http\Controllers\Admin\Product\ProductShowController;
 use App\Http\Controllers\Admin\Product\ProductStoreController;
 use App\Http\Controllers\Admin\Product\ProductUpdateController;
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -37,17 +36,21 @@ Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'api.about')->name('api.about_api');
-Route::view('/products', 'api.index_api')->name('api.index_api');
 Route::controller(FrontController::class)->group(function () {
+    Route::get('/products', 'index')->name('api.index_api');
     Route::get('/products/{category}', 'products')->name('api.products_api');
     Route::post('/products/{category}', 'products')->name('api.filter_api');
-    Route::get('/products/{category}/{product}', 'show')->name('api.show_api');
+    Route::get('/products/{category}/{product}', 'product')->name('api.product_api');
     Route::post('/cart', 'addToCart')->name('api.addToCart_api');
     Route::get('/cart', 'cart')->name('api.cart_api');
-    Route::post('/order', 'order')->name('api.order_api');
-    Route::post('/ordering', 'ordering')->name('api.ordering_api')->middleware('client');
-    Route::get('/orders', 'orders')->name('api.orders_api')->middleware('client');
+    Route::get('/support', 'support')->name('api.support_api')->middleware('client');
 });
+
+Route::resource('/orders', FrontOrderController::class)->except('edit')->middleware('client')->withTrashed()->names([
+    'index' => 'api.orders_api', 'create' => 'api.preOrdering_api',
+    'store' => 'api.ordering_api', 'show' => 'api.orderShow_api',
+    'update' => 'api.orderStatus_api', 'destroy' => 'api.orderDelete_api'
+]);
 
 Route::resource('/users', UserController::class)->names([
     //middleware в контроллере
@@ -60,7 +63,14 @@ Route::resource('/users', UserController::class)->names([
 Route::prefix('/admin')->group(function () {
     Route::middleware('saler')->group(function () {
         Route::view('/', 'admin.index_admin')->name('admin.index_admin');
-        Route::get('/orders', OrderController::class)->name('order.index_order');
+        Route::get('/support', [UserController::class, 'support'])->name('user.support_user');
+        Route::resource('/orders', OrderController::class)->withTrashed()
+            ->only(['index', 'show', 'update', 'destroy'])
+            ->names([
+                'index' => 'order.index_order', 'show' => 'order.show_order',
+                'update' => 'order.update_order', 'destroy' => 'order.delete_order'
+            ]);
+
         Route::prefix('/products')->group(function () {
             Route::resource('/groups', GroupController::class)->names([
                 'index' => 'group.index_group', 'create' => 'group.create_group',
@@ -97,7 +107,5 @@ Route::prefix('/admin')->group(function () {
             'edit' => 'tag.edit_tag', 'update' => 'tag.update_tag',
             'destroy' => 'tag.delete_tag'
         ]);
-        
     });
-    
 });

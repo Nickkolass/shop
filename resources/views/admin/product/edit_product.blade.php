@@ -101,8 +101,7 @@
           <select name="category_id" class="form-control select2" style="width: 100%;">
             <option selected="selected" disabled>
               @foreach($categories as $category)
-            <option {{$category['id']==$product['category_id'] ? 'selected' : ''}} value="{{$category['id']}}"> {{$category['title_rus']}}
-            </option>
+            <option {{$category['id']==$product['category_id'] ? 'selected' : ''}} value="{{$category['id']}}"> {{$category['title_rus']}}</option>
             @endforeach
             </option>
           </select>
@@ -129,10 +128,10 @@
         </div>
 
         <div class="form-group">
-          <select name="colors[]" class="colors" multiple="multiple" data-placeholder="Выберите цвет" style="width: 100%;">
+          <select name="color_id" class="colors" data-placeholder="Выберите цвет" style="width: 100%;">
+          <option selected="selected">
             @foreach($colors as $color)
-            <option @foreach($product['colors'] as $colorProduct) {{ $colorProduct['id']==$color['id'] ? 'selected' : '' }} value="{{$color['id']}}" @endforeach>
-              {{$color['title']}}
+            <option {{$color['id']==$product['color_id'] ? 'selected' : ''}} value="{{$color['id']}}"> {{$color['title']}}</option>
             </option>
             @endforeach
           </select>

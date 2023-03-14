@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('delivery');
             $table->integer('total_price');
             $table->boolean('payment_status');
+            $table->date('status');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

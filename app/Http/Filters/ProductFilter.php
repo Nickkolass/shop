@@ -35,9 +35,7 @@ class ProductFilter extends AbstractFilter
 
     public function colors(Builder $builder, $value)
     {
-        $builder->whereHas('colors', function ($b) use ($value) {
-            $b->whereIn('color_id', $value);
-        });
+        $builder->whereIn('color_id', $value);
     }
 
     public function prices(Builder $builder, $value)
@@ -54,6 +52,6 @@ class ProductFilter extends AbstractFilter
 
     public function salers(Builder $builder, $value)
     {
-        $builder->where('saler_id', $value);
+        $builder->whereIn('saler_id', $value);
     }
 }

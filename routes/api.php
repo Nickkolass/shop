@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\BackController;
+use App\Http\Controllers\API\BackOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,12 +19,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(BackController::class)->group(function () {
     Route::post('/user', function (Request $request) {return $request->user();});
-    Route::prefix('products')->group(function () {
-        Route::post('/{category:title}', 'products');
-        Route::post('/{category}/{product}', 'show');
-    });
     Route::post('/cart', 'cart');
-    Route::post('/ordering', 'ordering');
-    Route::post('/orders', 'orders');
+    Route::post('/products/{category:title}', 'products');
+    Route::post('/products/{category}/{product}', 'product');
 });
 
+Route::controller(BackOrderController::class)->group(function () {
+    Route::post('/orders', 'index');
+    Route::post('/orders/create', 'store');
+    Route::post('/orders/{order}', 'show')->withTrashed();
+    Route::patch('/orders/{order}', 'update');
+    Route::delete('/orders/{order}', 'destroy');
+});

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('gender');
             $table->integer('age');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

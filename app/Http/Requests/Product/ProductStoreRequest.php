@@ -33,7 +33,7 @@ class ProductStoreRequest extends FormRequest
             'is_published' => 'required|bool',
             'group_id' => 'nullable|integer',
             'tags' => 'required|array',
-            'colors' => 'required|array',
+            'color_id' => 'required|integer',
             'product_images' => 'required|array',
             'category_id' => 'required|integer',
         ];

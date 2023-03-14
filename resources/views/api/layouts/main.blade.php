@@ -39,7 +39,7 @@
   <!-- ***** Preloader End ***** -->
 
   <!-- Header -->
-  <header class="">
+  <header>
     <nav class="navbar navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand" href="{{ route('api.index_api') }}">
@@ -69,7 +69,7 @@
               </div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.about_api') }}">О нас</a>
+              <a class="nav-link" href="{{ route('api.about_api') }}" style="white-space: pre">О нас</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('api.cart_api') }}">Корзина</a>
@@ -90,7 +90,10 @@
               <a class="nav-link" href="{{ route('api.orders_api') }}">Заказы</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('user.show_user', auth()->id()) }}">{{ auth()->user()->name }}</a>
+              <a class="nav-link" href="{{ route('api.support_api') }}">Поддержка</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('user.show_user', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();

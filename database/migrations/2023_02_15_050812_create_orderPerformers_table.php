@@ -17,10 +17,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('saler_id')->constrained('users');
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('order_id')->constrained('orders');
             $table->date('dispatch_time');
+            $table->date('status');
             $table->jsonb('products');
             $table->string('delivery');
             $table->integer('total_price');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

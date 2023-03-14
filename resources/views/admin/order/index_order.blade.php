@@ -33,38 +33,63 @@
             <table class="table table-hover text-nowrap">
               <thead>
                 <tr style="text-align: center">
-                  <th>№ п/п</th>
                   @if(auth()->user()->role == 'admin')
-                  <th>Продавец</th>
+                  <th>Заказ</th>
                   <th>Заказчик</th>
+                  <th>Продавец</th>
                   @endif
+                  <th>Наряд</th>
+                  <th>Статус</th>
                   <th>Товары</th>
                   <th>Дата заказа</th>
-                  <th>Дата отправки</th>
+                  <th>Срок отправки</th>
                   <th>Способ доставки, получатель</th>
-                  <th>Стоимость заказа</th>
+                  <th>Стоимость</th>
                 </tr>
               </thead>
               <h4 hidden>{{$i = 1}}</h4>
               <tbody>
                 @foreach($orders as $order)
                 <tr style="text-align: center">
-                  <td>{{ $i++ }}</td>
                   @if(auth()->user()->role == 'admin')
-                  <td><a href="{{ route('user.show_user', $order['saler']['id']) }}">
-                      {{ $order['saler']['name'] }}</a></td>
-                  <td><a href="{{ route('user.show_user', $order['user']['id']) }}">
-                      {{ $order['user']['name'] }}</a></td>
+                  <td><a href="{{ route('api.orderShow_api', $order->order_id) }}">
+                      {{ $order->order_id }}</a></td>
+                  <td><a href="{{ route('user.show_user', $order->user->id) }}">
+                      {{ $order->user->name }}</a></td>
+                  <td><a href="{{ route('user.show_user', $order->saler->id) }}">
+                      {{ $order->saler->name }}</a></td>
                   @endif
-                  <td>@foreach($order['products'] as $product)
-                    <a href="{{ route('product.show_product', $product['id']) }}">
-                      <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 50px"></a>
+                  <td><a href="{{ route('order.show_order', $order->id) }}">
+                      {{ $order->id }}</a></td>
+                  <td>
+                    @if(!empty($order->deleted_at))
+                    {{ 'Отменен ' . $order->deleted_at}}
+                    @elseif($order->end != '0000-00-00')
+                    {{ 'Получен заказчиком ' . $order->end}}
+                    @else
+                    @if ($order->status != '0000-00-00')
+                    Отправлен {{$order->status}}
+                    @else
+                    <form action="{{ route('order.update_order', $order->id) }}" method="post">
+                      @csrf
+                      @method('patch')
+                      <div class="form-group">
+                        <input type="submit" class="btn-btn-primary" value="Подтвердить отправку">
+                      </div>
+                    <form>
+                    @endif
+                    @endif
+                  </td>
+                  <td>@foreach($order->products as $product)
+                  <a href="{{ route('product.show_product', $product->id) }}">
+                      <img src="{{asset('/storage/'.$product->preview_image)}}" style="height: 50px"></a>
+                      {{$product->amount.' шт.'}}
                     @endforeach
                   </td>
-                  <td>{{ $order['created_at'] }}</td>
-                  <td>{{ $order['dispatch_time'] }}</td>
-                  <td style="word-wrap: break-word;min-width: 160px;max-width: 160px; white-space:normal">{{ $order['delivery'] }}</td>
-                  <td>{{ $order['total_price'] }}</td>
+                  <td>{{ $order->created_at }}</td>
+                  <td>До {{ $order->dispatch_time }}</td>
+                  <td style="word-wrap: break-word;min-width: 160px;max-width: 160px; white-space:normal">{{ $order->delivery }}</td>
+                  <td>{{ $order->total_price }}</td>
                 </tr>
                 @endforeach
               </tbody>
@@ -76,6 +101,8 @@
       @endif
     </div>
   </div><!-- /.container-fluid -->
+  {{ $orders->links('vendor.pagination.bootstrap-4') }}
+
 </section>
 
 <!-- /.content -->

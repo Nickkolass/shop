@@ -17,15 +17,13 @@ class Service
         try {
             $productImages = $data['product_images'];
             $tagsIds = $data['tags'];
-            $colorsIds = $data['colors'];
-            unset($data['tags'], $data['colors'], $data['product_images']);
+            unset($data['tags'], $data['product_images']);
             $data['preview_image'] = $data['preview_image']->storePublicly('preview_images', 'public');
             $product = Product::firstOrCreate([
                 'title' => $data['title']
             ], $data);
 
             $product->tags()->attach($tagsIds);
-            $product->colors()->attach($colorsIds);
 
             foreach ($productImages as $productImage) {
                 $filePath = $productImage->storePublicly('product_images', 'public');
@@ -71,13 +69,9 @@ class Service
             }
 
             $tagsIds = $data['tags'];
-            $colorsIds = $data['colors'];
-
-            unset($data['tags'], $data['colors'], $data['product_images']);
-
+            unset($data['tags'], $data['product_images']);
             $product->update($data);
             $product->tags()->sync($tagsIds);
-            $product->colors()->sync($colorsIds);
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -99,7 +93,6 @@ class Service
 
             $product->productImages()->delete();
             $product->tags()->detach();
-            $product->colors()->detach();
 
             if (isset($product->group_id)) {
                 if (Product::where('group_id', $product->group_id)->count() == 1) {

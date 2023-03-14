@@ -17,13 +17,7 @@ class ClientMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check()) {
-            $uri = explode('/', $_SERVER['REQUEST_URI']);
-            $user = auth()->user();
-            if ($user->role == 'admin') {
-                return $next($request);
-            } elseif (($uri['1'] == 'ordering') || ($uri['2'] == $user->id)) {
-                return $next($request);
-            }
+            return $next($request);
         }
         abort(404);
     }

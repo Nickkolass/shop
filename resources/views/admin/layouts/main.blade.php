@@ -35,7 +35,7 @@
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
-      @if (auth()->user()->role === 'saler')
+      @if (auth()->user()->role == 'saler')
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -193,8 +193,15 @@
 
             <li class="nav-item">
               <a href="{{ route('group.index_group') }}" class="nav-link">
-                <i class="fas fa-bars"></i>
+                <i class="nav-icon fas fa-bars"></i>
                 <p>Группы</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{{ route('user.support_user') }}" class="nav-link">
+                <i class="nav-icon fas fa-phone"></i>
+                <p>Поддержка</p>
               </a>
             </li>
 

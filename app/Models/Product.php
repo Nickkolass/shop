@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Products\Candle;
 use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,8 +20,8 @@ class Product extends Model
 
 
     
-    public function colors(){
-        return $this->beLongsToMany(Color::class, 'color_products', 'product_id', 'color_id');
+    public function color(){
+        return $this->beLongsTo(Color::class, 'color_id', 'id');
     }
 
     public function tags(){
@@ -38,16 +39,6 @@ class Product extends Model
     public function saler()
     {
         return $this->beLongsTo(User::class, 'saler_id', 'id');
-    }
-
-    public function salerThrough()
-    {
-        return $this->hasOneThrough(User::class, Group::class);
-    }
-    
-    public function categoryThrough()
-    {
-        return $this->hasOneThrough(Category::class, Group::class);
     }
 
     public function category()

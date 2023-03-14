@@ -10,6 +10,7 @@ class ProductUpdateController extends DBProductController
 {
     public function __invoke (ProductUpdateRequest $request, Product $product) {
 
+        $this->authorize('update', $product);
         $data = $request->validated();
         $this->service->update($data, $product);
         

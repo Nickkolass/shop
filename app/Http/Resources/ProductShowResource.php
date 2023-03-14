@@ -25,10 +25,10 @@ class ProductShowResource extends JsonResource
                 'preview_image' => $this['product']->preview_image,
                 'price' => $this['product']->price,
                 'count' => $this['product']->count,
+                'color' => $this['product']->color()->select('id', 'title')->get()->toArray(),      
                 'saler' => $this['product']->saler()->select('id', 'name')->get()->toArray(),
                 'group' => $this['product']->group()->first()->products()->select('id', 'preview_image')->get()->toArray(),
                 'product_images' => $this['product']->productImages()->pluck('file_path'),
-                'colors' => $this['product']->colors()->select('colors.id', 'title')->get()->toArray(),      
             ],
             'category' => Category::where('title', $this['category'])->select('id', 'title', 'title_rus')->first()->toArray(),
         ];
