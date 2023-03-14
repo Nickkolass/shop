@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             // $wicks = ['title' => 'деревянный',
             //         'title' => 'хлопковый'];
                     
-            Wick::create($wicks);
+            // Wick::create($wicks);
             Color::factory(10)->create();
             $tags = Tag::factory(10)->create();
             
