@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Services\API\Order;
+
+use App\Models\Order;
+use App\Models\User;
+
+class OrderService
+{
+
+    private $service;
+
+    public function __construct(OrderProductService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index($user_id)
+    {
+        $user = User::select('id', 'role')->find($user_id);
+        $orders = $user->role == 'admin' ?  Order::query() : $user->orders();
+        $orders = $orders->with(['orderPerformers' => function ($q) {
+            $q->withTrashed()->max('dispatch_time');
+        }])->latest()->withTrashed()->simplePaginate(3, ['*'], 'page', request('page'))->withPath('');
+
+        $orders = $this->service->getProducts($orders);
+
+        return $orders;
+    }
+
+
+    public function show(Order &$order)
+    {
+        $order->load(['orderPerformers' => function ($q) {
+            $q->select('id', 'saler_id', 'order_id', 'status', 'dispatch_time')->withTrashed();
+        }]);
+
+        $order = $this->service->getProducts($order, true)->first();
+    }
+}

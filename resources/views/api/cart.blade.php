@@ -22,38 +22,27 @@
                     <th>№ п/п</th>
                     <th>Наименование</th>
                     <th>Изображение</th>
+                    <th>Параметры</th>
                     <th>Цена за шт.</th>
                     <th>Количество</th>
                     <th>Сумма</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($data['products'] as $product)
+                @foreach($products as $product)
                 <tr style="text-align: center">
                     <td style="vertical-align: middle">{{ $i++ }}</td>
                     <td style="vertical-align: middle">{{ $product['title'] }}</td>
                     <td style="vertical-align: middle"><a href="{{ route('api.product_api', [$product['category'], $product['id']]) }}">
                             <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 150px"></a></td>
+                    <td style="vertical-align: middle">
+                        @foreach($product['optionValues'] as $optionValue)
+                        {{$optionValue['option']['title'] . ': ' . $optionValue['value']}}<br>
+                        @endforeach
+                    </td>
                     <td style="vertical-align: middle">{{ $product['price'] }} руб.</td>
                     <td style="vertical-align: middle">
-                        <div class="qty mt-5">
-                            <form action="{{ route('api.addToCart_api') }}" method="post">
-                                @csrf
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default btn-number" data-type="minus" data-field="addToCart[{{$product['id']}}]">
-                                        <span class="minus bg-dark">-</span>
-                                    </button>
-                                </span>
-                                <input type="number" name="addToCart[{{$product['id']}}]" class="count" min="0" max="{{$product['count']}}" value="{{ $product['amount'] }}">
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default btn-number" data-type="plus" data-field="addToCart[{{$product['id']}}]">
-                                        <span class="plus bg-dark">+</span>
-                                    </button>
-                                </span>
-                                <br>
-                                <input type="submit" class="btn btn-primary btn-lg" style="height: 35px" value="Обновить">
-                            </form>
-                        </div>
+                    @include('api.components.qty')
                     </td>
                     <td style="vertical-align: middle">{{$product['amount']*$product['price']}} руб.</td>
                 </tr>
@@ -62,11 +51,11 @@
             </tbody>
         </table>
     </div>
-    @if(!empty($data['products']))
+    @if(!empty($products))
     <form action="{{ route('api.preOrdering_api') }}" style="text-align: center;">
         <h4 style="vertical-align: middle">Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4>
         <br>
-        @foreach($data['products'] as $product)
+        @foreach($products as $product)
         <input type="number" name="cart[{{$product['id']}}]" value="{{ $product['amount'] }}" hidden>
         @endforeach
         <input type="number" name="total_price" value="{{ $totalPrice }}" hidden>

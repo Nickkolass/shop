@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('file_path');
             $table->string('size');
-            $table->foreignId('product_id')->index()->constrained('products');
+            $table->foreignId('product_id')->index()->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

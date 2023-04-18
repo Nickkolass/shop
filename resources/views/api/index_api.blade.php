@@ -19,4 +19,10 @@
   </div>
 </div>
 
+@if(!empty($data['products']))
+<div style="text-align: center">
+  <h4>Просмотренные товары</h4>
+</div>
+@include('api.components.products')
+@endif
 @endsection

@@ -19,11 +19,9 @@ class GroupController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role == 'admin') {
-            $groups = Group::with(['category:id,title_rus', 'products:id,group_id,preview_image'])->paginate(8);
-        } else {
-            $groups = auth()->user()->groups()->with(['category:id,title_rus', 'products:id,group_id,preview_image'])->paginate(8);
-        }
+        auth()->user()->role == 'admin' ? $groups = Group::query() :  $groups = auth()->user()->groups();
+        $groups = $groups->with(['category:id,title_rus', 'products:id,group_id,preview_image'])->simplePaginate(8);
+        
         return view('admin.group.index_group', compact('groups'));
     }
 
@@ -34,11 +32,8 @@ class GroupController extends Controller
      */
     public function create()
     {
-        if (auth()->user()->role == 'admin') {
-            $products = Product::select(['id', 'title'])->get();
-        } else {
-            $products = auth()->user()->products()->select('id', 'title')->get();
-        }
+        auth()->user()->role == 'admin' ? $products = Product::query() : $products = auth()->user()->products();
+        $products = $products->select(['id', 'title'])->get();
         $categories = Category::all();
 
         return view('admin.group.create_group', compact('products', 'categories'));   
@@ -88,11 +83,8 @@ class GroupController extends Controller
     public function edit(Group $group)
     {
         $this->authorize('update', $group);
-        if (auth()->user()->role == 'admin') {
-            $products = Product::select(['id', 'title', 'group_id'])->get();
-        } else {
-            $products = auth()->user()->products()->select(['id', 'title', 'group_id'])->get();
-        }
+        auth()->user()->role == 'admin' ? $products = Product::query() : $products = auth()->user()->products();
+        $products = $products->select(['id', 'title', 'group_id'])->get();
         $group->load(['category:id,title,title_rus']);
         $categories = Category::all();
         return view('admin.group.edit_group', compact('group', 'categories', 'products'));   
@@ -110,16 +102,13 @@ class GroupController extends Controller
         $this->authorize('update', $group);
         $data = $request->validated();
         $data['saler_id'] = auth()->id();
-        if(empty($data['products'])){
-            $group->update($data);
-        } else {
-            $products = Product::find($data['products']);
-            
-            unset($data['products']);
-            $group->update($data);
+        
+        if(!empty($data['products'])){
             $group->products()->update(['group_id'=>null]);
-            $group->products()->saveMany($products);
+            Product::whereIn('id', $data['products'])->update(['group_id'=>$group->id]);
+            unset($data['products']);
         }
+        $group->update($data);
         return $this->show($group);
     }
 
@@ -132,7 +121,7 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $this->authorize('delete', $group);
-        $group->products()->update(['group_id'=>null]);
+        !request('all') ? $group->products()->update(['group_id'=>null]) : '';
         $group->delete();
         return $this->index();
     }

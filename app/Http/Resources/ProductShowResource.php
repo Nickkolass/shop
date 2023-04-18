@@ -17,20 +17,20 @@ class ProductShowResource extends JsonResource
     {
 
         return [
-            'product' => [
-                'id' => $this['product']->id,
-                'title' => $this['product']->title,
-                'description' => $this['product']->description,
-                'content' => $this['product']->content,
-                'preview_image' => $this['product']->preview_image,
-                'price' => $this['product']->price,
-                'count' => $this['product']->count,
-                'color' => $this['product']->color()->select('id', 'title')->get()->toArray(),      
-                'saler' => $this['product']->saler()->select('id', 'name')->get()->toArray(),
-                'group' => $this['product']->group()->first()->products()->select('id', 'preview_image')->get()->toArray(),
-                'product_images' => $this['product']->productImages()->pluck('file_path'),
-            ],
-            'category' => Category::where('title', $this['category'])->select('id', 'title', 'title_rus')->first()->toArray(),
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'preview_image' => $this->preview_image,
+            'price' => $this->price,
+            'count' => $this->count,
+            'saler' => $this->saler,
+            'group' => $this->group->products,
+            'product_images' => $this->productImages,
+            'option_values' => $this->optionValues,
+            'property_values' => $this->propertyValues,
+            'category' => $this->category,
+            'inCart' => $this->inCart,
+
         ];
     }
 }

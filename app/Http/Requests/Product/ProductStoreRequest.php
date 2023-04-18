@@ -26,16 +26,17 @@ class ProductStoreRequest extends FormRequest
         return [
             'title' => 'required|string',
             'description' => 'required|string',
-            'content' => 'required',
-            'preview_image' => 'required',
-            'price' => 'required|integer',
-            'count' => 'required|integer',
-            'is_published' => 'required|bool',
+            'price' => 'required|string',
+            'count' => 'required|string',
             'group_id' => 'nullable|integer',
-            'tags' => 'required|array',
-            'color_id' => 'required|integer',
-            'product_images' => 'required|array',
             'category_id' => 'required|integer',
+            'preview_image' => 'required',
+
+            'productImages' => 'required|array',
+
+            'optionValues' => 'required|array',
+            'propertyValues' => 'required|array',
+            'tags' => 'required|array',
         ];
     }
 }

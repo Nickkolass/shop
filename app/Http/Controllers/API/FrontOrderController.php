@@ -4,12 +4,20 @@ namespace App\Http\Controllers\API;
 
 use App\Components\ImportDataClient;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\Order\StoreFrontRequest;
 use App\Models\Order;
-use App\Models\User;
 
 class FrontOrderController extends Controller
 {
-  
+
+    private $import;
+
+    public function __construct(ImportDataClient $import)
+    {
+        $this->import = $import;
+    }
+
+       
     /**
      * Display a listing of the resource.
      *
@@ -18,12 +26,13 @@ class FrontOrderController extends Controller
 
     public function index()
     {
-        request()->has('page') ? $data['page'] = request('page') : $data['page'] = 1;
+        $data['page'] = request('page') ?? 1;
         $data['user_id'] = auth()->id();
-        $import = new ImportDataClient();
-        $data = $import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
-        $data = json_decode($data, true);
-        return view('api.order.index_order', compact('data'));    
+
+        $orders = $this->import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
+        $orders = json_decode($orders, true);
+
+        return view('api.order.index_order', compact('orders'));
     }
 
     /**
@@ -33,7 +42,7 @@ class FrontOrderController extends Controller
      */
     public function create()
     {
-        url()->previous() != 'http://127.0.0.1:8876/cart' ? abort(404) : '';
+        url()->previous() == 'http://127.0.0.1:8876/cart' ?: abort(404);
         $data['total_price'] = request('total_price');
         return view('api.order.create_order', compact('data'));
     }
@@ -43,18 +52,16 @@ class FrontOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(StoreFrontRequest $request)
     {
-        $data = request()->except('_token');
-        $data['user_id'] = auth()->id();
-        $data['cart'] = session('cart');
         //платежная система
-        $data['payment_status'] = true;
-        // dd($data);
-        $import = new ImportDataClient();
-        $import->client->request('POST', 'api/orders/create', ['query' => $data])->getBody()->getContents();
-        session()->forget(['cart', 'filter']);
-        return redirect()->route('api.orders_api');    
+        $data = $request->validated();
+
+        $this->import->client->request('POST', 'api/orders/create', ['query' => $data])->getBody()->getContents();
+
+        session()->forget(['cart', 'filter', 'paginate']);
+
+        return redirect()->route('api.orders_api');
     }
 
     /**
@@ -66,11 +73,9 @@ class FrontOrderController extends Controller
     public function show($order_id)
     {
         $this->authorize('view', Order::withTrashed()->find($order_id));
-        $import = new ImportDataClient();
-        $data = $import->client->request('POST', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
-        $data = json_decode($data, true);
-        // dd($data);
-        return view('api.order.show_order', compact('data'));
+        $order = $this->import->client->request('POST', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
+        $order = json_decode($order, true);
+        return view('api.order.show_order', compact('order'));
     }
 
     /**
@@ -93,8 +98,7 @@ class FrontOrderController extends Controller
     public function update($order_id)
     {
         $this->authorize('update', Order::find($order_id));
-        $import = new ImportDataClient();
-        $import->client->request('PATCH', 'api/orders/' . $order_id, ['query' => $order_id]);
+        $this->import->client->request('PATCH', 'api/orders/' . $order_id, ['query' => $order_id]);
         return back();
     }
 
@@ -107,8 +111,7 @@ class FrontOrderController extends Controller
     public function destroy($order_id)
     {
         $this->authorize('delete', Order::find($order_id));
-        $import = new ImportDataClient();
-        $import->client->request('DELETE', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
+        $this->import->client->request('DELETE', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
         return back();
     }
 }

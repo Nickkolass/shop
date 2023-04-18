@@ -8,8 +8,8 @@ use App\Http\Controllers\API\FrontController;
 use App\Http\Controllers\API\FrontOrderController;
 
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\GroupController;
+use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -95,17 +95,17 @@ Route::prefix('/admin')->group(function () {
             'edit' => 'category.edit_category', 'update' => 'category.update_category',
             'destroy' => 'category.delete_category'
         ]);
-        Route::resource('/colors', ColorController::class)->names([
-            'index' => 'color.index_color', 'create' => 'color.create_color',
-            'store' => 'color.store_color', 'show' => 'color.show_color',
-            'edit' => 'color.edit_color', 'update' => 'color.update_color',
-            'destroy' => 'color.delete_color'
-        ]);
         Route::resource('/tags', TagController::class)->names([
             'index' => 'tag.index_tag', 'create' => 'tag.create_tag',
             'store' => 'tag.store_tag', 'show' => 'tag.show_tag',
             'edit' => 'tag.edit_tag', 'update' => 'tag.update_tag',
             'destroy' => 'tag.delete_tag'
+        ]);
+        Route::resource('/options', OptionController::class)->names([
+            'index' => 'option.index_option', 'create' => 'option.create_option',
+            'store' => 'option.store_option', 'show' => 'option.show_option',
+            'edit' => 'option.edit_option', 'update' => 'option.update_option',
+            'destroy' => 'option.delete_option'
         ]);
     });
 });

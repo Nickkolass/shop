@@ -9,7 +9,7 @@
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-        <a href="{{ route('admin.index_admin') }}">Главная</a>
+          <a href="{{ route('admin.index_admin') }}">Главная</a>
         </ol>
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -30,11 +30,20 @@
               <a href="{{ route('group.edit_group', $group->id) }}" class="btn btn-primary">Редактировать</a>
 
             </div>
-            <form action="{{route('group.delete_group', $group->id) }}" method="post">
-              @csrf
-              @method('delete')
-              <input type="submit" class="btn btn-danger" value="Удалить">
-            </form>
+            <div class="mr-3">
+              <form action="{{route('group.delete_group', $group->id) }}" method="post">
+                @csrf
+                @method('delete')
+                <input type="submit" class="btn btn-danger" value="Удалить группу">
+              </form>
+            </div>
+            <div class="mr-3">
+              <form action="{{route('group.delete_group', [$group->id, 'all' => 1]) }}" method="post">
+                @csrf
+                @method('delete')
+                <input type="submit" class="btn btn-danger" value="Удалить вместе с товарами">
+              </form>
+            </div>
           </div>
 
           <div class="card-body table-responsive p-0">

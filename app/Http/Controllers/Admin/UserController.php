@@ -6,20 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\User;
-use App\Services\Product\Service;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-   
+
     public function __construct()
     {
         $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'support']);
         $this->middleware('admin')->only('index');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -27,7 +24,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(5);
+        $users = User::simplePaginate(5);
         return view('admin.user.index_user', compact('users'));
     }
 
@@ -49,19 +46,11 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        DB::beginTransaction();
-        try {
-            $data = $request->validated();
-            $data['password'] = Hash::make($data['password']);
-
-            User::firstOrCreate([
-                'email' => $data['email']
-            ], $data);
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        User::firstOrCreate([
+            'email' => $data['email']
+        ], $data);
         return $this->index();
     }
 
@@ -100,6 +89,7 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
         $data = $request->validated();
+        $data = array_diff($data, $user->toArray());
         $user->update($data);
         return view('admin.user.show_user', compact('user'));
     }
@@ -113,24 +103,11 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $this->authorize('delete', $user);
-        DB::beginTransaction();
-        try {
-            if ($user->role == 'saler') {
-                $products = $user->products()->get();
-                foreach ($products as $product) {
-                    Service::delete($product);
-                }
-            }
-            $user->delete();
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $user->delete();
         return $this->index();
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -139,5 +116,4 @@ class UserController extends Controller
     {
         return view('admin.support');
     }
-
 }

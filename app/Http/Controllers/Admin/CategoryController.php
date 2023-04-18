@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Http\Requests\Category\CategoryUpdateRequest;
 use App\Models\Category;
-use App\Services\Product\Service;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -90,18 +87,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $products = $category->products()->get();
-        DB::beginTransaction();
-        try {
-            foreach ($products as $product) {
-                Service::delete($product);
-            }
-            $category->delete();
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $category->delete();
         return $this->index();
     }
 }

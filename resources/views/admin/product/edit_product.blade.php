@@ -1,5 +1,6 @@
 @extends('admin.layouts.main')
 @section('content')
+
 <!-- Content Header (Page header) -->
 <div class="content-header">
   <div class="container-fluid">
@@ -18,134 +19,161 @@
 <!-- /.content-header -->
 
 <!-- Main content -->
+
 <section class="content">
   <div class="container-fluid">
-    <!-- Small boxes (Stat box) -->
-    @if ($errors->any())
-    <div class="row">
-      <div class="alert alert-danger">
-        <ul>
-          @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-    </div><!-- /.container-fluid -->
-    @endif
-    <div class="row">
-      <form action="{{ route('product.update_product', $product['id']) }}" method="post" enctype="multipart/form-data">
-        @csrf
-        @method('patch')
+    <form action="{{ route('product.update_product', $product['id']) }}" method="post" enctype="multipart/form-data">
+      @csrf
+      @method('patch')
+      <div class="row align-items-start">
+        <div class="col">
 
-        <div class="form-group">
-          <input type="text" name="title" value="{{ $product['title'] }}" class="form-control" placeholder="Наименование">
-        </div>
-
-        <div class="form-group">
-          <input type="text" name="description" value="{{ $product['description'] }}" class="form-control" placeholder="Описание">
-        </div>
-        <div class="form-group">
-          <textarea name="content" class="form-control" cols="30" rows="10" placeholder="Контент">{{ $product['content'] }}</textarea>
-        </div>
-        <div class="form-group">
-          <input type="text" name="price" value="{{ $product['price'] }}" class="form-control" placeholder="Цена">
-        </div>
-        <div class="form-group">
-          <input type="text" name="count" value="{{ $product['count'] }}" class="form-control" placeholder="Остаток">
-        </div>
-        <div class="form-group">
-          <input type="text" name="is_published" value="{{ $product['is_published'] }}" class="form-control" placeholder="Опубликовать">
-        </div>
-
-        <div class="card">
-          <div class="card-body card-block">
-            <div class="row form-group">
-              <div class="control-group" id="exampleInputFile">
-                <label class="control-label" for="exampleInputFile">Выберите заставку</label>
-                <div class="controls">
-                  <div class="entry input-group upload-input-group">
-                    <input name="preview_image" type="file" class="form-control">
-                  </div>
-                  <label class="control-label" for="fields">Выбранное</label>
-                </div>
-                <td>
-                  <img src="{{ asset('/storage/'.$product['preview_image']) }}" width='70' height='70' class="img img-responsive">
-                </td>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body card-block">
-            <div class="row form-group">
-              <div class="control-group" id="fields">
-                <label class="control-label" for="fields">Выберите изображения</label>
-                <div class="controls">
-                  <div class="entry input-group upload-input-group">
-                    <input class="form-control" name="product_images[]" type="file" multiple>
-                  </div>
-                  <label class="control-label" for="fields">Выбранные</label>
-                </div>
-                @foreach($product['productImages'] as $img)
-                <td>
-                  <img src="{{ asset('/storage/'.$img['file_path']) }}" width='70' height='70' class="img img-responsive">
-                </td>
+          <!-- Small boxes (Stat box) -->
+          @if ($errors->any())
+          <div class="row" style="margin:5px">
+            <div class="alert alert-danger">
+              <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
                 @endforeach
+              </ul>
+            </div>
+          </div>
+          @endif
+
+          <div class="row" style="margin:5px">
+            <div class="col" style="padding: 5px;">
+              <label>Наименование</label>
+              <input type="text" name="title" value="{{ $product['title'] }}" class="form-control">
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label>Описание</label>
+              <textarea name="description" class="form-control" rows="5">{{ $product['description'] }}</textarea>
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label>Цена</label>
+              <input type="number" name="price" value="{{ $product['price'] }}" class="form-control">
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label>Остаток</label>
+              <input type="number" name="count" value="{{ $product['count'] }}" class="form-control">
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label class="control-label" for="exampleInputFile">Выберите заставку</label>
+              <div class="card">
+                <div class="card-body card-block">
+                  <div class="row form-group">
+                    <div class="control-group" id="exampleInputFile">
+                      <div class="controls">
+                        <div class="entry input-group upload-input-group">
+                          <input name="preview_image" type="file" class="form-control">
+                        </div>
+                        <label class="control-label" for="fields">Выбранное</label>
+                      </div>
+                      <td>
+                        <img src="{{ asset('/storage/'.$product['preview_image']) }}" width='70' height='70' class="img img-responsive">
+                      </td>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label class="control-label" for="fields">Выберите изображения</label>
+              <div class="card">
+                <div class="card-body card-block">
+                  <div class="row form-group">
+                    <div class="control-group" id="fields">
+                      <div class="controls">
+                        <div class="entry input-group upload-input-group">
+                          <input class="form-control" name="productImages[]" type="file" multiple>
+                        </div>
+                        <label class="control-label" for="fields">Выбранные</label>
+                      </div>
+                      @foreach($product['product_images'] as $img)
+                      <td>
+                        <img src="{{ asset('/storage/'.$img) }}" width='70' height='70' class="img img-responsive">
+                      </td>
+                      @endforeach
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label>Группа</label>
+              <select name="group_id" class="categories" data-placeholder="Группа" style="width: 100%;">
+                @foreach($groups as $group)
+                <option value="{{ $group['id'] }}" @selected($product['group_id']==$group['id'])>{{ $group['title'] }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="w-100"></div>
+
+            <div class="col" style="padding: 5px;">
+              <label>Теги</label>
+              <select name="tags[]" class="tags" multiple="multiple" data-placeholder="Теги" style="width: 100%;">
+                @foreach($tags as $tag)
+                <option value="{{ $tag['id'] }}" @selected(in_array($tag['id'], $product['tags'] ?? []))>{{ $tag['title'] }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="w-100"></div>
+            
           </div>
         </div>
 
-        <div class="form-group">
-          <select name="category_id" class="form-control select2" style="width: 100%;">
-            <option selected="selected" disabled>
-              @foreach($categories as $category)
-            <option {{$category['id']==$product['category_id'] ? 'selected' : ''}} value="{{$category['id']}}"> {{$category['title_rus']}}</option>
+        <div class="col">
+          <div class="row" style="margin:5px">
+            <br>
+            <h5 style="margin:10px">Опции</h5>
+            <div class="w-100"></div>
+
+            @foreach($optionValues as $option => $optionValues)
+            <div class="col" style="padding: 5px;">
+              <label>{{$option}}</label>
+              <select name="optionValues[]" class="tags" multiple="multiple" style="width: 100%;">
+                @foreach($optionValues as $optionValue)
+                <option value="{{ $optionValue['id'] }}" @selected(in_array($optionValue['id'], $product['option_values'] ?? []))>{{ $optionValue['value'] }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="w-100"></div>
             @endforeach
-            </option>
-          </select>
-        </div>
 
-        <div class="form-group">
-          <select name="group_id" class="form-control select2" style="width: 100%;">
-            <option selected="selected">
-            @foreach($groups as $group)
-            <option {{$group['id']==$product['group_id'] ? 'selected' : ''}} value="{{$group['id']}}"> {{$group['title']}}</option>
+            <br>
+            <h5 style="margin:10px">Характеристики</h5>
+            <div class="w-100"></div>
+
+            @foreach($product['category']['properties'] as $property)
+            <div class="col" style="padding: 5px;">
+              <label>{{$property['title']}}</label>
+              <input type="text" name="propertyValues[{{$property['id']}}]" value="{{ $product['property_values'][$property['id']] ?? '' }}" class="form-control">
+            </div>
+            <div class="w-100"></div>
             @endforeach
-            </option>
-          </select>
+
+          </div>
         </div>
-
-        <div class="form-group">
-          <select name="tags[]" class="tags" multiple="multiple" data-placeholder="Выберите тег" style="width: 100%;">
-            @foreach($tags as $tag)
-            <option @foreach($product['tags'] as $productTag) {{ $productTag['id'] == $tag['id'] ? 'selected' : '' }} value="{{$tag['id']}}" @endforeach>
-              {{$tag['title']}}
-            </option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="form-group">
-          <select name="color_id" class="colors" data-placeholder="Выберите цвет" style="width: 100%;">
-          <option selected="selected">
-            @foreach($colors as $color)
-            <option {{$color['id']==$product['color_id'] ? 'selected' : ''}} value="{{$color['id']}}"> {{$color['title']}}</option>
-            </option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="form-group">
-          <input type="submit" class="btn-btn-primary" value="Редактировать">
-        </div>
-
-      </form>
-
-
-    </div>
-  </div><!-- /.container-fluid -->
+      </div><!-- /.container-fluid -->
+      <div class="col" style="padding: 5px;">
+        <input type="submit" class="btn-btn-primary" value="Редактировать">
+      </div>
+    </form>
+  </div>
 </section>
 <!-- /.content -->
+
 @endsection

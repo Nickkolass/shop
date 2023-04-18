@@ -30,7 +30,7 @@ class GroupPolicy
      */
     public function view(User $user, Group $group)
     {
-        return $user->id == $group->user_id || $user->role == 'admin';
+        return $user->id == $group->saler_id || $user->role == 'admin';
     }
 
     /**
@@ -53,7 +53,7 @@ class GroupPolicy
      */
     public function update(User $user, Group $group)
     {
-        return $user->id == $group->user_id || $user->role == 'admin';
+        return $user->id == $group->saler_id || $user->role == 'admin';
     }
 
     /**
@@ -65,7 +65,7 @@ class GroupPolicy
      */
     public function delete(User $user, Group $group)
     {
-        return $user->id == $group->user_id || $user->role == 'admin';
+        return $user->id == $group->saler_id || $user->role == 'admin';
     }
 
     /**
@@ -77,7 +77,7 @@ class GroupPolicy
      */
     public function restore(User $user, Group $group)
     {
-        return $user->id == $group->user_id || $user->role == 'admin';
+        return $user->id == $group->saler_id || $user->role == 'admin';
     }
 
     /**
@@ -89,6 +89,6 @@ class GroupPolicy
      */
     public function forceDelete(User $user, Group $group)
     {
-        return $user->id == $group->user_id || $user->role == 'admin';
+        return $user->id == $group->saler_id || $user->role == 'admin';
     }
 }

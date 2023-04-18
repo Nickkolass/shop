@@ -26,17 +26,16 @@ class ProductUpdateRequest extends FormRequest
         return [
             'title' => 'required|string',
             'description' => 'required|string',
-            'content' => 'required',
-            'preview_image' => 'nullable',
-            'price' => 'required|integer',
-            'count' => 'required|integer',
-            'is_published' => 'required|bool',
+            'price' => 'required|string',
+            'count' => 'required|string',
             'group_id' => 'nullable|integer',
-            'tags' => 'required|array',
-            'color_id' => 'required|integer',
+            'preview_image' => 'nullable',
+            
             'productImages' => 'nullable|array',
-            'saler_id' => 'nullable',
-            'category_id' => 'nullable|integer',
+            
+            'optionValues' => 'required|array',
+            'propertyValues' => 'required|array',
+            'tags' => 'required|array',
         ];
     }
 }

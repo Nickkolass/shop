@@ -5,7 +5,7 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0">{{'Заказ № '.$order['id'].' от '.$order['created_at']}}</h1>
+        <h1 class="m-0">{{'Заказ № '.$order->id.' от '.$order->created_at}}</h1>
 
       </div><!-- /.col -->
       <div class="col-sm-6">
@@ -28,59 +28,53 @@
           <tbody>
             <tr>
               <td>Номер заказа</td>
-              <td>{{ $order['id'] }}</td>
+              <td>{{ $order->id }}</td>
             </tr>
 
             <tr>
               <td>Дата заказа</td>
-              <td>{{ $order['created_at'] }}</td>
+              <td>{{ $order->created_at }}</td>
             </tr>
             <tr>
               <td>Статус</td>
-              <td>
-                @if (!empty($order['deleted_at']))
-                {{ 'Отменен ' . $order['deleted_at'] }}
-                @elseif($order['end'] != '0000-00-00')
-                {{ 'Получен заказчиком ' . $order['end']}}
-                @elseif ($order['status'] != '0000-00-00')
-                {{ 'Отправлен ' . $order['status'] }}
-                @else
-                В работе
-                @endif
-              </td>
+              <td>{{ $order->status }}</td>
             </tr>
             <tr>
               <td>Способ доставки, получатель</td>
-              <td>{{ $order['delivery'] }}</td>
+              <td>{{ $order->delivery }}</td>
             </tr>
             <tr>
               <td>Срок отправки</td>
-              <td>До {{ $order['dispatch_time'] }}</td>
+              <td>До {{ $order->dispatch_time }}</td>
             </tr>
             <tr>
               <td>Стоимость заказа</td>
-              <td>{{ $order['total_price'] }}</td>
+              <td>{{ $order->total_price }}</td>
             </tr>
             <tr>
               <td style="vertical-align: middle">Товары</td>
               <td>
                 <table class="table table-striped">
                   <tbody>
-                    @foreach($products as $product)
+                    @foreach($order->products as $product)
                     <tr>
-                      <td><a href="{{ route('product.show_product', $product['id']) }}">
-                          <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 140px"></a></td>
-                      <td>Название: {{ $product['title'] }}<br>
-                        Категория: {{ $product['category']['title_rus'] }}<br>
-                        Количество: {{ $product['amount'] }}<br>
-                        Стоимость: {{ $product['price'] }}<br>
-                        Продавец: 
+                      <td><a href="{{ route('product.show_product', $product->id) }}">
+                          <img src="{{asset('/storage/'.$product->preview_image)}}" style="height: 140px"></a></td>
+                      <td>Название: {{ $product->title }}<br>
+                        Категория: {{ $product->category->title_rus }}<br>
+                        Количество: {{ $product->amount }}<br>
+                        Стоимость: {{ $product->price }}<br>
+                        Продавец:
                         @if(auth()->user()->role == 'admin')
-                          <a class="linkclass disabled" href="{{ route('user.show_user', $product['saler_id']) }}"> {{ $product['saler']['name'] }} </a><br>
-                          <a href="{{ route('api.orderShow_api', $order['id']) }}">Перейти к заказу</a>
+                        <a class="linkclass disabled" href="{{ route('user.show_user', $product->saler_id) }}"> {{ $product->saler->name }} </a><br>
+                        <a href="{{ route('api.orderShow_api', $order->order_id) }}">Перейти к заказу</a>
                         @else
-                        {{ $product['saler']['name'] }}
+                        {{ $product->saler->name }}
                         @endif
+                      </td>
+                      <td>@foreach($product->optionValues as $option => $value)
+                        {{$option . ': '. $value}}<br>
+                        @endforeach
                       </td>
                     </tr>
                     @endforeach
@@ -97,18 +91,19 @@
           <a href="{{ route('user.support_user') }}" class="btn btn-primary">Поддержка</a>
         </div>
         <div class="mr-3">
-          <form action="{{ route('order.update_order', $order['id']) }}" method="post">
+          <form action="{{ route('order.update_order', $order->id) }}" method="post">
             @csrf
             @method('patch')
             <div class="form-group">
-              <input type="submit" class="btn btn-primary" value="Подтвердить отправку" {{$order['status'] != '0000-00-00' ? 'disabled' : ''}} {{ !empty($order['deleted_at']) ? 'disabled' : '' }}>
+              <input type="submit" class="btn btn-primary" value="Подтвердить отправку" @disabled($order->status != 'В работе')>
+
             </div>
           </form>
         </div>
-        <form action="{{route('order.delete_order', $order['id']) }}" method="post">
+        <form action="{{route('order.delete_order', $order->id) }}" method="post">
           @csrf
           @method('delete')
-          <input type="submit" class="btn btn-danger" value="Отказаться" {{ !empty($order['deleted_at']) ? 'disabled' : '' }} {{$order['status'] != '0000-00-00' ? 'disabled' : ''}}>
+          <input type="submit" class="btn btn-danger" value="Отказаться" @disabled($order->status != 'В работе')>
         </form>
       </div>
     </div>

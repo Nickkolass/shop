@@ -20,8 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::controller(BackController::class)->group(function () {
     Route::post('/user', function (Request $request) {return $request->user();});
     Route::post('/cart', 'cart');
+    Route::post('/products', 'index');
     Route::post('/products/{category:title}', 'products');
-    Route::post('/products/{category}/{product}', 'product');
+    Route::post('/products/{category:title}/{product}', 'product');
 });
 
 Route::controller(BackOrderController::class)->group(function () {

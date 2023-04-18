@@ -21,9 +21,11 @@ class CartResource extends JsonResource
             'preview_image' => $this->preview_image,
             'price' => $this->price,
             'count' => $this->count,
-            'amount' => array_shift($_REQUEST),
-            'category' => $this->category()->pluck('title')['0'],
-            'saler' => $this->saler()->select('id', 'name')->first()->toArray(),
+            'amount' => $this->amount,
+            'category' => $this->category->title,
+            'saler' => $this->saler,
+            'optionValues' => $this->optionValues,
+            'cart_id' => $this->cart_id,
         ];
            
     }

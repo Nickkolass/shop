@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Components\Method;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -18,23 +18,15 @@ class OrderController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role == 'admin') {
-            $orders = OrderPerformer::latest('created_at');
-        } else {
-            $orders = auth()->user()->orderPerformers()->latest('created_at');
-        }
-        $orders = $orders->withTrashed()->paginate(5);
+
+        $orders = auth()->user()->role == 'admin' ? OrderPerformer::with('user:id,name') : auth()->user()->orderPerformers();
+        $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
         foreach ($orders as &$order) {
-            $products = json_decode($order->products, true);
-            foreach ($products as $product_id => $amount) {
-                $products[$product_id] = Product::select('id', 'preview_image')->find($product_id);
-                $products[$product_id]->amount = $amount;
-            }
-            $order->products = array_values($products);
-            $order->end = Order::withTrashed()->find($order->order_id)->status;
-            if (auth()->user()->role == 'admin') {
-                $order->saler = User::select('id', 'name')->find($order->saler_id);
-                $order->user = User::select('id', 'name')->find($order->user_id);
+            $order->products = json_decode($order->products);
+            foreach ($order->products as $product) {
+                $prod = Product::select('preview_image', 'title')->find($product->product_id);
+                $product->preview_image = $prod->preview_image;
+                $product->title = $prod->title;
             }
         }
         return view('admin.order.index_order', compact('orders'));
@@ -49,16 +41,23 @@ class OrderController extends Controller
     public function show(OrderPerformer $order)
     {
         $this->authorize('view', $order);
-        $order = $order->toArray();
-        $order['created_at'] = explode('T', $order['created_at'])['0'];
-        $order['deleted_at'] = explode('T', $order['deleted_at'])['0'];
-        $order['end'] = Order::withTrashed()->find($order['order_id'])->status;
-        $products = json_decode($order['products'], true);
-        foreach ($products as $product_id => $amount) {
-            $products[$product_id] = Product::with(['category:id,title,title_rus', 'saler:id,name'])->select('id', 'title', 'preview_image', 'price', 'category_id', 'saler_id')->find($product_id)->toArray();
-            $products[$product_id]['amount'] = $amount;
+
+        $products = json_decode($order->products, true);
+        foreach ($products as &$product) {
+            $prod = $product;
+            $product = Product::select('id', 'title', 'preview_image', 'price', 'category_id', 'saler_id')->with([
+                'category:id,title,title_rus', 'saler:id,name', 'optionValues' => function ($q) use ($prod) {
+                    $q->with('option:id,title')->whereIn('optionValues.id', $prod['optionValues'])
+                    ->select('optionValues.id', 'option_id', 'value');
+                }
+            ])->find($prod['product_id']);
+
+            $product->amount = $prod['amount'];
+            $product->price = $prod['price'];
+            Method::valuesToKeys($product, 'optionValues');
         }
-        return view('admin.order.show_order', compact('order', 'products'));
+        $order->products = $products;
+        return view('admin.order.show_order', compact('order'));
     }
 
     /**
@@ -70,7 +69,7 @@ class OrderController extends Controller
     public function update(OrderPerformer $order)
     {
         $this->authorize('update', $order);
-        $order->update(['status' => now()]);
+        $order->update(['status' => 'Отправлен ' . now()]);
         return back();
     }
 
@@ -85,10 +84,12 @@ class OrderController extends Controller
         $this->authorize('delete', $order);
         DB::beginTransaction();
         try {
+            $order->update(['status' => 'Отменен ' . now()]);
             $order->delete();
-            $deleted_at = $order->order()->first()->orderPerformers()->withTrashed()->pluck('deleted_at')->toArray();
-            !array_search(null, $deleted_at) ? $order->order()->delete() : '';
             //возврат денег
+            Order::where('id', $order->order_id)->doesntHave('orderPerformers')->update(['status' => 'Отменен ' . now()]);
+            Order::where('id', $order->order_id)->doesntHave('orderPerformers')->delete();
+
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

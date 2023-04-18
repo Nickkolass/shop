@@ -55,7 +55,7 @@
           </div>
 
         </div>
-        {{ $groups->links('vendor.pagination.bootstrap-4') }}
+        {{ $groups->links('vendor.pagination.simple-bootstrap-4') }}
       </div>
     </div>
   </div><!-- /.container-fluid -->

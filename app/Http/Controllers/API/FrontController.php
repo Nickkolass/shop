@@ -4,72 +4,87 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Components\ImportDataClient;
+use App\Http\Requests\API\Product\ProductsRequest;
+use App\Services\API\APIFrontService;
+use Illuminate\Http\Request;
 
 class FrontController extends Controller
 {
+    
+    private $import;
+
+    public function __construct(ImportDataClient $import)
+    {
+        $this->import = $import;
+    }
+   
+   
     // $response = Http::get('192.168.32.1:8876/api/products/'.$category, $request);
     public function index()
     {
-        return view('api.index_api');
-    }
+        $data['products'] = session('viewed') ?? [];
+        $data['cart'] = session('cart') ?? [];
 
-    public function support()
-    {
-        return view('api.support');
-    }
-
-    public function products($category)
-    {
-        // dd(request()->except('_token'));
-        // session()->forget('filter');
-        if (request()->has('page')) {
-            $data = session('filter');
-            $data['page'] = request()->page;
-        } else {
-            $data = request()->except('_token');
+        if (!empty($data['products'])) {
+            $products = $this->import->client->request('POST', 'api/products', ['query' => $data])->getBody()->getContents();
+            $data['products'] = json_decode($products, true);
         }
-        $import = new ImportDataClient();
-        $products = $import->client->request('POST', 'api/products/' . $category, ['query' => $data])->getBody()->getContents();
-        $data = json_decode($products, true)['data'];
-        array_pop($data['products']['links']);
-        array_shift($data['products']['links']);
-        $data['cart'] = session('cart');
-        session(['filter' => $data['filter']]);
-        // dd($data);
+
+        return view('api.index_api', compact('data'));
+    }
+
+
+    public function products($category, ProductsRequest $request)
+    {
+        $queryParams = $request->validated();
+
+        APIFrontService::scenarioGetProducts($queryParams);
+
+        $data = $this->import->client->request('POST', 'api/products/' . $category, ['query' => $queryParams])->getBody()->getContents();
+        $data = json_decode($data, true);
+
+        $data = APIFrontService::afterGetProducts($data);
+
         return view('api.product.index_product', compact('data'));
     }
 
-    public function product($category, $product)
+
+    public function product($category, $product_id)
     {
-        $import = new ImportDataClient();
-        $data = $import->client->request('POST', 'api/products/' . $category . '/' . $product)->getBody()->getContents();
-        $data = json_decode($data, true)['data'];
-        $data['filter'] = session('filter');
-        return view('api.product.show_product', compact('data'));
+        $product = $this->import->client->request('POST', 'api/products/' . $category . '/' . $product_id, ['query' => session('cart')])->getBody()->getContents();
+        $product = json_decode($product, true);
+       
+        $page = session('paginate.page');
+        session()->push('viewed', $product_id);
+
+        return view('api.product.show_product', compact('product', 'page'));
     }
+
 
     public function addToCart()
     {
         $addToCart = request('addToCart');
-        foreach ($addToCart as $k => $v) {
-            if (empty($v)) {
-                session()->forget('cart.' . $k);
-            } else {
-                session(['cart.' . $k => $v]);
-            }
-        }
+        $addToCart = array_pop($addToCart);
+        $addToCart['amount'] = array_pop($addToCart['amount']);
+
+        APIFrontService::scenarioAddToCart($addToCart);
         return back()->withInput();
     }
 
+
     public function cart()
     {
-        if (empty(session('cart'))) {
-            $data['products'] = [];
-        } else {
-            $import = new ImportDataClient();
-            $data['products'] = $import->client->request('POST', 'api/cart', ['query' => session('cart')])->getBody()->getContents();
-            $data['products'] = json_decode($data['products'],  true)['data'];
+        $products = [];
+        if ($cart = session('cart')) {
+            $products = $this->import->client->request('POST', 'api/cart', ['query' => $cart])->getBody()->getContents();
+            $products = json_decode($products,  true);
         }
-        return view('api.cart', compact('data'));
+        return view('api.cart', compact('products'));
+    }
+
+    
+    public function support()
+    {
+        return view('api.support');
     }
 }

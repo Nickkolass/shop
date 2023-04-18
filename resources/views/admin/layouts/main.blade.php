@@ -213,18 +213,17 @@
               </a>
             </li>
 
+            <li class="nav-item">
+              <a href="{{ route('option.index_option') }}" class="nav-link">
+                <i class="nav-icon fa fa-database"></i>
+                <p>Опции</p>
+              </a>
+            </li>
 
             <li class="nav-item">
               <a href="{{ route('tag.index_tag') }}" class="nav-link">
                 <i class="nav-icon fas fa-tags"></i>
                 <p>Теги</p>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="{{ route('color.index_color') }}" class="nav-link">
-                <i class="nav-icon fas fa-palette"></i>
-                <p>Цвета</p>
               </a>
             </li>
 
@@ -283,11 +282,7 @@
 
   <script>
     $('.tags').select2()
-  </script>
-  <script>
-    $('.colors').select2()
-  </script>
-  <script>
+    $('.categories').select2()
     $('.groups').select2()
   </script>
 </body>

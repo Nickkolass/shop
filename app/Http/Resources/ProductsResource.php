@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductsResource extends JsonResource
 {
+    protected $preserveKeys = true;
+    
     /**
      * Transform the resource into an array.
      *
@@ -16,14 +17,12 @@ class ProductsResource extends JsonResource
     public function toArray($request)
     {
         return [
+
             'products' => $this['products'],
+            'paginate' => $this['paginate'],
+            'filter' => $this['filter'],
+            'filterable' => $this['filterable'],
             'category' => $this['category'],
-            'tags' => $this['tags'],
-            'colors' => $this['colors'],
-            'salers' => $this['salers'],
-            'prices' => ['minPrice' => $this['prices']['minPrice'],
-                         'maxPrice' => $this['prices']['maxPrice']],
-            'filter' => $this['request'],
         ];
     }
 }

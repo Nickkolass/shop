@@ -15,21 +15,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->text('content');
+            $table->string('title')->fullText();
+            $table->text('description')->fullText();
+            $table->unsignedInteger('price');
+            $table->unsignedInteger('count');
+            $table->boolean('is_published');
             $table->string('preview_image');
-            $table->integer('price');
-            $table->integer('count');
-            $table->boolean('is_published')->default(true);
-            $table->foreignId('color_id')->nullable()->constrained('colors');
-            $table->foreignId('group_id')->nullable()->constrained('groups');
-            $table->foreignId('saler_id')->nullable()->constrained('users');
-            $table->foreignId('category_id')->required()->constrained('categories');
-
-            // commentable_id - integer
-            // commentable_type - string
-
+            $table->fullText(['title', 'description']);
+            $table->foreignId('group_id')->nullable()->constrained('groups')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('saler_id')->nullable()->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('category_id')->required()->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -28,14 +28,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data['orders']['data'] as $order)
+                @foreach($orders['data'] as $order)
                 <tr style="text-align: center">
                     <td style="vertical-align: middle"><a href="{{ route('api.orderShow_api', $order['id']) }}">{{ $order['id'] }}</a></td>
                     <td style="vertical-align: middle">
-                        @if (!empty($order['deleted_at']))
-                        {{ 'Отменен ' . $order['deleted_at'] }}
-                        @else
-                        @if ($order['status'] == '0000-00-00')
+                        @if ($order['status'] == 'В работе' || str_contains('Отправлен', $order['status']))
                         <form action="{{ route('api.orderStatus_api', $order['id']) }}" method="post">
                             @csrf
                             @method('patch')
@@ -44,8 +41,7 @@
                             </div>
                         </form>
                         @else
-                        Получен {{$order['status']}}
-                        @endif
+                        {{$order['status']}}
                         @endif
                     </td>
                     <td style="vertical-align: middle">
@@ -65,38 +61,10 @@
         </table>
     </div>
 
-    @if(empty($data['orders']['data']))
-    <h4 style="text-align:center">По вашему запросу заказов не найдено</h4>
+    @if(empty($orders['data']))
+    <h4 style="text-align:center">Надеемся, что скоро здесь появится первый заказ</h4>
     @else
-    @if($data['orders']['last_page'] != 1)
-    <div>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li class="page-item {{ $data['orders']['current_page'] == 1 ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $data['orders']['first_page_url'] }}" aria-label="First">
-                        <span aria-hidden="true">&laquo;</span>
-                        <span class="sr-only">В начало</span>
-                    </a>
-                </li>
-                <li class="page-item {{ $data['orders']['current_page'] == 1 ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $data['orders']['prev_page_url'] }}" tabindex="-1">Назад</a>
-                </li>
-                @foreach ($data['orders']['links'] as $link)
-                <li class="page-item {{ $link ['active'] == true ? 'active' : ''}}"><a class="page-link" href="{{ $link['url'] }}">{{$link['label']}}</a></li>
-                @endforeach
-                <li class="page-item {{ $data['orders']['last_page'] == $data['orders']['current_page'] ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $data['orders']['next_page_url'] }}">Вперед</a>
-                </li>
-                <li class="page-item {{ $data['orders']['last_page'] == $data['orders']['current_page'] ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $data['orders']['last_page_url'] }}" aria-label="Last">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">В конец</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    @endif
+    @include('api.components.paginate')
     @endif
 </main>
 @endsection

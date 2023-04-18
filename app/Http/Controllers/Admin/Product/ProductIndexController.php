@@ -16,7 +16,7 @@ class ProductIndexController extends Controller
             $groups = auth()->user()->products()->whereNotNull('group_id')->groupBy('group_id');
             $prods = auth()->user()->products()->whereNull('group_id');
         }
-        $products = $groups->union($prods)->with(['group:id,title', 'category:id,title_rus', 'group.products:id,group_id,preview_image'])->orderBy('id')->paginate(8);
+        $products = $groups->union($prods)->with(['group:id,title', 'category:id,title_rus', 'group.products:id,group_id,preview_image'])->orderBy('id')->simplePaginate(8);
 
         return view('admin.product.index_product', compact('products'));
     }

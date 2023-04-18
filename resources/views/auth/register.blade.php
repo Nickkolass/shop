@@ -88,8 +88,8 @@
                                 <div class="form-group">
                                     <select name="gender" class="custom-select form-control" id="exampleSelectBorder">
                                         <option disabled selected></option>
-                                        <option {{ old('gender') == 1 ? 'selected' : '' }} value="1">Мужской</option>
-                                        <option {{ old('gender') == 2 ? 'selected' : '' }} value="2">Женский</option>
+                                        <option @selected(old('gender') == 1) value="1">Мужской</option>
+                                        <option @selected(old('gender') == 2) value="2">Женский</option>
                                     </select>
                                 </div>
                                 @error('gender')

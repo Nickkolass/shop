@@ -43,7 +43,7 @@
         <div class="form-group">
           <select name="category_id" data-placeholder="Выберите категорию" style="width: 100%;">
             @foreach($categories as $category)
-            <option value="{{$category->id}}" {{$group->category->id==$category->id ? 'selected' : ''}}> {{$category->title_rus}}</option>
+            <option value="{{$category->id}}" @selected($group->category->id==$category->id)> {{$category->title_rus}}</option>
             @endforeach
           </select>
         </div>
@@ -51,7 +51,7 @@
         <div class="form-group">
           <select name="products[]" class="products" multiple="multiple" data-placeholder="Выберите продукты" style="width: 100%;">
             @foreach($products as $product)
-            <option value="{{$product->id}}" {{$group->id==$product->group_id ? 'selected' : ''}}> {{$product->title}}</option>
+            <option value="{{$product->id}}" @selected($group->id==$product->group_id)> {{$product->title}}</option>
             @endforeach
           </select>
         </div>

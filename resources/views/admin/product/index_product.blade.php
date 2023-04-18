@@ -79,7 +79,7 @@
           </div>
         </div>
       </div>
-        {{ $products->links('vendor.pagination.bootstrap-4') }}
+        {{ $products->links('vendor.pagination.simple-bootstrap-4') }}
     </div>
   </div><!-- /.container-fluid -->
 </section>

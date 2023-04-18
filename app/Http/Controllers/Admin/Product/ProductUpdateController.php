@@ -8,13 +8,15 @@ use App\Http\Controllers\Admin\Product\DBProductController;
 
 class ProductUpdateController extends DBProductController
 {
-    public function __invoke (ProductUpdateRequest $request, Product $product) {
+    public function __invoke(ProductUpdateRequest $request, Product $product)
+    {
 
         $this->authorize('update', $product);
+                
         $data = $request->validated();
-        $this->service->update($data, $product);
-        
-        return redirect()->route('product.show_product', compact('product'));
 
+        $this->service->update($product, $data);
+
+        return redirect()->route('product.show_product', compact('product'));
     }
 }

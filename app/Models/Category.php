@@ -21,5 +21,8 @@ class Category extends Model
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
 
-    
+    public function properties()
+    {
+        return $this->beLongsToMany(Property::class, 'category_properties', 'category_id', 'property_id');
+    }
 }
