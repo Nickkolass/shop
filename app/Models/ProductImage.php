@@ -13,7 +13,7 @@ class ProductImage extends Model
     protected $guarded = false;
 
     public function product(){
-        return $this->beLongsTo(Product::class, 'product_id', 'id');
+        return $this->beLongsTo(ProductType::class, 'productType_id', 'id');
     }
        
 }

@@ -4,34 +4,43 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
-use App\Models\Product;
+use App\Http\Requests\Product\ProductRequest;
 use App\Models\Category;
-use App\Models\Group;
+use App\Models\Product;
 use App\Models\Option;
+use App\Models\Property;
 use App\Models\Tag;
 
 class ProductEditController extends Controller
 {
-    public function __invoke(Product $product)
+    public function index(Product $product)
     {
         $this->authorize('update', $product);
-        $product->load(['tags:id', 'productImages:product_id,file_path', 'optionValues:id', 'propertyValues:id,property_id,value', 'category.properties:id,title']);
-        
-        Method::valuesToKeys($product, 'propertyValues', true);
 
-        $optionValues = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get()->mapWithKeys(function ($option) {
-            return [$option->title => $option->optionValues];
-        })->toArray();
+        $product->tags = $product->tags()->pluck('tags.id');
+        $tags = Tag::pluck('title', 'id');
+        $categories = Category::pluck('title_rus', 'id');
 
-        $groups = auth()->user()->groups()->select('id', 'title')->get()->toArray();
-        $tags = Tag::select(['id', 'title'])->get()->toArray();
-        
-        $product = $product->toArray();
-        $product['option_values'] = array_column($product['option_values'], 'id');
-        
-        $product['tags'] = array_column($product['tags'], 'id');
-        $product['product_images'] = array_column($product['product_images'], 'file_path');
+        return view('admin.product.edit.index_edit_product', compact('product', 'tags', 'categories'));
+    }
 
-        return view('admin.product.edit_product', compact('tags', 'groups', 'product', 'optionValues'));
+
+    public function properties(Product $product, ProductRequest $request)
+    {
+        $data = $request->validated();
+        session(['edit' => $data]);
+
+        $productPV_ids = $product->propertyValues()->pluck('property_value_id')->flip();
+        $productOV_ids = $product->optionValues()->pluck('optionValue_id');
+
+        $propertyValues = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function ($q) use ($data) {
+            $q->where('category_id', $data['category_id']);
+        })->select('id', 'title')->get();
+        $propertyValues = Method::OVPs($propertyValues);
+
+        $optionValues = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get();
+        $optionValues = Method::OVPs($optionValues);
+
+        return view('admin.product.edit.properties_edit_product', compact('product', 'propertyValues', 'optionValues', 'productPV_ids', 'productOV_ids'));
     }
 }

@@ -19,43 +19,43 @@ class APIFrontService
     }
 
 
-    public static function afterGetProducts($data)
+    public static function afterGetProducts(&$data)
     {
         $data['cart'] = session('cart');
-
         session(['filter' => $data['filter']]);
         session(['paginate' => $data['paginate']]);
-
-        return $data;
+        $productTypes = $data['productTypes'];
+        unset($data['productTypes']);
+        return $productTypes;
     }
 
 
-    public static function scenarioAddToCart($addToCart)
-    {
-        //если обновление из корзины
-        if (!empty($addToCart['cart_id'])) {
-            a:
-            $addToCart['amount'] == 0 ? session()->forget('cart.' . $addToCart['cart_id'])
-                : session(['cart.' . $addToCart['cart_id'] . '.amount' => $addToCart['amount']]);
-            return;
-        }
+    // public static function scenarioAddToCart($addToCart)
+    // {
+    //     //если обновление из корзины
+    //     if (!empty($addToCart['cart_id'])) {
+    //         a:
+    //         $addToCart['amount'] == 0 ? session()->forget('cart.' . $addToCart['cart_id'])
+    //             : session(['cart.' . $addToCart['cart_id'] . '.amount' => $addToCart['amount']]);
+    //         return;
+    //     }
 
-        if ($cart = session('cart')) {
-            foreach ($cart as $key => $val) {
-                $val['product_id'] != $addToCart['product_id'] ?: $inCart[$key] = $val;
-            }
+    //     if ($cart = session('cart')) {
+    //         foreach ($cart as $key => $val) {
+    //             $val['product_id'] != $addToCart['product_id'] ?: $inCart[$key] = $val;
+    //         }
 
-            if (!empty($inCart)) {
-                if (!in_array($addToCart, $inCart)) {
-                    foreach ($inCart as $k => $v) {
-                        if ($addToCart['optionValues'] == $v['optionValues']) {
-                            $addToCart['cart_id'] = $k;
-                            goto a;
-                        }
-                    }
-                } else return;
-            }
-        }
-        empty($addToCart['amount']) ?: session()->push('cart', $addToCart);
-    }
+    //         if (!empty($inCart)) {
+    //             if (!in_array($addToCart, $inCart)) {
+    //                 foreach ($inCart as $k => $v) {
+    //                     if ($addToCart['optionValues'] == $v['optionValues']) {
+    //                         $addToCart['cart_id'] = $k;
+    //                         goto a;
+    //                     }
+    //                 }
+    //             } else return;
+    //         }
+    //     }
+    //     empty($addToCart['amount']) ?: session()->push('cart', $addToCart);
+    // }
 }

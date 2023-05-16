@@ -13,8 +13,9 @@
         </div>
     </div>
 </div>
-<h4 hidden>{{$i = 1, $totalPrice = 0}}</h4>
+<h4 hidden>{{$i = 1}}</h4>
 <main class="cd-main-content">
+    @if(!empty($productTypes))
     <div class="card-body table-responsive">
         <table class="table table-striped">
             <thead>
@@ -29,42 +30,36 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($products as $product)
+                @foreach($productTypes as $productType)
                 <tr style="text-align: center">
                     <td style="vertical-align: middle">{{ $i++ }}</td>
-                    <td style="vertical-align: middle">{{ $product['title'] }}</td>
-                    <td style="vertical-align: middle"><a href="{{ route('api.product_api', [$product['category'], $product['id']]) }}">
-                            <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 150px"></a></td>
+                    <td style="vertical-align: middle">{{ $productType['title'] }}</td>
+                    <td style="vertical-align: middle"><a href="{{ route('api.product_api', [$productType['category'], $productType['id']]) }}">
+                            <img src="{{asset('/storage/'.$productType['preview_image'])}}" style="opacity:{{$productType['is_published'] == 0 || $productType['count'] == 0 ? '0.3' : '1'}}; height: 150px"></a></td>
                     <td style="vertical-align: middle">
-                        @foreach($product['optionValues'] as $optionValue)
-                        {{$optionValue['option']['title'] . ': ' . $optionValue['value']}}<br>
+                        @foreach($productType['option_values'] as $option => $value)
+                        {{$option . ': ' . $value}}<br>
                         @endforeach
                     </td>
-                    <td style="vertical-align: middle">{{ $product['price'] }} руб.</td>
+                    <td style="vertical-align: middle">{{ $productType['price'] }} руб.</td>
                     <td style="vertical-align: middle">
-                    @include('api.components.qty')
+                        @include('api.product.components.qty')
                     </td>
-                    <td style="vertical-align: middle">{{$product['amount']*$product['price']}} руб.</td>
+                    <td style="vertical-align: middle">{{$productType['totalPrice']}} руб.</td>
                 </tr>
-                <h4 hidden>{{ $totalPrice += $product['amount']*$product['price'] }}</h4>
                 @endforeach
             </tbody>
         </table>
     </div>
-    @if(!empty($products))
-    <form action="{{ route('api.preOrdering_api') }}" style="text-align: center;">
-        <h4 style="vertical-align: middle">Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4>
-        <br>
-        @foreach($products as $product)
-        <input type="number" name="cart[{{$product['id']}}]" value="{{ $product['amount'] }}" hidden>
-        @endforeach
-        <input type="number" name="total_price" value="{{ $totalPrice }}" hidden>
-        @if (auth()->check())
-        <input type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" value="Перейти к оформлению">
-        @else
-        <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" href="{{ route('login') }}">Для оформления заказа <br> зарегистрируйтесь или войдите</a>
-        @endif
-    </form>
+    <div style="text-align: center">
+        <h4>Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4><br>
+        <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" href="{{ auth()->check() ? route('api.preOrdering_api', ['totalPrice' => $totalPrice]) : route('login') }}">
+        <h4 style="padding: 10px;margin-left: {{auth()->check() ? '0px' : '-15px'}};text-align: center">{{auth()->check() ? 'Перейти к оформлению' : 'Зарегистрируйтесь или войдите'}}</h4>
+        </a>
+    </div>
+    @else
+    <br>
+    <h4 style="text-align: center">Корзина пока пуста</h4>
     @endif
 </main>
 @endsection

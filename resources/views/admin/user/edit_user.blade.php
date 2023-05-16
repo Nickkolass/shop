@@ -82,7 +82,7 @@ auth()->user()->role == 'client'
               <input type="text" value="{{ $user->address }}" name="address" class="form-control" placeholder="Адрес">
             </div>
           </div>
-          @if(auth()->check())
+          @auth
           @if((auth()->user()->role == 'admin') || (auth()->user()->role == 'saler'))
           <div class="row mb-3">
             <label for="INN" class="col-md-6 col-form-label text-md-end">{{ __('ИНН') }}</label>
@@ -97,7 +97,7 @@ auth()->user()->role == 'client'
             </div>
           </div>
           @endif
-          @endif
+          @endauth
           <div class="col-md-6">
             <input type="submit" class="btn-btn-primary" value="Редактировать">
           </div>

@@ -3,20 +3,18 @@
 namespace App\Http\Controllers\Admin\Product;
 
 use App\Models\Product;
-use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Http\Controllers\Admin\Product\DBProductController;
+use App\Http\Requests\Product\UpdateRequest;
 
 class ProductUpdateController extends DBProductController
 {
-    public function __invoke(ProductUpdateRequest $request, Product $product)
+    public function __invoke(Product $product, UpdateRequest $request)
     {
-
         $this->authorize('update', $product);
-                
-        $data = $request->validated();
 
-        $this->service->update($product, $data);
+        $this->service->update($product, session()->pull('edit'), $request->validated());
 
         return redirect()->route('product.show_product', compact('product'));
     }
+
 }

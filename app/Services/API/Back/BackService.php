@@ -4,53 +4,52 @@ namespace App\Services\API\Back;
 
 use App\Components\Method;
 use App\Models\Product;
-
+use App\Models\ProductType;
 
 class BackService
 {
 
-    public function viewed($data)
+    public function viewed($productType_ids)
     {
-        $product_ids = array_slice(value(array_unique(array_reverse($data['products']))), 0, 12);
+        $productTypes = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
+            ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
+                $q->select('id', 'title', 'category_id')->with(['productTypes:id,product_id,is_published,preview_image', 'category:id,title']);
+            }])->find($productType_ids);
 
-        $products = Product::select('id', 'title', 'count', 'is_published', 'price', 'preview_image', 'category_id')
-            ->with(['productImages:product_id,file_path', 'category:id,title', 'optionValues.option:id,title'])
-            ->find($product_ids);
-
-        $products->map(function ($product) {
+        $productTypes->map(function ($product) {
             Method::valuesToGroups($product, 'optionValues');
         });
 
-        empty($data['cart']) ?: $products = Method::inCart($products, $data['cart']);;
-
-        return $products;
+        return $productTypes;
     }
 
-  
-    public function product(Product &$product, $cart)
+
+    public function product(ProductType &$productType)
     {
-        $product->load([
-            'saler:id,name', 'productImages:product_id,file_path', 'optionValues.option:id,title',
-            'category:id,title,title_rus', 'propertyValues.property:id,title'
-        ]);
-        
-        empty($cart) ?: $product = Method::inCart($product, $cart, true)->first();
-        Method::optionsAndProperties($product);
+        $productType->load(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
+            $q->with([
+                'saler:id,name',  'optionValues.option:id,title', 'category:id,title,title_rus',
+                'propertyValues.property:id,title', 'productTypes:id,product_id,is_published,preview_image'
+            ]);
+        }]);
+        Method::valuesToKeys($productType->product, 'propertyValues');
+        Method::valuesToKeys($productType, 'optionValues');
     }
+
+
 
 
     public function cart($cart)
     {
-        foreach ($cart as $key => &$product) {
-            $prod = $product;
-            $product = Product::select('id', 'title', 'category_id', 'saler_id', 'preview_image', 'price', 'count')
-                ->with(['category:id,title', 'saler:id,name', 'optionValues' => function ($q) use ($prod) {
-                    $q->select('optionValues.id', 'option_id', 'value')->whereIn('optionValues.id', $prod['optionValues'])->with('option:id,title');
-                }])->find($prod['product_id']);
-
-            $product->amount = $prod['amount'];
-            $product->cart_id = $key;
-        }
-        return $cart;
+        $productType_ids = array_keys($cart);
+        $productTypes = ProductType::select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
+            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find($productType_ids);
+        
+        $productTypes->map(function($productType) use ($cart) {
+            $productType->amount = $cart[$productType->id];
+            $productType->totalPrice = $productType->amount * $productType->price;
+            Method::valuesToKeys($productType, 'optionValues');
+        });
+        return $productTypes;
     }
 }

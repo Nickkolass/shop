@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
             $table->date('dispatch_time');
             $table->string('status')->default('В работе');
-            $table->jsonb('products');
+            $table->jsonb('productTypes');
             $table->string('delivery');
             $table->integer('total_price');
             $table->softDeletes();

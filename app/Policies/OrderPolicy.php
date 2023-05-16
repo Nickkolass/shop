@@ -18,7 +18,6 @@ class OrderPolicy
      */
     public function viewAny(User $user)
     {
-
     }
 
     /**
@@ -41,7 +40,6 @@ class OrderPolicy
      */
     public function create(User $user)
     {
-
     }
 
     /**

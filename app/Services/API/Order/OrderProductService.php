@@ -4,6 +4,7 @@ namespace App\Services\API\Order;
 
 use App\Components\Method;
 use App\Models\Product;
+use App\Models\ProductType;
 
 class OrderProductService
 {
@@ -13,46 +14,46 @@ class OrderProductService
         !$show ?: $orders = collect([0 => $orders]);
 
         $orders->map(function ($order) use ($show) {
-            $products = json_decode($order->products, true);
-            $prods = Product::select('id', 'category_id', 'preview_image')->with('category:id,title')->when($show, function ($q) {
-                $q->with(['saler:id,name', 'optionValues.option:id,title'])->addSelect('title', 'saler_id');
-            })->find(array_column($products, 'product_id'));
+            $productTypes = json_decode($order->productTypes, true);
+            $pTs = ProductType::with('category:categories.id,categories.title')->when($show, function ($q) {
+                $q->with(['optionValues.option:id,title', 'product' => function ($b) {
+                    $b->select('id', 'saler_id', 'title')->with(['saler:id,name']);
+                }]);
+            })->select('id', 'product_id', 'preview_image')->find(array_column($productTypes, 'productType_id'));
 
-            $show ? $this->forShow($products, $prods, $order->orderPerformers) : $this->forIndex($products, $prods);
+            $show ? $this->forShow($productTypes, $pTs, $order->orderPerformers) : $this->forIndex($productTypes, $pTs);
 
-            $order->products = $products;
+            $order->productTypes = $productTypes;
         });
         return $orders;
     }
 
 
-    private function forIndex(&$products, $prods)
+    private function forIndex(&$productTypes, $pTs)
     {
-        foreach ($products as &$product) {
-            $prod = $prods->where('id', $product['product_id'])->first();
-            $product['preview_image'] = $prod->preview_image;
-            $product['category'] = $prod->category->title;
+        foreach ($productTypes as &$productType) {
+            $pT = $pTs->where('id', $productType['productType_id'])->first();
+            $productType['preview_image'] = $pT->preview_image;
+            $productType['category'] = $pT->category->title;
         }
     }
 
 
-    private function forShow(&$products, $prods, $orderPerformers)
+    private function forShow(&$productTypes, $pTs, $orderPerformers)
     {
-        foreach ($products as &$product) {
-            $prod = $product;
+       
+        foreach ($productTypes as &$productType) {
+            $prod = $productType;
             $orderPerformer = $orderPerformers->where('saler_id', $prod['saler_id'])->first();
-            $product = $prods->where('saler_id', $prod['saler_id'])->first();
-
-            $product->setRelation('optionValues', $product->optionValues->whereIn('id', $prod['optionValues']));
-            Method::valuesToKeys($product, 'optionValues');
-
-            $product->amount = $prod['amount'];
-            $product->price = $prod['price'];
-            $product->dispatch_time = $orderPerformer->dispatch_time;
-            $product->orderPerformer = [
-                'id' => $orderPerformer->id,
-                'status' => $orderPerformer->status,
-            ];
+            $productType = $pTs->where('id', $prod['productType_id'])->first();
+            
+            Method::valuesToKeys($productType, 'optionValues');
+            
+            $productType->amount = $prod['amount'];
+            $productType->price = $prod['price'];
+            $productType->status = $orderPerformer->status;
+            $productType->orderPerformer_id = $orderPerformer->id;
         }
+
     }
 }

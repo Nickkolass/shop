@@ -14,16 +14,21 @@ class Method
     }
 
 
-    public static function valuesToKeys(Product &$product, $relationship, ?bool $value_id = false)
+    public static function valuesToKeys(&$product, $relationship, ?bool $value_id = false)
     {
-        $product->setRelation($relationship, $product->$relationship->mapWithKeys(function ($value) use ($value_id) {
-            $key = !empty($value_id) ? $value->option_id ?? $value->property_id : $value->option->title ?? $value->property->title;
-            return [$key => $value->value];
-        }));
+        $product->setRelation($relationship, Method::toKeys($product->$relationship, $value_id));
     }
 
+    public static function toKeys($relationship, ?bool $value_id = false)
+    {
+        return $relationship->mapWithKeys(function ($value) use ($value_id) {
+                $key = !empty($value_id) ? $value->option_id ?? $value->property_id : $value->option->title ?? $value->property->title;
+                return [$key => $value->value];
+            }
+        );
+    }
 
-    public static function valuesToGroups(Product &$product, $relationship)
+    public static function valuesToGroups(&$product, $relationship)
     {
         $product->setRelation($relationship, Method::toGroups($product->$relationship));
     }
@@ -36,17 +41,11 @@ class Method
         });
     }
 
-
-    public static function inCart($products, $cart, ?bool $show = false)
+    public static function OVPs($OVPs)
     {
-        !$show ?: $products = collect([0 => $products]);
-
-        $product_ids_in_cart = array_combine(array_keys($cart), array_column($cart, 'product_id'));
-
-        $products->map(function ($product) use ($product_ids_in_cart, $cart) {
-            $key = array_search($product->id, $product_ids_in_cart);
-            $key === false ?: $product->inCart = $cart[$key];
+        return $OVPs->mapWithKeys(function ($OVP) {
+            $value = $OVP->propertyValues ?? $OVP->optionValues;
+            return [$OVP->title => $value->pluck('value', 'id')];
         });
-        return $products;
     }
 }

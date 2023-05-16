@@ -60,7 +60,7 @@
         <div class="form-group">
           <input type="text" value="{{ old('address') }}" name="address" class="form-control" placeholder="Адрес">
         </div>
-        @if(auth()->check()))
+        @auth
         @if(auth()->user()->role == 'admin')
         <div class="form-group">
           <input type="text" value="{{ old('INN') }}" name="INN" class="form-control" placeholder="ИНН">
@@ -69,7 +69,7 @@
           <input type="text" value="{{ old('registredOffice') }}" name="registredOffice" class="form-control" placeholder="Юр. Адрес">
         </div>
         @endif
-        @endif
+        @endauth
         <div class="form-group">
           <input type="email" value="{{ old('email') }}" name="email" class="form-control" placeholder="email">
         </div>

@@ -22,13 +22,13 @@ class ShowOrderProductsResource extends JsonResource
             'amount' => $this->amount,
             'price' => $this->price,
             'optionValues' => $this->optionValues,
-            'title' => $this->title,
-            'saler_id' => $this->saler_id,
-            'saler' => $this->saler->name,
+            'title' => $this->product->title,
+            'saler_id' => $this->product->saler_id,
+            'saler' => $this->product->saler->name,
             'preview_image' => $this->preview_image,
             'category' => $this->category->title,
-            'status' =>  $this->orderPerformer['status'],
-            'orderPerformer_id' => $this->orderPerformer['id'],
+            'status' =>  $this->status,
+            'orderPerformer_id' => $this->orderPerformer_id,
         ];
 
 

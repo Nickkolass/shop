@@ -192,13 +192,6 @@
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('group.index_group') }}" class="nav-link">
-                <i class="nav-icon fas fa-bars"></i>
-                <p>Группы</p>
-              </a>
-            </li>
-
-            <li class="nav-item">
               <a href="{{ route('user.support_user') }}" class="nav-link">
                 <i class="nav-icon fas fa-phone"></i>
                 <p>Поддержка</p>
@@ -216,7 +209,7 @@
             <li class="nav-item">
               <a href="{{ route('option.index_option') }}" class="nav-link">
                 <i class="nav-icon fa fa-database"></i>
-                <p>Опции</p>
+                <p>Классификаторы</p>
               </a>
             </li>
 
@@ -242,13 +235,13 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-
+    <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
     <div class="content-wrapper">
       <div id="app">
         @yield('content')
       </div>
     </div>
-    
+
     <!-- /.content-wrapper -->
     <footer class="main-footer">
       <strong>Copyright &copy; 2022-{{ now()->year }} <a href="{{ route('admin.index_admin') }}">Главная</a>.</strong>

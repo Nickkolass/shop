@@ -14,7 +14,7 @@
   </div>
 </div>
 <main class="cd-main-content">
-  @include('api.components.filter')
+  @include('api.product.components.filter')
   <div>
     <ul class="nav justify-content-center">
       @foreach ($categories as $cat)
@@ -25,12 +25,12 @@
     </ul>
   </div>
 
-  @include('api.components.products')
+  @include('api.product.components.index')
 
-  @if(empty($data['products']['data']))
+  @if(empty($productTypes['data']))
   <h4 style="text-align:center">По вашему запросу товаров не найдено</h4>
   @else
-  @include('api.components.paginate')
+  @include('api.product.components.paginate')
   @endif
 
 </main>

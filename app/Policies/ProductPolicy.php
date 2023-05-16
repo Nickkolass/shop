@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Product;
+use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -41,7 +42,6 @@ class ProductPolicy
      */
     public function create(User $user)
     {
-        //
     }
 
     /**

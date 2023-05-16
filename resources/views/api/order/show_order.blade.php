@@ -43,24 +43,24 @@
                     <td>
                         <table class="table table-striped">
                             <tbody>
-                                @foreach($order['products'] as $product)
+                                @foreach($order['productTypes'] as $productType)
                                 <tr>
-                                    <td><a href="{{ route('api.product_api', [$product['category'], $product['id']]) }}">
-                                            <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 90px"></a></td>
-                                    <td>Название: {{ $product['title'] }}<br>
-                                        Количество: {{ $product['amount'] }}<br>
-                                        Стоимость: {{ $product['price'] }}<br>
-                                        Статус: {{ $product['status'] }}<br>
+                                    <td><a href="{{ route('api.product_api', [$productType['category'], $productType['id']]) }}">
+                                            <img src="{{asset('/storage/'.$productType['preview_image'])}}" style="height: 90px"></a></td>
+                                    <td>Название: {{ $productType['title'] }}<br>
+                                        Количество: {{ $productType['amount'] }}<br>
+                                        Стоимость: {{ $productType['price'] }}<br>
+                                        Статус: {{ $productType['status'] }}<br>
                                         Продавец:
                                         @if(auth()->user()->role == 'admin')
-                                        <a class="linkclass disabled" href="{{ route('user.show_user', $product['saler_id']) }}"> {{ $product['saler'] }} </a><br>
-                                        <a href="{{ route('order.show_order', $product['orderPerformer_id']) }}">Перейти к заказу</a>
+                                        <a class="linkclass disabled" href="{{ route('user.show_user', $productType['saler_id']) }}"> {{ $productType['saler'] }} </a><br>
+                                        <a href="{{ route('order.show_order', $productType['orderPerformer_id']) }}">Перейти к заказу</a>
                                         @else
-                                        {{ $product['saler'] }}
+                                        {{ $productType['saler'] }}
                                         @endif
                                     </td>
                                     <td>
-                                        @foreach($product['optionValues'] as $option => $value)
+                                        @foreach($productType['optionValues'] as $option => $value)
                                         {{$option . ': ' . $value}}<br>
                                         @endforeach
                                     </td>
@@ -91,7 +91,7 @@
         <form action="{{route('api.orderDelete_api', $order['id']) }}" method="post">
             @csrf
             @method('delete')
-            <input type="submit" class="btn btn-danger btn-lg" value="Отказаться" @disabled($order['status'] !='В работе' || str_contains('Отправлен', $order['status']) || !empty(array_diff(array_column($order['products'], 'status' ), ['В работе'])))>
+            <input type="submit" class="btn btn-danger btn-lg" value="Отказаться" @disabled($order['status'] !='В работе' || str_contains('Отправлен', $order['status']) || !empty(array_diff(array_column($order['productTypes'], 'status' ), ['В работе'])))>
         </form>
     </div>
 </main>

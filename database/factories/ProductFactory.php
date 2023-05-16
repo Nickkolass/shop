@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Group;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,17 +18,11 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
-        $group = Group::latest('id')->first();
         return [
             'title' => $this->faker->sentence(5),
             'description' => $this->faker->realText(),
-            'price' => $this->faker->numberBetween(1, 10000),
-            'count' => $this->faker->numberBetween(1, 10),
-            'is_published' => 1,
-            'preview_image' => '',
-            'category_id' => $group->category_id,
-            'group_id' => $group->id,
-            'saler_id' => $group->saler_id,
+            'category_id' => Category::latest('id')->pluck('id')['0'],
+            'saler_id' => User::latest('id')->pluck('id')['0'],
         ];
     }
 }

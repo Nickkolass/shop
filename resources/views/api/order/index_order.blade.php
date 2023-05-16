@@ -14,6 +14,9 @@
     </div>
 </div>
 <main class="cd-main-content">
+    @if(empty($orders['data']))
+    <h4 style="text-align:center"> <br> Надеемся, что скоро здесь появится первый заказ</h4>
+    @else
     <div class="card-body table-responsive">
         <table class="table table-striped">
             <thead>
@@ -45,10 +48,10 @@
                         @endif
                     </td>
                     <td style="vertical-align: middle">
-                        @foreach($order['products'] as $product)
-                        <a href="{{ route('api.product_api', [$product['category'], $product['id']]) }}">
-                            <img src="{{asset('/storage/'.$product['preview_image'])}}" style="height: 50px"></a>
-                        {{$product['amount'].' шт.'}}
+                        @foreach($order['productTypes'] as $productType)
+                        <a href="{{ route('api.product_api', [$productType['category'], $productType['id']]) }}">
+                            <img src="{{asset('/storage/'.$productType['preview_image'])}}" style="height: 50px"></a>
+                        {{$productType['amount'].' шт.'}}
                         @endforeach
                     </td>
                     <td style="vertical-align: middle">{{ $order['created_at'] }}</td>
@@ -60,11 +63,7 @@
             </tbody>
         </table>
     </div>
-
-    @if(empty($orders['data']))
-    <h4 style="text-align:center">Надеемся, что скоро здесь появится первый заказ</h4>
-    @else
-    @include('api.components.paginate')
+    @include('api.product.components.paginate')
     @endif
 </main>
 @endsection

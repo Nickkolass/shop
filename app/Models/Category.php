@@ -12,13 +12,15 @@ class Category extends Model
     protected $table = 'categories';
     protected $guarded = false;
 
-    public function groups(){
-        return $this->hasMany(Group::class, 'category_id', 'id');
-    }
 
     public function products()
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
+    }
+
+    public function productTypes()
+    {
+        return $this->hasManyThrough(ProductType::class, Product::class);
     }
 
     public function properties()

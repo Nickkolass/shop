@@ -74,10 +74,10 @@
                       {{$order->status}}
                       @endif
                   </td>
-                  <td>@foreach($order->products as $product)
-                    <a href="{{ route('product.show_product', $product->product_id) }}">
-                      <img src="{{asset('/storage/'.$product->preview_image)}}" style="height: 50px"></a>
-                    {{$product->amount.' шт.'}}
+                  <td>@foreach($order->productTypes as $productType)
+                    <a href="{{ route('product.show_product', $productType->productType_id) }}">
+                      <img src="{{asset('/storage/'.$productType->preview_image)}}" style="height: 50px"></a>
+                    {{$productType->amount.' шт.'}}
                     @endforeach
                   </td>
                   <td>{{ $order->created_at }}</td>

@@ -29,13 +29,14 @@ class User extends Authenticatable
         return self::getGenders()[$this->gender];
     }
 
-    public function groups(){
-        return $this->hasMany(Group::class, 'saler_id', 'id');
-    }
-
     public function products()
     {
-        return $this->hasMany(Product::class, 'saler_id', 'id');
+        return $this->hasMany(Product:: class, 'saler_id', 'id');
+    }
+
+    public function productTypes()
+    {
+        return $this->hasManyThrough(ProductType::class, Product:: class, 'saler_id', 'product_id', 'id', 'id');
     }
 
     public function orders(){

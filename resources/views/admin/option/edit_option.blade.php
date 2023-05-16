@@ -5,7 +5,7 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-3">
-        <h1 class="m-0">Редактировать опцию</h1>
+        <h1 class="m-0">Редактировать Классификатор</h1>
       </div><!-- /.col -->
       <div class="col-sm-3">
         <ol class="breadcrumb float-sm-right">

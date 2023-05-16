@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,16 +20,19 @@ class ProductImageFactory extends Factory
     public function definition()
     {
 
+
         $filesPath = Storage::files('/public/fact/');
         $filePath = $filesPath[random_int(0, count($filesPath)-1)];
-        $productImagePath = str_replace('public/fact/', 'product_images/', $filePath);
+        $productImagePath = str_replace('public/fact/', 'product_images/' . Product::latest('id')->pluck('id')['0']. '/', $filePath);
 
         Storage::move($filePath, 'public/'.$productImagePath);
 
         return [
             'file_path' => $productImagePath,
             'size' => random_int(1, 10000),
-            'product_id' => '0',
+            'productType_id' => ProductType::latest('id')->pluck('id')['0'],
         ];
+
+
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -22,11 +23,10 @@ class OrderController extends Controller
         $orders = auth()->user()->role == 'admin' ? OrderPerformer::with('user:id,name') : auth()->user()->orderPerformers();
         $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
         foreach ($orders as &$order) {
-            $order->products = json_decode($order->products);
-            foreach ($order->products as $product) {
-                $prod = Product::select('preview_image', 'title')->find($product->product_id);
-                $product->preview_image = $prod->preview_image;
-                $product->title = $prod->title;
+            $order->productTypes = json_decode($order->productTypes);
+            $preview_images = ProductType::whereIn('id', array_column($order->productTypes, 'productType_id'))->pluck('preview_image', 'id');
+            foreach ($order->productTypes as $productType) {
+                $productType->preview_image = $preview_images[$productType->productType_id];
             }
         }
         return view('admin.order.index_order', compact('orders'));
@@ -42,21 +42,18 @@ class OrderController extends Controller
     {
         $this->authorize('view', $order);
 
-        $products = json_decode($order->products, true);
-        foreach ($products as &$product) {
-            $prod = $product;
-            $product = Product::select('id', 'title', 'preview_image', 'price', 'category_id', 'saler_id')->with([
-                'category:id,title,title_rus', 'saler:id,name', 'optionValues' => function ($q) use ($prod) {
-                    $q->with('option:id,title')->whereIn('optionValues.id', $prod['optionValues'])
-                    ->select('optionValues.id', 'option_id', 'value');
-                }
-            ])->find($prod['product_id']);
+        $order->load('saler:users.id,name');
+        $pTs = collect(json_decode($order->productTypes));
+        $order->productTypes = ProductType::whereIn('id', $pTs->pluck('productType_id'))->select('id', 'product_id', 'preview_image')
+            ->with(['category:categories.id,title_rus', 'optionValues.option:id,title', 'product:id,title'])->get();
 
-            $product->amount = $prod['amount'];
-            $product->price = $prod['price'];
-            Method::valuesToKeys($product, 'optionValues');
-        }
-        $order->products = $products;
+        $order->productTypes->map(function ($productType) use ($pTs) {
+            $pT = $pTs->where('productType_id', $productType->id)->first();
+            $productType->amount = $pT->amount;
+            $productType->price = $pT->price;
+            Method::valuesToKeys($productType, 'optionValues');
+        });
+
         return view('admin.order.show_order', compact('order'));
     }
 

@@ -2,12 +2,12 @@
 
 namespace App\Services\API\Back;
 
-use Illuminate\Database\Eloquent\Builder;
 use App\Http\Filters\ProductFilter;
 use App\Components\Method;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\OptionValue;
+use App\Models\ProductType;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
@@ -15,17 +15,16 @@ use App\Models\User;
 
 class BackProductService
 {
-    
+
     public function getData(&$data, Category $category)
     {
-        $cart = empty($data['cart']) ? [] : array_pop($data);
         $data['filter'] = $data['filter'] ?? [];
         $data['paginate'] = $this->getPaginate($data);
-        $data['products'] = $this->getProducts($data, $category->id, $cart);
+        $data['productTypes'] = $this->getProductTypes($data, $category);
         $data['filterable'] = $this->getFilterable($category);
         $data['category'] = $category;
     }
-    
+
 
     private function getPaginate($data)
     {
@@ -36,7 +35,7 @@ class BackProductService
         ];
     }
 
-    
+
     private function getFilterable(Category $category)
     {
         $products_ids = $category->products()->pluck('id');
@@ -55,8 +54,8 @@ class BackProductService
         $data['propertyValues'] = Method::toGroups($data['propertyValues']);
 
         $data['prices'] = [
-            'min' => $category->products()->min('price'),
-            'max' =>  $category->products()->max('price'),
+            'min' => $category->productTypes()->min('price'),
+            'max' => $category->productTypes()->max('price'),
         ];
 
         $data['salers'] = User::whereHas('products', function ($b) use ($products_ids) {
@@ -69,41 +68,40 @@ class BackProductService
 
         return $data;
     }
-    
 
-    private function getProducts($data, $category_id, $cart)
+
+    private function getProductTypes($data, Category $category)
     {
-        $data['filter']['prices'] ?? false ? $this->sortPrices($data['filter']['prices'], $category_id) : '';
-        $products = $this->products($data['filter'], $data['paginate'], $category_id);
-        !empty($cart) ?: $products = Method::inCart($products, $cart);
-        return $products;
+        empty($data['filter']['prices']) ?: $this->sortPrices($data['filter']['prices'], $category);
+        $productTypes = $this->productTypes($data['filter'], $data['paginate'], $category->id);
+
+        return $productTypes;
     }
 
 
-    private function sortPrices(&$prices, $category_id)
+    private function sortPrices(&$prices, Category $category)
     {
-        $prices['min'] = $prices['min'] ?? Product::where('category_id', $category_id)->min('price');
-        $prices['max'] = $prices['max'] ?? Product::where('category_id', $category_id)->max('price');
+        $prices['min'] = $prices['min'] ?? $category->productTypes()->min('price');
+        $prices['max'] = $prices['max'] ?? $category->productTypes()->max('price');
         $prices['min'] > $prices['max'] ? $prices['min'] = $prices['max'] : '';
         asort($prices);
     }
 
 
-    private function products($queryParams, $paginate, $category_id)
+    private function productTypes($queryParams, $paginate, $category_id)
     {
+        empty($queryParams['search']) ?: $queryParams['search'] = Product::search($queryParams['search'])->get('id')->pluck('id');
         $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($queryParams), ['category' => $category_id])]);
-        $products = Product::search($queryParams['search'] ?? null)
-            ->query(function (Builder $query) use ($filter, $paginate) {
-                $query->filter($filter)->sorted($paginate['orderBy'])
-                    ->select('id', 'title', 'count', 'is_published', 'price', 'preview_image')
-                    ->with(['productImages:product_id,file_path', 'optionValues.option:id,title']);
-            })
-            ->simplePaginate($paginate['perPage'], 'page', $paginate['page'])->withPath('');
 
-        $products->map(function ($product) {
+        $productTypes = ProductType::filter($filter)->sorted($paginate['orderBy'])->select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
+            ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
+                $q->select('id', 'title')->with('productTypes:id,product_id,is_published,preview_image');
+            }])->simplePaginate($paginate['perPage'], ['*'], 'page', $paginate['page'])->withPath('');
+            
+        $productTypes->map(function ($product) {
             Method::valuesToGroups($product, 'optionValues');
         });
 
-        return $products;
+        return $productTypes;
     }
 }

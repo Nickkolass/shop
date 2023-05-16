@@ -41,7 +41,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Способ оплаты {{$data['total_price'] }} руб.</td>
+                                <td>Способ оплаты {{$totalPrice }} руб.</td>
                             </tr>
                             <tr>
                                 <td>
@@ -74,7 +74,7 @@
                         </tbody>
                     </table>
                 </div>
-                <input type="number" name="total_price" value= "{{ $data['total_price'] }}" hidden>
+                <input type="number" name="total_price" value= "{{ $totalPrice }}" hidden>
                 <input type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" value="Перейти к оплате">
             </form>
         </div>

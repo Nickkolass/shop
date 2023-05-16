@@ -2,11 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Group;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
-use App\Policies\GroupPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
@@ -23,7 +21,6 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         User::class => UserPolicy::class,
         Order::class => OrderPolicy::class,
-        Group::class => GroupPolicy::class,
         Product::class => ProductPolicy::class,
         OrderPerformer::class => OrderPerformerPolicy::class,
     ];

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Filterable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -13,29 +11,24 @@ use Laravel\Scout\Attributes\SearchUsingPrefix;
 class Product extends Model
 {
 
-    use Filterable, HasFactory, Searchable;
+    use HasFactory, Searchable;
 
     protected $table = 'products';
     protected $guarded = false;
     protected $hidden = array('pivot');
 
 
+    public function productTypes()
+    {
+        return $this->hasMany(ProductType::class, 'product_id', 'id');
+    }
+   
     public function tags()
     {
         return $this->beLongsToMany(Tag::class, 'product_tags', 'product_id', 'tag_id');
     }
 
-    public function productImages()
-    {
-        return $this->hasMany(ProductImage::class, 'product_id', 'id');
-    }
-
-    public function group()
-    {
-        return $this->beLongsTo(Group::class, 'group_id', 'id');
-    }
-
-    public function saler()
+        public function saler()
     {
         return $this->beLongsTo(User::class, 'saler_id', 'id');
     }
@@ -53,11 +46,6 @@ class Product extends Model
     public function optionValues()
     {
         return $this->beLongsToMany(OptionValue::class, 'optionValue_products', 'product_id', 'optionValue_id');
-    }
-
-    public function scopeSorted(Builder $query, $orderBy)
-    {
-        $orderBy == 'latest' ? $query->latest() : $query->orderBy('price', $orderBy);
     }
 
     // #[SearchUsingPrefix(['id', 'email'])]

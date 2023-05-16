@@ -6,10 +6,10 @@ use App\Components\ImportDataClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use App\Models\Order;
+use App\Models\ProductType;
 
 class FrontOrderController extends Controller
 {
-
     private $import;
 
     public function __construct(ImportDataClient $import)
@@ -17,7 +17,7 @@ class FrontOrderController extends Controller
         $this->import = $import;
     }
 
-       
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +28,7 @@ class FrontOrderController extends Controller
     {
         $data['page'] = request('page') ?? 1;
         $data['user_id'] = auth()->id();
-
+        
         $orders = $this->import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
@@ -43,8 +43,8 @@ class FrontOrderController extends Controller
     public function create()
     {
         url()->previous() == 'http://127.0.0.1:8876/cart' ?: abort(404);
-        $data['total_price'] = request('total_price');
-        return view('api.order.create_order', compact('data'));
+        $totalPrice = request('totalPrice');
+        return view('api.order.create_order', compact('totalPrice'));
     }
 
     /**
@@ -54,10 +54,9 @@ class FrontOrderController extends Controller
      */
     public function store(StoreFrontRequest $request)
     {
-        //платежная система
         $data = $request->validated();
-
-        $this->import->client->request('POST', 'api/orders/create', ['query' => $data])->getBody()->getContents();
+        //платежная система
+        $this->import->client->request('POST', 'api/orders/store', ['query' => $data])->getBody()->getContents();
 
         session()->forget(['cart', 'filter', 'paginate']);
 
@@ -73,7 +72,7 @@ class FrontOrderController extends Controller
     public function show($order_id)
     {
         $this->authorize('view', Order::withTrashed()->find($order_id));
-        $order = $this->import->client->request('POST', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
+        $order = $this->import->client->request('POST', 'api/orders/' . $order_id)->getBody()->getContents();
         $order = json_decode($order, true);
         return view('api.order.show_order', compact('order'));
     }
@@ -98,7 +97,7 @@ class FrontOrderController extends Controller
     public function update($order_id)
     {
         $this->authorize('update', Order::find($order_id));
-        $this->import->client->request('PATCH', 'api/orders/' . $order_id, ['query' => $order_id]);
+        $this->import->client->request('PATCH', 'api/orders/' . $order_id);
         return back();
     }
 
@@ -111,7 +110,7 @@ class FrontOrderController extends Controller
     public function destroy($order_id)
     {
         $this->authorize('delete', Order::find($order_id));
-        $this->import->client->request('DELETE', 'api/orders/' . $order_id, ['query' => $order_id])->getBody()->getContents();
+        $this->import->client->request('DELETE', 'api/orders/' . $order_id)->getBody()->getContents();
         return back();
     }
 }

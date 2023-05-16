@@ -56,23 +56,23 @@
               <td>
                 <table class="table table-striped">
                   <tbody>
-                    @foreach($order->products as $product)
+                    @foreach($order->productTypes as $productType)
                     <tr>
-                      <td><a href="{{ route('product.show_product', $product->id) }}">
-                          <img src="{{asset('/storage/'.$product->preview_image)}}" style="height: 140px"></a></td>
-                      <td>Название: {{ $product->title }}<br>
-                        Категория: {{ $product->category->title_rus }}<br>
-                        Количество: {{ $product->amount }}<br>
-                        Стоимость: {{ $product->price }}<br>
+                      <td><a href="{{ route('product.show_product', $productType->id) }}">
+                          <img src="{{asset('/storage/'.$productType->preview_image)}}" style="height: 140px"></a></td>
+                      <td>Название: {{ $productType->title }}<br>
+                        Категория: {{ $productType->category->title_rus }}<br>
+                        Количество: {{ $productType->amount }}<br>
+                        Стоимость: {{ $productType->price }}<br>
                         Продавец:
                         @if(auth()->user()->role == 'admin')
-                        <a class="linkclass disabled" href="{{ route('user.show_user', $product->saler_id) }}"> {{ $product->saler->name }} </a><br>
+                        <a class="linkclass disabled" href="{{ route('user.show_user', $order->saler->id) }}"> {{ $order->saler->name }} </a><br>
                         <a href="{{ route('api.orderShow_api', $order->order_id) }}">Перейти к заказу</a>
                         @else
-                        {{ $product->saler->name }}
+                        {{ $productType->saler->name }}
                         @endif
                       </td>
-                      <td>@foreach($product->optionValues as $option => $value)
+                      <td>@foreach($productType->optionValues as $option => $value)
                         {{$option . ': '. $value}}<br>
                         @endforeach
                       </td>

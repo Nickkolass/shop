@@ -5,16 +5,15 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
-use App\Models\Group;
 use App\Models\Option;
 use App\Models\OptionValue;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -62,53 +61,62 @@ class DatabaseSeeder extends Seeder
 
         foreach ($options as $option) {
             Option::create($option);
-            OptionValue::factory(random_int(2, 4))->create();
+            OptionValue::factory(random_int(3, 4))->create();
         }
 
-        // PropertyValue::factory(12)->create();
         $tags = Tag::factory(10)->create();
 
         Storage::deleteDirectory('/public/preview_images/');
+        Storage::deleteDirectory('/public/product_images/');
         $filesPath = Storage::files('/public/factories/');
         foreach ($filesPath as $filePath) {
             Storage::copy($filePath, str_replace('ories', '', $filePath));
         }
 
         foreach ($categories as $category) {
-            $properties = Property::inRandomOrder()->take(5)->get('id');
-            $options = Option::inRandomOrder()->take(4)->get('id');
+            $properties = Property::with(['propertyValues' => function ($q) {
+                $q->select('id', 'property_id')->inRandomOrder();
+            }])->inRandomOrder()->take(5)->get('id');
+
+            $options = Option::with(['optionValues' => function ($q) {
+                $q->select('id', 'option_id')->inRandomOrder();
+            }])->inRandomOrder()->take(4)->get('id');
+
             Category::create($category)->properties()->attach($properties);
-            for ($i = 1; $i <= 2; $i++) {
-                User::factory(1)->create();
-                for ($j = 1; $j <= 2; $j++) {
-                    $opt = $options->random(2);
-                    Group::factory(1)
-                        ->has(Product::factory(5)
-                            ->has(ProductImage::factory(3))
-                            ->hasAttached($tags->random(random_int(3, 5)))
-                            ->hasAttached($opt['0']->optionValues()->take(random_int(2, $opt['0']->optionValues()->count()))->get('id'))
-                            ->hasAttached($opt['1']->optionValues()->take(random_int(2, $opt['1']->optionValues()->count()))->get('id'))
-                            ->hasAttached($properties['0']->propertyValues()->inRandomOrder()->take(1)->get('id'))
-                            ->hasAttached($properties['1']->propertyValues()->inRandomOrder()->take(1)->get('id'))
-                            ->hasAttached($properties['2']->propertyValues()->inRandomOrder()->take(1)->get('id'))
-                            ->hasAttached($properties['3']->propertyValues()->inRandomOrder()->take(1)->get('id'))
-                            ->hasAttached($properties['4']->propertyValues()->inRandomOrder()->take(1)->get('id')))
-                        ->create();
-                    // ->hasAttached($category->properties()->inRandomOrder()->take(2)->get(), new Sequence(
-                    //     fn () => ['value' => fake()->word()],
-                    // ))
+            User::factory(1)->create();
+            for ($j = 1; $j <= 5; $j++) {
+                $ov = $options->random(2)->pluck('optionValues');
+                $ov = $ov->pluck(0)->merge($ov->pluck(1));
+                $pv = $properties->pluck('propertyValues');
+                foreach ($pv as $k => $i) {
+                    $pv[$k] = $i->shuffle();
                 }
+                Product::factory(1)
+                    ->has(ProductType::factory(4)
+                        ->has(ProductImage::factory(3)))
+                    ->hasAttached($tags->random(random_int(3, 5)))
+                    ->hasAttached($ov)
+                    ->hasAttached($pv->pluck(0))
+                    ->create();
             }
         }
         Storage::deleteDirectory('/public/fact/');
 
-        $products = Product::select('id', 'count')->with('productImages:product_id,file_path')->get();
+        $products = Product::with('productTypes.productImages:productType_id,file_path')->get('id');
         foreach ($products as $product) {
-            $productImage = $product->productImages['0']->file_path;
-            $previewImage = str_replace('product_images', 'preview_images', $productImage);
-            Storage::copy('public/' . $productImage, 'public/' . $previewImage);
-            $product->count == 0 ? $is_published = 0 : $is_published = 1;
-            $product->update(['is_published' => $is_published, 'preview_image' => $previewImage]);
+            $optionValues = $product->optionValues()->select('optionValues.id', 'option_id')->get()->groupBy('option_id')->map(function ($o) {
+                return $o->pluck('id');
+            });
+            $optionValues = $optionValues->pop()->crossJoin(...$optionValues);
+
+            foreach ($product->productTypes as $key => $productType) {
+                $productImage = $productType->productImages['0']->file_path;
+                $previewImage = str_replace('product_images/' . $product->id, 'preview_images', $productImage);
+                Storage::copy('public/' . $productImage, 'public/' . $previewImage);
+                $productType->count == 0 ? $is_published = 0 : $is_published = 1;
+                $productType->update(['is_published' => $is_published, 'preview_image' => $previewImage]);
+                $productType->optionValues()->attach($optionValues[$key]);
+            }
         }
     }
 }

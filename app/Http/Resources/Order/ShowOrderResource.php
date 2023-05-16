@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Models\OrderPerformer;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ShowOrderResource extends JsonResource
@@ -15,18 +14,14 @@ class ShowOrderResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'products' => ShowOrderProductsResource::collection($this->products)->resolve(),
+            'productTypes' => is_object(current($this->productTypes)) ? ShowOrderProductsResource::collection($this->productTypes)->resolve() : OrdersProductsResource::collection($this->productTypes)->resolve(),
             'delivery' => $this->delivery,
             'total_price' => $this->total_price,
-            'payment' => $this->payment,
-            'payment_status' => $this->payment_status,
             'status' => $this->status,
-            'dispatch_time' => $this->orderPerformers->max('dispatch_time'),
             'created_at' => $this->created_at->toDateString(),
+            'dispatch_time' => $this->orderPerformers->max('dispatch_time'),
         ];
 
     }

@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Admin\Product\DBProductController;
-use App\Http\Requests\Product\ProductStoreRequest;
+use App\Http\Requests\Product\StoreRequest;
 
 class ProductStoreController extends DBProductController
 {
         
-    public function __invoke(ProductStoreRequest $request)
+    public function __invoke(StoreRequest $request)
     {
-        $data = $request->validated();
+        $types = $request->validated()['types'];
 
-        $this->service->store($data);
+        $this->service->store(session()->pull('create'), $types);
         
         return redirect()->route('product.index_product');
     }

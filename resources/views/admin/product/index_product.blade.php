@@ -27,17 +27,13 @@
         <div class="card">
           <div class="card-header">
             <a href="{{ route('product.create_product') }}" class="btn btn-primary">Добавить продукт</a>
-            <a href="{{ route('group.create_group') }}" class="btn btn-primary">Создать группу продуктов</a>
-            <a href="{{ route('group.index_group') }}" class="btn btn-primary">Добавить продукты в группу</a>
           </div>
-
           <div class="card-body table-responsive p-0">
             <table class="table table-hover text-nowrap">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Продукты</th>
-                  <th>Группа</th>
                   <th>Категория</th>
                   @if (auth()->user()->role == 'admin')
                   <th>Продавец</th>
@@ -47,39 +43,25 @@
               </thead>
               <tbody>
                 @foreach($products as $product)
-                @if(isset($product->group_id))
                 <tr>
                   <td>{{ $product->id }}</td>
                   <td><a href="{{ route('product.show_product', $product->id) }}">{{ $product->title }}</a></td>
-                  <td><a href="{{ route('group.show_group', $product->group->id) }}">{{ $product->group->title }}</a></td>
                   <td>{{ $product->category->title_rus }}</td>
                   @if (auth()->user()->role == 'admin')
-                  <td><a href="{{ route('user.show_user', $product->saler->id) }}">{{ $product->saler->name }}</a></td>
+                  <td><a href="{{ route('user.show_user', $product->saler_id) }}">{{$product->saler_id}}</a></td>
                   @endif
-                  <td>@foreach($product->group->products as $prod)
-                    <a href="{{ route('product.show_product', $prod->id) }}"><img src="{{ asset('/storage/'.$prod->preview_image) }}" width='50' height='50' class="img img-responsive"></a>
+                  <td>@foreach($product->productTypes as $productType)
+                    <img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50' height='50' class="img img-responsive">
                     @endforeach
                   </td>
                 </tr>
-                @else
-                <tr>
-                  <td>{{ $product->id }}</td>
-                  <td><a href="{{ route('product.show_product', $product->id) }}">{{ $product->title }}</a></td>
-                  <td>{{ __('Нет') }}</td>
-                  <td>{{ $product->category->title_rus }}</td>
-                  @if (auth()->user()->role == 'admin')
-                  <td><a href="{{ route('user.show_user', $product->saler->id) }}">{{ $product->saler->name }}</a></td>
-                  @endif
-                  <td><a href="{{ route('product.show_product', $product->id) }}"><img src="{{ asset('/storage/'.$product->preview_image) }}" width='50' height='50' class="img img-responsive"></a></td>
-                </tr>
-                @endif
                 @endforeach
               </tbody>
             </table>
           </div>
         </div>
       </div>
-        {{ $products->links('vendor.pagination.simple-bootstrap-4') }}
+      {{ $products->links('vendor.pagination.simple-bootstrap-4') }}
     </div>
   </div><!-- /.container-fluid -->
 </section>

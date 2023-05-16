@@ -17,12 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->fullText();
             $table->text('description')->fullText();
-            $table->unsignedInteger('price');
-            $table->unsignedInteger('count');
-            $table->boolean('is_published');
-            $table->string('preview_image');
             $table->fullText(['title', 'description']);
-            $table->foreignId('group_id')->nullable()->constrained('groups')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('saler_id')->nullable()->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('category_id')->required()->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();

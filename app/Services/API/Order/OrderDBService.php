@@ -5,6 +5,7 @@ namespace App\Services\API\Order;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\Product;
+use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -12,14 +13,9 @@ class OrderDBService
 {
     public function store($data)
     {
-
         DB::beginTransaction();
         try {
-            $this->productCountUpdate($data['cart']);
-            $order_id = $this->orderStore($data);
-            $data['cart'] = collect($data['cart'])->groupBy('saler_id');
-            $this->orderPerformerStore($data, $order_id);
-
+            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
@@ -61,47 +57,55 @@ class OrderDBService
 
     private function productCountUpdate(&$cart)
     {
-        $products = Product::select('id', 'count', 'saler_id', 'price')->find(array_column($cart, 'product_id'));
+        $productType_ids = array_keys($cart);
+        $productTypes = ProductType::select('id', 'count', 'price', 'product_id')->with('product:id,saler_id')->find($productType_ids);
 
-        foreach ($cart as &$order) {
-            $product = $products->where('id', $order['product_id'])->first();
-
-            $order['price'] = $order['amount'] * $product->price;
-            $order['saler_id'] = $product->saler_id;
-            if ($order['cart_id']) unset($order['cart_id']);
-
-            $upd['count'] = $product->count - $order['amount'];
-            $upd['count'] <= 0 ? $upd['is_published'] = 0 : '';
-            $product->update($upd);
+        foreach ($cart as $productType_id => $amount) {
+            $pT = $productTypes->where('id', $productType_id)->first();
+            $pT->count -= $amount;
+            $pT->count > 0 ?: $pT->is_published = 0;
+            $pT->update();
+            $cart[$productType_id] = [
+                'productType_id' => $productType_id,
+                'amount' => $amount,
+                'price' => $pT->price * $amount,
+                'saler_id' => $pT->product->saler_id,
+            ];
         }
+        return $this;
+      
     }
 
 
-    private function orderStore($data)
+    private function orderStore(&$data)
     {
-        return Order::create([
+        $data['order_id'] = Order::create([
             'user_id' => $data['user_id'],
-            'products' => json_encode($data['cart']),
+            'productTypes' => json_encode($data['cart']),
             'delivery' => $data['delivery'],
             'total_price' => $data['total_price'],
             'payment' => $data['payment'],
             'payment_status' => $data['payment_status'],
         ])->id;
+        return $this;
     }
 
 
-    private function orderPerformerStore($data, $order_id)
+    private function orderPerformerStore($data)
     {
+        $data['cart'] = collect($data['cart'])->groupBy('saler_id');
+
         foreach ($data['cart'] as $saler_id => $order) {
             OrderPerformer::create([
                 'saler_id' => $saler_id,
                 'user_id' => $data['user_id'],
-                'order_id' => $order_id,
-                'products' => json_encode($order),
+                'order_id' => $data['order_id'],
+                'productTypes' => json_encode($order),
                 'dispatch_time' => now()->addDays(25),
                 'delivery' => $data['delivery'],
-                'total_price' => $order->pluck('price')->sum(),
+                'total_price' => $order->sum('price'),
             ]);
         }
+        return $this;
     }
 }

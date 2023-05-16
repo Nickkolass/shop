@@ -23,4 +23,10 @@ class OptionValue extends Model
     {
         return $this->beLongsToMany(Product::class, 'optionValue_products', 'optionValue_id', 'product_id');
     }
+
+    public function productTypes()
+    {
+        return $this->beLongsToMany(ProductType::class, 'productType_optionValues', 'optionValue_id', 'productType_id');
+    }
+
 }

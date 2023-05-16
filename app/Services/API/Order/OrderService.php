@@ -15,16 +15,15 @@ class OrderService
         $this->service = $service;
     }
 
-    public function index($user_id)
+    public function index($user_id, $page)
     {
         $user = User::select('id', 'role')->find($user_id);
         $orders = $user->role == 'admin' ?  Order::query() : $user->orders();
-        $orders = $orders->with(['orderPerformers' => function ($q) {
-            $q->withTrashed()->max('dispatch_time');
-        }])->latest()->withTrashed()->simplePaginate(3, ['*'], 'page', request('page'))->withPath('');
-
+        $orders = $orders->without('payment_status', 'payment')->with(['orderPerformers' => function ($q) {
+            $q->withTrashed()->select('order_id', 'dispatch_time');
+        }])->latest()->withTrashed()->simplePaginate(3, ['*'], 'page', $page)->withPath('');
+        
         $orders = $this->service->getProducts($orders);
-
         return $orders;
     }
 

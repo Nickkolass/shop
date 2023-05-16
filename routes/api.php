@@ -22,12 +22,12 @@ Route::controller(BackController::class)->group(function () {
     Route::post('/cart', 'cart');
     Route::post('/products', 'index');
     Route::post('/products/{category:title}', 'products');
-    Route::post('/products/{category:title}/{product}', 'product');
+    Route::post('/products/{category:title}/{productType}', 'product');
 });
 
 Route::controller(BackOrderController::class)->group(function () {
     Route::post('/orders', 'index');
-    Route::post('/orders/create', 'store');
+    Route::post('/orders/store', 'store');
     Route::post('/orders/{order}', 'show')->withTrashed();
     Route::patch('/orders/{order}', 'update');
     Route::delete('/orders/{order}', 'destroy');

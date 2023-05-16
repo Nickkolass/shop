@@ -2,23 +2,49 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Components\Method;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\ProductRequest;
 use App\Models\Category;
 use App\Models\Option;
+use App\Models\OptionValue;
 use App\Models\Property;
 use App\Models\Tag;
 
 class ProductCreateController extends Controller
 {
-    public function __invoke () {
+    public function index () {
+        $tags = Tag::pluck('title', 'id');
+        $categories = Category::pluck('title_rus', 'id');
+        return view('admin.product.create.index_create_product', compact('tags', 'categories'));   
+    }
+
+
+    public function properties (ProductRequest $request) {
         
-        $groups = auth()->user()->groups()->select('id','title')->get()->toArray();
-        $tags = Tag::select('id','title')->get()->toArray();
-        $categories = Category::select('id','title', 'title_rus')->with('properties:id,title')->get()->toArray();
-        $optionValues = Option::with('optionValues:id,option_id,value')->select('id','title')->get()->mapWithKeys(function ($option) {
-            return [$option->title => $option->optionValues];
-        })->toArray();
+        $data = $request->validated();
+        session(['create' => $data]);
+
+        $propertyValues = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function($q) use($data) {
+            $q->where('category_id', $data['category_id']);
+        })->select('id','title')->get();
+        $propertyValues = Method::OVPs($propertyValues);
+
+        $optionValues = Option::with('optionValues:id,option_id,value')->select('id','title')->get();
+        $optionValues = Method::OVPs($optionValues);
+
+        return view('admin.product.create.properties_create_product', compact('propertyValues', 'optionValues'));   
+    }
+
+
+    public function types () {
         
-        return view('admin.product.create_product', compact('tags', 'categories', 'groups', 'optionValues'));   
+        session(['create.propertyValues' => array_filter(request('propertyValues'))]);
+
+        $optionValues = array_merge(...array_values(request('optionValues')));
+        $optionValues = OptionValue::with('option:id,title')->select('id','option_id','value')->find($optionValues);
+        $optionValues = Method::toGroups($optionValues);
+        
+        return view('admin.product.create.types_create_product', compact('optionValues'));   
     }
 }
