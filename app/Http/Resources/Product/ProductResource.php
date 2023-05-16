@@ -17,12 +17,7 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'description' => $this->description,
-            'saler_id' => $this->saler_id,
-            'saler' => $this->saler,
-            'option_values' => $this->optionValues,
-            'category' => $this->category,
-            'property_values' => $this->propertyValues,
+            'category' => $this->category ?? '',
             'product_types' => ProductTypesResource::collection($this->productTypes)->resolve(),
         ];
 

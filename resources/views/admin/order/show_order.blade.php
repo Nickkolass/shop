@@ -65,7 +65,7 @@
                         Количество: {{ $productType->amount }}<br>
                         Стоимость: {{ $productType->price }}<br>
                         Продавец:
-                        @if(auth()->user()->role == 'admin')
+                        @if(session('user_role') == 'admin')
                         <a class="linkclass disabled" href="{{ route('user.show_user', $order->saler->id) }}"> {{ $order->saler->name }} </a><br>
                         <a href="{{ route('api.orderShow_api', $order->order_id) }}">Перейти к заказу</a>
                         @else

@@ -53,8 +53,8 @@
     </div>
     <div style="text-align: center">
         <h4>Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4><br>
-        <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" href="{{ auth()->check() ? route('api.preOrdering_api', ['totalPrice' => $totalPrice]) : route('login') }}">
-        <h4 style="padding: 10px;margin-left: {{auth()->check() ? '0px' : '-15px'}};text-align: center">{{auth()->check() ? 'Перейти к оформлению' : 'Зарегистрируйтесь или войдите'}}</h4>
+        <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px" href="{{ session()->has('user_role') ? route('api.preOrdering_api', ['totalPrice' => $totalPrice]) : route('login') }}">
+        <h4 style="padding: 10px;margin-left: {{session()->has('user_role') ? '0px' : '-15px'}};text-align: center">{{session()->has('user_role') ? 'Перейти к оформлению' : 'Зарегистрируйтесь или войдите'}}</h4>
         </a>
     </div>
     @else

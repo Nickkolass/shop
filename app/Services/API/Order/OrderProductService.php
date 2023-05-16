@@ -3,57 +3,56 @@
 namespace App\Services\API\Order;
 
 use App\Components\Method;
-use App\Models\Product;
+use App\Models\Order;
 use App\Models\ProductType;
 
 class OrderProductService
 {
 
-    public function getProducts($orders, ?bool $show = false)
+    public function getProductsForShow(Order $order)
     {
-        !$show ?: $orders = collect([0 => $orders]);
+        $productTypes = json_decode($order->productTypes, true);
 
-        $orders->map(function ($order) use ($show) {
-            $productTypes = json_decode($order->productTypes, true);
-            $pTs = ProductType::with('category:categories.id,categories.title')->when($show, function ($q) {
-                $q->with(['optionValues.option:id,title', 'product' => function ($b) {
-                    $b->select('id', 'saler_id', 'title')->with(['saler:id,name']);
-                }]);
-            })->select('id', 'product_id', 'preview_image')->find(array_column($productTypes, 'productType_id'));
+        $pTs = ProductType::with(['category:categories.id,categories.title', 'optionValues.option:id,title', 'product' => function ($b) {
+            $b->select('id', 'saler_id', 'title')->with(['saler:id,name']);
+        }])->select('id', 'product_id', 'preview_image')->find(array_column($productTypes, 'productType_id'));
 
-            $show ? $this->forShow($productTypes, $pTs, $order->orderPerformers) : $this->forIndex($productTypes, $pTs);
-
-            $order->productTypes = $productTypes;
-        });
-        return $orders;
-    }
-
-
-    private function forIndex(&$productTypes, $pTs)
-    {
-        foreach ($productTypes as &$productType) {
-            $pT = $pTs->where('id', $productType['productType_id'])->first();
-            $productType['preview_image'] = $pT->preview_image;
-            $productType['category'] = $pT->category->title;
-        }
-    }
-
-
-    private function forShow(&$productTypes, $pTs, $orderPerformers)
-    {
-       
         foreach ($productTypes as &$productType) {
             $prod = $productType;
-            $orderPerformer = $orderPerformers->where('saler_id', $prod['saler_id'])->first();
+            $orderPerformer = $order->orderPerformers->where('saler_id', $prod['saler_id'])->first();
             $productType = $pTs->where('id', $prod['productType_id'])->first();
-            
+
             Method::valuesToKeys($productType, 'optionValues');
-            
+
             $productType->amount = $prod['amount'];
             $productType->price = $prod['price'];
             $productType->status = $orderPerformer->status;
             $productType->orderPerformer_id = $orderPerformer->id;
         }
+        $order->productTypes = $productTypes;
+
+        return $order;
+    }
+
+
+    public function getProductsForIndex($orders)
+    {
+        foreach ($orders as $order) {
+            $ordersProductTypes[] = json_decode($order->productTypes, true);
+        }
+
+        $pTs = ProductType::with('category:categories.id,categories.title')->select('id', 'product_id', 'preview_image')
+            ->find(array_column(array_merge(...$ordersProductTypes), 'productType_id'));
+
+        foreach ($ordersProductTypes as $key => &$productTypes) {
+            foreach ($productTypes as &$productType) {
+                $pT = $pTs->where('id', $productType['productType_id'])->first();
+                $productType['preview_image'] = $pT->preview_image;
+                $productType['category'] = $pT->category->title;
+            }
+            $orders[$key]->productTypes = $productTypes;
+        }
+        return $orders;
 
     }
 }

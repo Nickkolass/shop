@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        if (auth()->check()) {
+        if (session()->has('user_role')) {
             $this->middleware('auth');
         }
     }
@@ -25,10 +25,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (auth()->check()) {
-            if (auth()->user()->role != 'client') {
-                return redirect()->route('admin.index_admin');
-            }
+        if (session('user_role') != 'client') {
+            return redirect()->route('admin.index_admin');
         }
         return redirect()->route('api.index_api');
     }

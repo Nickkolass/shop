@@ -16,11 +16,9 @@ class SalerMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check()) {
-            $role = auth()->user()->role;
-            if ($role == 'admin' || $role == 'saler') {
-                return $next($request);
-            }
+        $role = session('user_role');
+        if ($role == 'admin' || $role == 'saler') {
+            return $next($request);
         }
         abort(404);
     }

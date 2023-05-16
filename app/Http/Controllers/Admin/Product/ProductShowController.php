@@ -10,7 +10,7 @@ class ProductShowController extends Controller
 {
     public function __invoke(Product $product)
     {
-       $this->authorize('view', $product);
+        $this->authorize('view', $product);
 
         $product->load([
             'category:id,title,title_rus', 'propertyValues.property:id,title', 'optionValues.option:id,title', 'tags:id,title',
@@ -23,7 +23,7 @@ class ProductShowController extends Controller
         $product->productTypes->map(function ($productType) {
             Method::valuesToKeys($productType, 'optionValues');
         });
-
+        
         return view('admin.product.show_product', compact('product'));
     }
 }

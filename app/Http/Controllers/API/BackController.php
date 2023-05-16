@@ -7,6 +7,7 @@ use App\Http\Requests\API\Product\FilterRequest;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\Product\DataResource;
 use App\Http\Resources\Product\ProductTypeResource;
+use App\Http\Resources\Product\ShowProductTypeResource;
 use App\Models\Category;
 use App\Models\ProductType;
 use App\Services\API\Back\BackProductService;
@@ -36,7 +37,6 @@ class BackController extends Controller
     {
         $data = $request->validated();
         $this->productService->getData($data, $category);
-
         return DataResource::make($data)->resolve();
     }
 
@@ -44,7 +44,7 @@ class BackController extends Controller
     public function product($category, ProductType $productType)
     {
         $this->service->product($productType);
-        return ProductTypeResource::make($productType)->resolve();
+        return ShowProductTypeResource::make($productType)->resolve();
     }
 
 

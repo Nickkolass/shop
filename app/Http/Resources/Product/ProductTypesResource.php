@@ -19,7 +19,6 @@ class ProductTypesResource extends JsonResource
             'product_id' => $this->product_id,
             'preview_image' => $this->preview_image,
             'is_published' => $this->is_published,
-            'option_values' => $this->optionValues,
         ];
     }
 }

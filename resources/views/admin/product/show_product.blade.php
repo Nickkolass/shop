@@ -54,7 +54,7 @@
                   <td>{{ $product->id }}</td>
                 </tr>
 
-                @if (auth()->user()->role == 'admin')
+                @if (session('user_role') == 'admin')
                 <tr>
                   <td>Продавец</td>
                   <td>{{ $product->saler_id }}</td>
@@ -110,8 +110,8 @@
             <table class="table table-hover text-nowrap">
               <thead>
                 <tr style="text-align:center">
-                  <th>Классификаторы</th>
                   <th>ID</th>
+                  <th>Классификаторы</th>
                   <th>Заставка</th>
                   <th>Изображения</th>
                   <th>Цена</th>
@@ -124,12 +124,12 @@
               <tbody>
                 @foreach ($product->productTypes as $productType)
                 <tr style="text-align:center">
+                  <td>{{$productType->id}}</td>
                   <td>
                     @foreach ($productType->optionValues as $option => $value)
                     {{$option . ': ' . $value}}<br>
                     @endforeach
                   </td>
-                  <td>{{$productType->id}}</td>
                   <td><img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50' height='50' class="img img-responsive"></td>
                   <td>
                     @foreach($productType->productImages as $img)

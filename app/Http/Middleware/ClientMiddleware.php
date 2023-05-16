@@ -16,7 +16,7 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check()) {
+        if (session()->has('user_role')) {
             return $next($request);
         }
         abort(404);

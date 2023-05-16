@@ -23,17 +23,16 @@ class OrderService
             $q->withTrashed()->select('order_id', 'dispatch_time');
         }])->latest()->withTrashed()->simplePaginate(3, ['*'], 'page', $page)->withPath('');
         
-        $orders = $this->service->getProducts($orders);
-        return $orders;
+        return $this->service->getProductsForIndex($orders);
     }
 
 
-    public function show(Order &$order)
+    public function show(Order $order)
     {
         $order->load(['orderPerformers' => function ($q) {
             $q->select('id', 'saler_id', 'order_id', 'status', 'dispatch_time')->withTrashed();
         }]);
 
-        $order = $this->service->getProducts($order, true)->first();
+        return $this->service->getProductsForShow($order);
     }
 }

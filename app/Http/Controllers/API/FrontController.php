@@ -22,7 +22,6 @@ class FrontController extends Controller
     public function index()
     {
         $productTypes = $data['cart'] = null;
-
         if ($viewed = session('viewed')) {
             $viewed = array_slice(value(array_unique(array_reverse($viewed))), 0, 12);
             $productTypes = $this->import->client->request('POST', 'api/products', ['query' => ['viewed' => $viewed]])->getBody()->getContents();

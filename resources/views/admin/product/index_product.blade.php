@@ -35,7 +35,7 @@
                   <th>ID</th>
                   <th>Продукты</th>
                   <th>Категория</th>
-                  @if (auth()->user()->role == 'admin')
+                  @if (session('user_role') == 'admin')
                   <th>Продавец</th>
                   @endif
                   <th>Виды</th>
@@ -47,7 +47,7 @@
                   <td>{{ $product->id }}</td>
                   <td><a href="{{ route('product.show_product', $product->id) }}">{{ $product->title }}</a></td>
                   <td>{{ $product->category->title_rus }}</td>
-                  @if (auth()->user()->role == 'admin')
+                  @if (session('user_role') == 'admin')
                   <td><a href="{{ route('user.show_user', $product->saler_id) }}">{{$product->saler_id}}</a></td>
                   @endif
                   <td>@foreach($product->productTypes as $productType)

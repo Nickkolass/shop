@@ -73,9 +73,7 @@ class BackProductService
     private function getProductTypes($data, Category $category)
     {
         empty($data['filter']['prices']) ?: $this->sortPrices($data['filter']['prices'], $category);
-        $productTypes = $this->productTypes($data['filter'], $data['paginate'], $category->id);
-
-        return $productTypes;
+        return $this->productTypes($data['filter'], $data['paginate'], $category->id);
     }
 
 

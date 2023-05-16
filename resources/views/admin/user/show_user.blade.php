@@ -1,11 +1,11 @@
 @extends(
-auth()->user()->role == 'client'
+session('user_role') == 'client'
 ? 'api.layouts.main'
 : 'admin.layouts.main'
 )
 @section('content')
 <!-- Content Header (Page header) -->
-@if(auth()->user()->role == 'client')
+@if(session('user_role') == 'client')
 <br><br><br><br><br><br>
 @else
 <div class="content-header">
@@ -40,7 +40,7 @@ auth()->user()->role == 'client'
                   <td>ID</td>
                   <td>{{ $user->id }}</td>
                 </tr>
-                @if(auth()->user()->role == 'admin')
+                @if(session('user_role') == 'admin')
                 <tr>
                   <td>Статус</td>
                   <td>{{ $user->role }}</td>
@@ -78,7 +78,7 @@ auth()->user()->role == 'client'
                   <td>Адрес</td>
                   <td>{{ $user->address }}</td>
                 </tr>
-                @if((auth()->user()->role == 'saler') || (auth()->user()->role == 'admin'))
+                @if((session('user_role') == 'saler') || (session('user_role') == 'admin'))
                 <tr>
                   <td>ИНН</td>
                   <td>{{ $user->INN }}</td>

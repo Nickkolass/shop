@@ -61,7 +61,7 @@
           <input type="text" value="{{ old('address') }}" name="address" class="form-control" placeholder="Адрес">
         </div>
         @auth
-        @if(auth()->user()->role == 'admin')
+        @if(session('user_role') == 'admin')
         <div class="form-group">
           <input type="text" value="{{ old('INN') }}" name="INN" class="form-control" placeholder="ИНН">
         </div>

@@ -16,8 +16,8 @@ class BackService
                 $q->select('id', 'title', 'category_id')->with(['productTypes:id,product_id,is_published,preview_image', 'category:id,title']);
             }])->find($productType_ids);
 
-        $productTypes->map(function ($product) {
-            Method::valuesToGroups($product, 'optionValues');
+        $productTypes->map(function ($productType) {
+            Method::valuesToGroups($productType, 'optionValues');
         });
 
         return $productTypes;
@@ -35,8 +35,6 @@ class BackService
         Method::valuesToKeys($productType->product, 'propertyValues');
         Method::valuesToKeys($productType, 'optionValues');
     }
-
-
 
 
     public function cart($cart)

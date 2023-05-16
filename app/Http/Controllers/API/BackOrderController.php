@@ -62,7 +62,7 @@ class BackOrderController extends Controller
      */
     public function show(Order $order)
     {
-        $this->service->show($order);
+        $order = $this->service->show($order);
         return ShowOrderResource::make($order)->resolve();
     }
 

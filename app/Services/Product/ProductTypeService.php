@@ -37,7 +37,7 @@ class ProductTypeService
             if ($isNewProduct) {
                 $productType->optionValues()->attach($sync['optionValues']);
             } else {
-                $productType->optionValues()->sync($sync['optionValues'], false);
+                $productType->optionValues()->attach($sync['optionValues'], false);
                 $product->optionValues()->sync($sync['optionValues'], false);
             }
 
