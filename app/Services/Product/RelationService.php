@@ -26,7 +26,7 @@ class RelationService
 
     public function sync(Product $product, $sync)
     {
-        empty($sync['propertyValues']) ?: $sync['propertyValues'] = $this->storePropertyValues($sync['propertyValues']);
+        empty($sync['propertyValues']) ?: $sync['propertyValues'] = $this->storePropertyValues($sync['propertyValues'], $product->category_id);
 
         foreach ($sync as $relationship => $keys) {
             $detached[$relationship] = $product->$relationship()->sync($keys)['detached'];
@@ -40,21 +40,14 @@ class RelationService
     }
 
 
-    private function storePropertyValues($propertyValues)
+    private function storePropertyValues($propertyValues, $category_id)
     {
-        $proderty = Property::whereIn('title', array_keys($propertyValues))->pluck('id', 'title');
+        $property = Property::whereHas('categories', function ($q) use ($category_id){
+            $q->where('category_id', $category_id);
+        })->whereIn('title', array_keys($propertyValues))->pluck('id', 'title');
 
         foreach ($propertyValues as $property_title => $value) {
-            $pV_ids[] = PropertyValue::firstOrCreate(
-                [
-                    'property_id' => $proderty[$property_title],
-                    'value' => $value,
-                ],
-                [
-                    'property_id' => $proderty[$property_title],
-                    'value' => $value,
-                ]
-            )->id;
+            $pV_ids[] = PropertyValue::firstOrCreate(['property_id' => $property[$property_title], 'value' => $value,])->id;
         }
         return $pV_ids;
     }

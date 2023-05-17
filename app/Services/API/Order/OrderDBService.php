@@ -58,13 +58,15 @@ class OrderDBService
     private function productCountUpdate(&$cart)
     {
         $productType_ids = array_keys($cart);
-        $productTypes = ProductType::select('id', 'count', 'price', 'product_id')->with('product:id,saler_id')->find($productType_ids);
+        $productTypes = ProductType::select('id', 'count', 'price', 'product_id', 'is_published')->with('product:id,saler_id')->find($productType_ids);
 
         foreach ($cart as $productType_id => $amount) {
             $pT = $productTypes->where('id', $productType_id)->first();
-            $pT->count -= $amount;
-            $pT->count > 0 ?: $pT->is_published = 0;
-            $pT->update();
+            
+            $update[$productType_id]['id'] =  $pT->id;
+            $update[$productType_id]['count'] = $pT->count - $amount;
+            $update[$productType_id]['is_published'] = $update[$productType_id]['count'] > 0 ? $pT->is_published : 0;
+            
             $cart[$productType_id] = [
                 'productType_id' => $productType_id,
                 'amount' => $amount,
@@ -72,21 +74,21 @@ class OrderDBService
                 'saler_id' => $pT->product->saler_id,
             ];
         }
+        ProductType::upsert($update, ['id'], ['count', 'is_published']);
         return $this;
-      
     }
 
 
     private function orderStore(&$data)
     {
-        $data['order_id'] = Order::create([
+        $data['order'] = Order::create([
             'user_id' => $data['user_id'],
             'productTypes' => json_encode($data['cart']),
             'delivery' => $data['delivery'],
             'total_price' => $data['total_price'],
             'payment' => $data['payment'],
             'payment_status' => $data['payment_status'],
-        ])->id;
+        ]);
         return $this;
     }
 
@@ -96,16 +98,16 @@ class OrderDBService
         $data['cart'] = collect($data['cart'])->groupBy('saler_id');
 
         foreach ($data['cart'] as $saler_id => $order) {
-            OrderPerformer::create([
+            $orderPerformers[] = [
                 'saler_id' => $saler_id,
                 'user_id' => $data['user_id'],
-                'order_id' => $data['order_id'],
                 'productTypes' => json_encode($order),
                 'dispatch_time' => now()->addDays(25),
                 'delivery' => $data['delivery'],
                 'total_price' => $order->sum('price'),
-            ]);
+            ];
         }
+        $data['order']->orderPerformers()->createMany($orderPerformers);
         return $this;
     }
 }

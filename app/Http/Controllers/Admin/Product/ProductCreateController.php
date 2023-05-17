@@ -16,7 +16,7 @@ class ProductCreateController extends Controller
     public function index () {
         $tags = Tag::pluck('title', 'id');
         $categories = Category::pluck('title_rus', 'id');
-        return view('admin.product.create.index_create_product', compact('tags', 'categories'));   
+        return view('admin.product.create.index_create', compact('tags', 'categories'));   
     }
 
 
@@ -33,7 +33,7 @@ class ProductCreateController extends Controller
         $optionValues = Option::with('optionValues:id,option_id,value')->select('id','title')->get();
         $optionValues = Method::OVPs($optionValues);
 
-        return view('admin.product.create.properties_create_product', compact('propertyValues', 'optionValues'));   
+        return view('admin.product.create.properties_create', compact('propertyValues', 'optionValues'));   
     }
 
 
@@ -45,6 +45,6 @@ class ProductCreateController extends Controller
         $optionValues = OptionValue::with('option:id,title')->select('id','option_id','value')->find($optionValues);
         $optionValues = Method::toGroups($optionValues);
         
-        return view('admin.product.create.types_create_product', compact('optionValues'));   
+        return view('admin.product.create.types_create', compact('optionValues'));   
     }
 }

@@ -29,7 +29,7 @@ class FrontController extends Controller
             $data['cart'] = session('cart') ?? [];
         }
 
-        return view('api.index_api', compact('data', 'productTypes'));
+        return view('api.index', compact('data', 'productTypes'));
     }
 
 
@@ -44,7 +44,7 @@ class FrontController extends Controller
         
         $productTypes = APIFrontService::afterGetProducts($data);
 
-        return view('api.product.index_product', compact('data', 'productTypes'));
+        return view('api.product.index', compact('data', 'productTypes'));
     }
 
 
@@ -57,7 +57,7 @@ class FrontController extends Controller
         $data['cart'][$productType['id']] = session('cart.'. $productType['id']);
         session()->push('viewed', $productType_id);
 
-        return view('api.product.show_product', compact('data', 'productType'));
+        return view('api.product.show', compact('data', 'productType'));
     }
 
 

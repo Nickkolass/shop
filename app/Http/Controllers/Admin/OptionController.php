@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Option\OptionStoreRequest;
 use App\Http\Requests\Option\OptionUpdateRequest;
 use App\Models\Option;
-use App\Models\OptionValue;
+use Illuminate\Support\Facades\DB;
 
 class OptionController extends Controller
 {
@@ -18,7 +18,7 @@ class OptionController extends Controller
     public function index()
     {
         $options = Option::all();
-        return view('admin.option.index_option', compact('options'));
+        return view('admin.option.index', compact('options'));
     }
 
     /**
@@ -28,7 +28,7 @@ class OptionController extends Controller
      */
     public function create()
     {
-        return view('admin.option.create_option');
+        return view('admin.option.create');
     }
 
     /**
@@ -40,10 +40,8 @@ class OptionController extends Controller
     public function store(OptionStoreRequest $request)
     {
         $data = $request->validated();
-        $option = Option::firstOrCreate($data['title']);
-        foreach($data['optionValues'] as $optionValue){
-            OptionValue::firstOrCreate(['option_id' => $option->id, 'value' => $optionValue]);
-        }
+        Option::firstOrCreate(['title' => $data['title']])
+            ->optionValues()->createMany($data['optionValues']);
         return $this->index();
     }
 
@@ -56,7 +54,7 @@ class OptionController extends Controller
     public function show(Option $option)
     {
         $option->load('optionValues:option_id,value');
-        return view('admin.option.show_option', compact('option'));
+        return view('admin.option.show', compact('option'));
     }
 
     /**
@@ -68,7 +66,7 @@ class OptionController extends Controller
     public function edit(Option $option)
     {
         $option->load('optionValues:option_id,value');
-        return view('admin.option.edit_option', compact('option'));
+        return view('admin.option.edit', compact('option'));
     }
 
     /**
@@ -81,16 +79,24 @@ class OptionController extends Controller
     public function update(OptionUpdateRequest $request, Option $option)
     {
         $data = $request->validated();
-        $data['optionValues'] = array_filter($data['optionValues']);
-        $optionValues = $option->optionValues()->pluck('value')->toArray();
-        
-        array_map(function($optionValue) use ($option) {
-            OptionValue::firstOrCreate(['option_id' => $option->id, 'value' => $optionValue]);
-        }, array_diff ($data['optionValues'], $optionValues));
 
-        $option->optionValues()->whereIn('value', array_diff ($optionValues, $data['optionValues']))->delete();
-        $option->update(['title' => $data['title']]);
-        
+        $optionValues = $option->optionValues()->pluck('value')->toArray();
+        $delete = array_diff($optionValues, array_column($data['optionValues'], 'value'));
+        $create = array_filter($data['optionValues'], function ($oV) use ($optionValues) {
+            return !in_array($oV['value'], $optionValues);
+        });
+
+        DB::beginTransaction();
+        try {
+            $option->optionValues()->whereIn('value', $delete)->delete();
+            $option->optionValues()->createMany($create);
+            $option->update(['title' => $data['title']]);
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return $exception->getMessage();
+        }
+
         return $this->show($option);
     }
 

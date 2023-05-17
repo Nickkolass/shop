@@ -10,18 +10,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
-    public function productImages(ProductType $productType, $productImages, ?bool $isUpdate=false)
+    public function productImages(ProductType $productType, $productImages, ?bool $isUpdate = false)
     {
         !$isUpdate ?: $this->deleteImages($productType->productImages->pluck('file_path'));
-        
+
         foreach ($productImages as $productImage) {
-            $filePath = $productImage->storePublicly('product_images/'.$productType->product_id, 'public');
-            ProductImage::create([
+            $filePath = $productImage->storePublicly('product_images/' . $productType->product_id, 'public');
+            $create[] = [
                 'file_path' => $filePath,
                 'size' => $productImage->getSize(),
                 'productType_id' => $productType->id,
-            ]);
+            ];
         }
+        $productType->productImages()->createMany($create);
     }
 
 
@@ -31,7 +32,7 @@ class ImageService
         $preview_image = $preview_image->storePublicly('preview_images', 'public');
     }
 
-    
+
     public function deleteImages(Collection $images)
     {
         Storage::disk('public')->delete($images->all());

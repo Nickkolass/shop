@@ -17,6 +17,20 @@ class OptionUpdateRequest extends FormRequest
     }
 
     /**
+     * Handle a passed validation attempt.
+     */
+    protected function prepareForValidation(): void
+    {
+        $oVs = [];
+        foreach ($this->optionValues as $oV) {
+            if (isset($oV['value']) & (array_search($oV, $oVs) === false)) {
+                $oVs[] = $oV;
+            }
+        }
+        $this->merge(['optionValues' => $oVs]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -26,6 +40,7 @@ class OptionUpdateRequest extends FormRequest
         return [
             'title' => 'required|string',
             'optionValues' => 'required|array',
+            'optionValues.*.value' => 'required|string',
         ];
     }
 }

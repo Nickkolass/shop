@@ -18,7 +18,7 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::all();
-        return view('admin.tag.index_tag', compact('tags'));
+        return view('admin.tag.index', compact('tags'));
     }
 
     /**
@@ -28,7 +28,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        return view('admin.tag.create_tag');
+        return view('admin.tag.create');
     }
 
     /**
@@ -52,7 +52,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        return view('admin.tag.show_tag', compact('tag'));   
+        return view('admin.tag.show', compact('tag'));   
     }
 
     /**
@@ -63,7 +63,7 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        return view('admin.tag.edit_tag', compact('tag'));   
+        return view('admin.tag.edit', compact('tag'));   
     }
 
     /**
@@ -77,7 +77,7 @@ class TagController extends Controller
     {
         $data = $request->validated();
         $tag->update($data);
-        return view('admin.tag.show_tag', compact('tag'));   
+        return view('admin.tag.show', compact('tag'));   
     }
 
     /**

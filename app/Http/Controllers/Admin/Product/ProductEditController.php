@@ -21,7 +21,7 @@ class ProductEditController extends Controller
         $tags = Tag::pluck('title', 'id');
         $categories = Category::pluck('title_rus', 'id');
 
-        return view('admin.product.edit.index_edit_product', compact('product', 'tags', 'categories'));
+        return view('admin.product.edit.index_edit', compact('product', 'tags', 'categories'));
     }
 
 
@@ -41,6 +41,6 @@ class ProductEditController extends Controller
         $optionValues = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get();
         $optionValues = Method::OVPs($optionValues);
 
-        return view('admin.product.edit.properties_edit_product', compact('product', 'propertyValues', 'optionValues', 'productPV_ids', 'productOV_ids'));
+        return view('admin.product.edit.properties_edit', compact('product', 'propertyValues', 'optionValues', 'productPV_ids', 'productOV_ids'));
     }
 }

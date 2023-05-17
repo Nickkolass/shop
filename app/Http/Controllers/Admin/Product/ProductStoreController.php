@@ -14,6 +14,6 @@ class ProductStoreController extends DBProductController
 
         $this->service->store(session()->pull('create'), $types);
         
-        return redirect()->route('product.index_product');
+        return redirect()->route('admin.products.index');
     }
 }

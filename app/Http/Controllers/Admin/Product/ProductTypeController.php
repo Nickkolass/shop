@@ -38,7 +38,7 @@ class ProductTypeController extends Controller
         })->get();
         $optionValues = Method::OVPs($optionValues);
 
-        return view('admin.product.productType.create_type', compact('optionValues', 'product'));
+        return view('admin.product.productType.create', compact('optionValues', 'product'));
     }
 
     /**
@@ -52,7 +52,7 @@ class ProductTypeController extends Controller
         $this->authorize('update', $product);
         $data = $request->validated();
         $this->productTypeService->storeType($product, $data, false);
-        return redirect()->route('product.show_product', $product->id);
+        return redirect()->route('admin.products.show', $product->id);
     }
 
     /**
@@ -75,7 +75,7 @@ class ProductTypeController extends Controller
         $optionValues = Method::OVPs($optionValues);
 
 
-        return view('admin.product.productType.edit_type', compact('productType', 'optionValues'));
+        return view('admin.product.productType.edit', compact('productType', 'optionValues'));
     }
 
     /**
@@ -90,7 +90,7 @@ class ProductTypeController extends Controller
         $this->authorize('update', $productType);
         $data = $request->validated();
         $this->productTypeService->updateType($productType, $data);
-        return redirect()->route('product.show_product', $productType->product_id);
+        return redirect()->route('admin.products.show', $productType->product_id);
     }
 
     /**
@@ -117,6 +117,6 @@ class ProductTypeController extends Controller
     {
         $this->authorize('delete', $productType);
         $this->productTypeService->deleteType($productType);
-        return redirect()->route('product.show_product', $productType->product_id);
+        return redirect()->route('admin.products.show', $productType->product_id);
     }
 }

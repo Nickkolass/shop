@@ -42,7 +42,7 @@
   <header>
     <nav class="navbar navbar-expand-lg">
       <div class="container">
-        <a class="navbar-brand" href="{{ route('api.index_api') }}">
+        <a class="navbar-brand" href="{{ route('api.index') }}">
           <table>
             <th><img src="{{asset('/storage/view/wand.svg')}}" alt="" width="30"></th>
             <th>
@@ -56,23 +56,23 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.index_api') }}">Главная</a>
+              <a class="nav-link" href="{{ route('api.index') }}">Главная</a>
             </li>
             <li class="nav-item">
               <div class="dropdown">
                 <a class="nav-link" data-toggle="dropdown">Продукты</a>
                 <div class="dropdown-menu">
                   @foreach ($categories as $category)
-                  <a class="dropdown-item" href="{{ route('api.products_api', $category['title']) }}">{{ $category['title_rus'] }}</a>
+                  <a class="dropdown-item" href="{{ route('api.products', $category['title']) }}">{{ $category['title_rus'] }}</a>
                   @endforeach
                 </div>
               </div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.about_api') }}" style="white-space: pre">О нас</a>
+              <a class="nav-link" href="{{ route('api.about') }}" style="white-space: pre">О нас</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.cart_api') }}">Корзина</a>
+              <a class="nav-link" href="{{ route('api.cart') }}">Корзина</a>
             </li>
             @guest
             @if (Route::has('login'))
@@ -87,13 +87,13 @@
             @endif
             @else
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.orders_api') }}">Заказы</a>
+              <a class="nav-link" href="{{ route('api.orders.index') }}">Заказы</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.support_api') }}">Поддержка</a>
+              <a class="nav-link" href="{{ route('api.support') }}">Поддержка</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('user.show_user', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
+              <a class="nav-link" href="{{ route('admin.users.show', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
@@ -123,7 +123,7 @@
               <li><a href="https://vk.com/"><i class="fa fa-vk"></i></a></li>
               <li><a href="https://instagram.com/"><i class="fa fa-instagram"></i></a></li>
             </ul>
-            <p>Copyright &copy; 2022-{{ now()->year }} <a rel="nofollow noopener" href="{{ route('api.index_api') }}" target="_blank">Lumos</a></p>
+            <p>Copyright &copy; 2022-{{ now()->year }} <a rel="nofollow noopener" href="{{ route('api.index') }}" target="_blank">Lumos</a></p>
           </div>
         </div>
       </div>

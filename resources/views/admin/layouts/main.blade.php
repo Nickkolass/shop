@@ -57,7 +57,7 @@
           @else
           <div>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('user.show_user', $user = auth()->id()) }}">{{ auth()->user()->email }}</a>
+              <a class="nav-link" href="{{ route('admin.users.show', $user = auth()->id()) }}">{{ auth()->user()->email }}</a>
             </li>
           </div>
           <div>
@@ -168,7 +168,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="{{ route('admin.index_admin') }}" class="brand-link">
+      <a href="{{ route('admin.index') }}" class="brand-link">
         <span class="brand-text font-weight-light">Lumos</span>
       </a>
       <!-- Sidebar -->
@@ -178,21 +178,21 @@
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
             <li class="nav-item">
-              <a href="{{ route('order.index_order') }}" class="nav-link">
+              <a href="{{ route('admin.orders.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-shopping-bag"></i>
                 <p>Заказы</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('product.index_product') }}" class="nav-link">
+              <a href="{{ route('admin.products.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-tshirt"></i>
                 <p>Продукты</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('user.support_user') }}" class="nav-link">
+              <a href="{{ route('admin.support') }}" class="nav-link">
                 <i class="nav-icon fas fa-phone"></i>
                 <p>Поддержка</p>
               </a>
@@ -200,28 +200,28 @@
 
             @if (session('user_role') == 'admin')
             <li class="nav-item">
-              <a href="{{ route('category.index_category') }}" class="nav-link">
+              <a href="{{ route('admin.categories.index') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>Категории</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('option.index_option') }}" class="nav-link">
+              <a href="{{ route('admin.options.index') }}" class="nav-link">
                 <i class="nav-icon fa fa-database"></i>
                 <p>Классификаторы</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('tag.index_tag') }}" class="nav-link">
+              <a href="{{ route('admin.tags.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-tags"></i>
                 <p>Теги</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('user.index_user') }}" class="nav-link">
+              <a href="{{ route('admin.users.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Пользователи</p>
               </a>
@@ -244,7 +244,7 @@
 
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-      <strong>Copyright &copy; 2022-{{ now()->year }} <a href="{{ route('admin.index_admin') }}">Главная</a>.</strong>
+      <strong>Copyright &copy; 2022-{{ now()->year }} <a href="{{ route('admin.index') }}">Главная</a>.</strong>
       Все права защищены.
     </footer>
 

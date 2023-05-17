@@ -23,11 +23,11 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function __invoke()
     {
         if (session('user_role') != 'client') {
-            return redirect()->route('admin.index_admin');
+            return redirect()->route('admin.index');
         }
-        return redirect()->route('api.index_api');
+        return redirect()->route('api.index');
     }
 }

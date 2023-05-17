@@ -15,6 +15,6 @@ class ProductIndexController extends Controller
             $q->select('id', 'product_id', 'preview_image');
         }])->simplePaginate(4);
 
-        return view('admin.product.index_product', compact('products'));
+        return view('admin.product.index', compact('products'));
     }
 }

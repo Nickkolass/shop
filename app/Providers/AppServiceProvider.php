@@ -31,9 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Cache::forget('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
+        // Cache::forget('categories');
+        
         Cache::has('categories') ?: Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
-
+        
         if (isset($_SERVER['REQUEST_URI'])) {
             explode('/', $_SERVER['REQUEST_URI'])['1'] == 'admin' ?: View::share('categories', Cache::get('categories'));
         }

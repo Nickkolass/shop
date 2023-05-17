@@ -5,7 +5,6 @@ namespace App\Services\Product;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ProductTypeService
 {
@@ -27,6 +26,7 @@ class ProductTypeService
             
             $sync = $this->relationService->getSync($type);
             $type['product_id'] = $product->id;
+            $type['is_published'] =  $type['count'] > 0 ?  $type['is_published'] ?? 0 : 0; 
 
             $this->imageService->previewImage($type['preview_image']);
 
@@ -37,7 +37,7 @@ class ProductTypeService
             if ($isNewProduct) {
                 $productType->optionValues()->attach($sync['optionValues']);
             } else {
-                $productType->optionValues()->attach($sync['optionValues'], false);
+                $productType->optionValues()->attach($sync['optionValues']);
                 $product->optionValues()->sync($sync['optionValues'], false);
             }
 

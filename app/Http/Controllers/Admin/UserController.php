@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::simplePaginate(5);
-        return view('admin.user.index_user', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
     /**
@@ -35,7 +35,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.user.create_user');
+        return view('admin.user.create');
     }
 
     /**
@@ -63,7 +63,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         $this->authorize('view', $user);
-        return view('admin.user.show_user', compact('user'));
+        return view('admin.user.show', compact('user'));
     }
 
     /**
@@ -75,7 +75,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $this->authorize('update', $user);
-        return view('admin.user.edit_user', compact('user'));
+        return view('admin.user.edit', compact('user'));
     }
 
     /**
@@ -91,7 +91,7 @@ class UserController extends Controller
         $data = $request->validated();
         $data = array_diff($data, $user->toArray());
         $user->update($data);
-        return view('admin.user.show_user', compact('user'));
+        return view('admin.user.show', compact('user'));
     }
 
     /**

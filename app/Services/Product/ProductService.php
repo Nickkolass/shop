@@ -30,7 +30,6 @@ class ProductService
             $this->productTypeService->relationService->sync($product, $sync);
 
             foreach ($types as $type) {
-                $type['is_published'] =  $type['count'] > 0 ?  $type['is_published'] ?? 0 : 0; 
                 $this->productTypeService->storeType($product, $type);
             }
 

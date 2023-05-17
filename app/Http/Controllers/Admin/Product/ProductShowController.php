@@ -24,6 +24,6 @@ class ProductShowController extends Controller
             Method::valuesToKeys($productType, 'optionValues');
         });
         
-        return view('admin.product.show_product', compact('product'));
+        return view('admin.product.show', compact('product'));
     }
 }

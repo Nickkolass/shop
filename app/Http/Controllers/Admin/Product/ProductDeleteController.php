@@ -13,6 +13,6 @@ class ProductDeleteController extends DBProductController
 
         $this->service->delete($product);
 
-        return redirect()->route('product.index_product');
+        return redirect()->route('admin.products.index');
     }
 }

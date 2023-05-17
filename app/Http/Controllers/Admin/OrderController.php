@@ -22,22 +22,22 @@ class OrderController extends Controller
 
         $orders = session('user_role') == 'admin' ? OrderPerformer::with('user:id,name') : auth()->user()->orderPerformers();
         $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
-
-        foreach ($orders as $order) {
-            $ordersProductTypes[] = json_decode($order->productTypes);
-        }
-
-        $preview_images = ProductType::whereIn('id', array_column(array_merge(...$ordersProductTypes), 'productType_id'))
-            ->select('id', 'product_id', 'preview_image')->pluck('preview_image', 'id');
-
-        foreach ($ordersProductTypes as $key => &$productTypes) {
-            foreach ($productTypes as &$productType) {
-                $productType->preview_image = $preview_images[$productType->productType_id];
+        if ($orders->count() != 0) {
+            foreach ($orders as $order) {
+                $ordersProductTypes[] = json_decode($order->productTypes);
             }
-            $orders[$key]->productTypes = $productTypes;
-        }
 
-        return view('admin.order.index_order', compact('orders'));
+            $preview_images = ProductType::whereIn('id', array_column(array_merge(...$ordersProductTypes), 'productType_id'))
+                ->select('id', 'product_id', 'preview_image')->pluck('preview_image', 'id');
+
+            foreach ($ordersProductTypes as $key => &$productTypes) {
+                foreach ($productTypes as &$productType) {
+                    $productType->preview_image = $preview_images[$productType->productType_id];
+                }
+                $orders[$key]->productTypes = $productTypes;
+            }
+        }
+        return view('admin.order.index', compact('orders'));
     }
 
     /**
@@ -62,7 +62,7 @@ class OrderController extends Controller
             Method::valuesToKeys($productType, 'optionValues');
         });
 
-        return view('admin.order.show_order', compact('order'));
+        return view('admin.order.show', compact('order'));
     }
 
     /**
@@ -75,6 +75,12 @@ class OrderController extends Controller
     {
         $this->authorize('update', $order);
         $order->update(['status' => 'Отправлен ' . now()]);
+
+        $order->order()->when(function ($q) use ($order) {
+            return OrderPerformer::where('order_id', $order->order_id)->where('status', 'В работе')->count() == 0;
+        }, function ($q) {
+            $q->update(['status' => 'Отправлен']);
+        });
         return back();
     }
 

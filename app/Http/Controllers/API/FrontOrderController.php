@@ -6,7 +6,6 @@ use App\Components\ImportDataClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use App\Models\Order;
-use App\Models\ProductType;
 
 class FrontOrderController extends Controller
 {
@@ -32,7 +31,7 @@ class FrontOrderController extends Controller
         $orders = $this->import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
-        return view('api.order.index_order', compact('orders'));
+        return view('api.order.index', compact('orders'));
     }
 
     /**
@@ -44,7 +43,7 @@ class FrontOrderController extends Controller
     {
         url()->previous() == 'http://127.0.0.1:8876/cart' ?: abort(404);
         $totalPrice = request('totalPrice');
-        return view('api.order.create_order', compact('totalPrice'));
+        return view('api.order.create', compact('totalPrice'));
     }
 
     /**
@@ -60,7 +59,7 @@ class FrontOrderController extends Controller
 
         session()->forget(['cart', 'filter', 'paginate']);
 
-        return redirect()->route('api.orders_api');
+        return redirect()->route('api.orders.index');
     }
 
     /**
@@ -74,7 +73,7 @@ class FrontOrderController extends Controller
         $this->authorize('view', Order::withTrashed()->find($order_id));
         $order = $this->import->client->request('POST', 'api/orders/' . $order_id)->getBody()->getContents();
         $order = json_decode($order, true);
-        return view('api.order.show_order', compact('order'));
+        return view('api.order.show', compact('order'));
     }
 
     /**

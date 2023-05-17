@@ -14,7 +14,7 @@ class ProductUpdateController extends DBProductController
 
         $this->service->update($product, session()->pull('edit'), $request->validated());
 
-        return redirect()->route('product.show_product', compact('product'));
+        return redirect()->route('admin.products.show', compact('product'));
     }
 
 }
