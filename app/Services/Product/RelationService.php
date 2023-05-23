@@ -5,54 +5,59 @@ namespace App\Services\Product;
 use App\Models\OptionValue;
 use App\Models\Product;
 use App\Models\ProductType;
-use App\Models\Property;
 use App\Models\PropertyValue;
 
 
 class RelationService
 {
 
-    public function getSync(&$product)
+    public function getRelations(&$product)
     {
-        foreach ($product as $column => $keys) {
+        foreach ($product as $relationship => $keys) {
             if (is_array($keys)) {
-                $sync[$column] = $product[$column];
-                unset($product[$column]);
+                $relations[$relationship] = $product[$relationship];
+                unset($product[$relationship]);
             }
         }
-        return $sync ?? [];
+        return $relations ?? [];
     }
 
 
-    public function sync(Product $product, $sync)
+    public function relationsType(Product $product, ProductType $productType, $relations, $isNewProduct)
     {
-        empty($sync['propertyValues']) ?: $sync['propertyValues'] = $this->storePropertyValues($sync['propertyValues'], $product->category_id);
-
-        foreach ($sync as $relationship => $keys) {
-            $detached[$relationship] = $product->$relationship()->sync($keys)['detached'];
+        if ($isNewProduct) {
+            $relations['optionValues'] = array_map(function($optionValue) use ($productType) {
+                return ['productType_id' => $productType->id, 'optionValue_id' => $optionValue];
+            }, $relations['optionValues']);
+            
+            return $relations;
+        } else {
+            $productType->optionValues()->attach($relations['optionValues']);
+            $product->optionValues()->sync($relations['optionValues'], false);
         }
-
-        empty($detached['propertyValues']) ?: PropertyValue::whereIn('id', $detached['propertyValues'])->doesntHave('products')->delete();
-
-        empty($detached['optionValues']) ?: $product->productTypes()->whereHas('optionValues', function ($q) use ($detached) {
-            $q->whereIn('optionValues.id', $detached['optionValues']);
-        })->update(['is_published' => 0]);
     }
 
 
-    private function storePropertyValues($propertyValues, $category_id)
+    public function relationsProduct(Product $product, $relations, ?bool $isNewProduct = true)
     {
-        $property = Property::whereHas('categories', function ($q) use ($category_id){
-            $q->where('category_id', $category_id);
-        })->whereIn('title', array_keys($propertyValues))->pluck('id', 'title');
-
-        foreach ($propertyValues as $property_title => $value) {
-            $pV_ids[] = PropertyValue::firstOrCreate(['property_id' => $property[$property_title], 'value' => $value,])->id;
+        foreach($relations['propertyValues'] as $property_id => &$value) {
+            $value = PropertyValue::firstOrCreate(['property_id' => $property_id, 'value' => $value])->id;
         }
-        return $pV_ids;
+        
+        if ($isNewProduct) {
+            foreach ($relations as $relationship => $keys) $product->$relationship()->attach($keys);
+        } else {
+            foreach ($relations as $relationship => $keys) $detached[$relationship] = $product->$relationship()->sync($keys)['detached'];
+
+            if (!empty($detached['propertyValues'])) PropertyValue::whereIn('id', $detached['propertyValues'])->doesntHave('products')->delete();
+            if (!empty($detached['optionValues'])) $product->productTypes()->whereHas('optionValues', function ($q) use ($detached) {
+                $q->whereIn('optionValues.id', $detached['optionValues']);
+            })->update(['is_published' => 0]);
+        }
     }
 
-    public function updateProductOVs(ProductType $productType, $optionValues_ids)
+
+    public function updateProductOVs(ProductType $productType)
     {
         $optionValue_ids = OptionValue::whereHas('productTypes', function ($pT) use ($productType) {
             $pT->where('product_id', $productType->product_id);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Option\OptionStoreRequest;
 use App\Http\Requests\Option\OptionUpdateRequest;
 use App\Models\Option;
+use App\Models\OptionValue;
 use Illuminate\Support\Facades\DB;
 
 class OptionController extends Controller
@@ -40,8 +41,17 @@ class OptionController extends Controller
     public function store(OptionStoreRequest $request)
     {
         $data = $request->validated();
-        Option::firstOrCreate(['title' => $data['title']])
-            ->optionValues()->createMany($data['optionValues']);
+
+        DB::beginTransaction();
+        try {
+            $option_id = Option::firstOrCreate(['title' => $data['title']])->id;
+            foreach ($data['optionValues'] as &$oV) $oV['option_id'] = $option_id;
+            OptionValue::insert($data['optionValues']);
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return $exception->getMessage();
+        }
         return $this->index();
     }
 
@@ -82,14 +92,14 @@ class OptionController extends Controller
 
         $optionValues = $option->optionValues()->pluck('value')->toArray();
         $delete = array_diff($optionValues, array_column($data['optionValues'], 'value'));
-        $create = array_filter($data['optionValues'], function ($oV) use ($optionValues) {
-            return !in_array($oV['value'], $optionValues);
-        });
-
+        foreach ($data['optionValues'] as $k => &$oV) {
+            if (in_array($oV['value'], $optionValues)) unset($data['optionValues'][$k]);
+            else ($oV['option_id'] = $option->id);
+        }
         DB::beginTransaction();
         try {
             $option->optionValues()->whereIn('value', $delete)->delete();
-            $option->optionValues()->createMany($create);
+            OptionValue::insert($data['optionValues']);
             $option->update(['title' => $data['title']]);
             DB::commit();
         } catch (\Exception $exception) {

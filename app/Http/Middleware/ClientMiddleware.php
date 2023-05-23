@@ -2,11 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Traits\HasVerify;
 use Closure;
 use Illuminate\Http\Request;
 
 class ClientMiddleware
 {
+    
+    use HasVerify;     
+
     /**
      * Handle an incoming request.
      *
@@ -16,9 +20,7 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (session()->has('user_role')) {
-            return $next($request);
-        }
-        abort(404);
+        $this->verify();
+        return $next($request);
     }
 }

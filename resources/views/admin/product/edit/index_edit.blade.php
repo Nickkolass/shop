@@ -30,6 +30,8 @@
           <!-- Small boxes (Stat box) -->
           @include('admin.product.errors')
 
+          <input type="hidden" value="{{ $product->id }}" name="product_id">
+
           <div class="row" style="margin:5px">
             <div class="col" style="padding: 5px;">
               <label>Наименование</label>

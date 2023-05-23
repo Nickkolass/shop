@@ -11,7 +11,15 @@ class ProductTypePolicy
 {
     use HandlesAuthorization;
 
-        
+    /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+
     /**
      * Determine whether the user can create models.
      *
@@ -32,7 +40,7 @@ class ProductTypePolicy
      */
     public function update(User $user, ProductType $productType)
     {
-        return $productType->product()->pluck('saler_id')->first() == $user->id || $user->role == 'admin';
+        return $productType->product()->pluck('saler_id')->first() == $user->id;
     }
 
     /**
@@ -44,7 +52,7 @@ class ProductTypePolicy
      */
     public function delete(User $user, ProductType $productType)
     {
-        return $productType->product()->pluck('saler_id')->first() == $user->id || $user->role == 'admin';
+        return $productType->product()->pluck('saler_id')->first() == $user->id;
     }
 
     /**

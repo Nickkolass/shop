@@ -18,7 +18,7 @@ class PropertyValueFactory extends Factory
     public function definition()
     {
         return [
-            'value' => $this->faker->word(),
+            'value' => $this->faker->unique()->word(),
             'property_id' => Property::latest('id')->first()->id,
     ];
     }

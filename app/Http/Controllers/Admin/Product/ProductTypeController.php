@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductType\ProductTypeCreateRequest;
+use App\Http\Requests\ProductType\ProductTypeStoreRequest;
 use App\Http\Requests\ProductType\ProductTypeUpdateRequest;
 use App\Models\Option;
 use App\Models\Product;
@@ -13,7 +13,7 @@ use App\Services\Product\ProductTypeService;
 
 class ProductTypeController extends Controller
 {
-    
+
     public $productTypeService;
 
     public function __construct(ProductTypeService $productTypeService)
@@ -21,7 +21,7 @@ class ProductTypeController extends Controller
         $this->productTypeService = $productTypeService;
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -47,11 +47,11 @@ class ProductTypeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductTypeCreateRequest $request, Product $product)
+    public function store(ProductTypeStoreRequest $request, Product $product)
     {
         $this->authorize('update', $product);
         $data = $request->validated();
-        $this->productTypeService->storeType($product, $data, false);
+        $this->productTypeService->store($product, $data, false);
         return redirect()->route('admin.products.show', $product->id);
     }
 
@@ -66,14 +66,12 @@ class ProductTypeController extends Controller
         $this->authorize('update', $productType);
 
         $productType->load(['productImages:productType_id,file_path', 'optionValues:id']);
-
         $optionValues = Option::select('id', 'title')->with('optionValues:id,option_id,value')->whereHas('optionValues', function ($q) use ($productType) {
             $q->whereHas('products', function ($b) use ($productType) {
                 $b->where('product_id', $productType->product_id);
             });
         })->get();
         $optionValues = Method::OVPs($optionValues);
-
 
         return view('admin.product.productType.edit', compact('productType', 'optionValues'));
     }
@@ -89,7 +87,7 @@ class ProductTypeController extends Controller
     {
         $this->authorize('update', $productType);
         $data = $request->validated();
-        $this->productTypeService->updateType($productType, $data);
+        $this->productTypeService->update($productType, $data);
         return redirect()->route('admin.products.show', $productType->product_id);
     }
 
@@ -99,7 +97,7 @@ class ProductTypeController extends Controller
      * @param  \App\Models\ProductType  $productType
      * @return \Illuminate\Http\Response
      */
-    public function published(ProductType $productType)
+    public function publish(ProductType $productType)
     {
         $this->authorize('update', $productType);
         $productType->update(['is_published' => $productType->is_published == 0 ? 1 : 0]);
@@ -116,7 +114,7 @@ class ProductTypeController extends Controller
     public function destroy(ProductType $productType)
     {
         $this->authorize('delete', $productType);
-        $this->productTypeService->deleteType($productType);
+        $this->productTypeService->delete($productType);
         return redirect()->route('admin.products.show', $productType->product_id);
     }
 }

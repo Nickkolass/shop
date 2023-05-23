@@ -21,7 +21,7 @@
 
 <section class="content">
   <div class="container-fluid">
-    <form action="{{ route('admin.products.createTypes') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('admin.products.createTypes') }}" method="get" enctype="multipart/form-data">
       @csrf
       <div class="row" style="margin-left:10px">
 
@@ -29,14 +29,14 @@
 
         <div class="col col-sm">
           <h3 class="m-2"><br>Характеристики<br><br></h3>
-          @foreach($propertyValues as $property => $values)
+          @foreach($properties as $property)
           <div class="col" style="padding: 5px;">
-            <label>{{$property}}</label>
-            <input class="form-control" name="propertyValues[{{$property}}]" value="{{ old('propertyValues[$property]') }}" list="datalistOptions[{{$property}}]" id="exampleDataList" style="width:500px">
-            <datalist id="datalistOptions[{{$property}}]">
-              @foreach($values as $value)
-              <option value={{$value}}>
-                @endforeach
+            <label>{{$property->title}}</label>
+            <input class="form-control" name="propertyValues[{{$property->id}}]" value="{{ old('propertyValues[$property->id]') }}" list="datalistOptions[{{$property->id}}]" id="exampleDataList" style="width:500px">
+            <datalist id="datalistOptions[{{$property->id}}]">
+              @foreach($property->propertyValues as $propertyValue)
+              <option value={{$propertyValue->value}}>
+              @endforeach
             </datalist>
           </div>
           @endforeach

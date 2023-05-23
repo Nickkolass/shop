@@ -35,7 +35,7 @@
                 <tr style="text-align: center">
                     <td style="vertical-align: middle"><a href="{{ route('api.orders.show', $order['id']) }}">{{ $order['id'] }}</a></td>
                     <td style="vertical-align: middle">
-                        @if ($order['status'] == 'В работе' || str_contains('Отправлен', $order['status']))
+                        @if ($order['status'] == 'В работе' || str_starts_with($order['status'], 'Отправлен'))
                         <form action="{{ route('api.orders.update', $order['id']) }}" method="post">
                             @csrf
                             @method('patch')

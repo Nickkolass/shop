@@ -2,6 +2,7 @@
   var Multi = function(id) {
     var container = document.getElementById(id);
     var that = this;
+    old = JSON.parse(container.getAttribute('data-old'));
 
     this.start = function(id) {
         container.querySelector('.js-add').addEventListener('click', function() {
@@ -15,7 +16,6 @@
           removeButton.append(document.createTextNode(" - "));
           removeButton.addEventListener('click', function() {
             this.parentElement.remove();
-            that.setNames();
           });
 
           newElement.append(removeButton);
@@ -32,7 +32,11 @@
             let inputs = rows[key].querySelectorAll('input');
             for (let i in inputs) {
               if (inputs.hasOwnProperty(i)) {
-                inputs[i].name = `optionValues[${rowNum}][value]`;
+                inputs[i].name = `${inputs[i].getAttribute('data-name')}[${rowNum}][value]`;
+                if(old != null) {
+                  if (old[rowNum] != null) inputs[i].setAttribute('value', old[rowNum]['value']);
+                  else if(inputs[i].value == inputs[0].value) inputs[i].setAttribute('value', '');
+                }
               }
             }
             rowNum++;
@@ -43,4 +47,16 @@
   var o = new Multi('multi');
 
   o.start();
+
+  if (old != null) {
+  $(document).ready(function () {
+    let i = 1;
+    let j = old.length;
+    while (i < j) {
+      $("#load_old_types").click();
+      i++;
+    }
+  });
+  }
+
 </script>

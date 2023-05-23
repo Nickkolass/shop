@@ -35,7 +35,7 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
+            'title' => 'required|string|unique:products,title,' . $this->product_id ?? '',
             'description' => 'required|string',
             'category_id' => 'required|integer',
             'saler_id' => 'required|integer',

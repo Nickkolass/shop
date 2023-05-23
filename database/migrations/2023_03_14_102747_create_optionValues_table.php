@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('option_id')->constrained('options')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('value');
+            $table->unique(['option_id','value']); 
             $table->timestamps();
         });
     }

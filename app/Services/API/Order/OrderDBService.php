@@ -4,9 +4,7 @@ namespace App\Services\API\Order;
 
 use App\Models\Order;
 use App\Models\OrderPerformer;
-use App\Models\Product;
 use App\Models\ProductType;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class OrderDBService
@@ -99,15 +97,18 @@ class OrderDBService
 
         foreach ($data['cart'] as $saler_id => $order) {
             $orderPerformers[] = [
+                'order_id' => $data['order']->id,
                 'saler_id' => $saler_id,
                 'user_id' => $data['user_id'],
                 'productTypes' => json_encode($order),
                 'dispatch_time' => now()->addDays(25),
                 'delivery' => $data['delivery'],
                 'total_price' => $order->sum('price'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
         }
-        $data['order']->orderPerformers()->createMany($orderPerformers);
+        OrderPerformer::insert($orderPerformers);
         return $this;
     }
 }

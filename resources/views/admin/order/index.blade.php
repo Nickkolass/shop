@@ -54,10 +54,10 @@
                   @if(session('user_role') == 'admin')
                   <td><a href="{{ route('api.orders.show', $order->order_id) }}">
                       {{ $order->order_id }}</a></td>
-                  <td><a href="{{ route('admin.users.show', $order->user->id) }}">
+                  <td><a href="{{ route('users.show', $order->user->id) }}">
                       {{ $order->user->name }}</a></td>
                   @endif
-                  <td><a href="{{ route('admin.users.show', $order->saler->id) }}" @disabled(session('user_role') != 'admin')>
+                  <td><a href="{{ route('users.show', $order->saler->id) }}" @disabled(session('user_role') != 'admin')>
                       {{ $order->saler->name }}</a></td>
                   <td><a href="{{ route('admin.orders.show', $order->id) }}">
                       {{ $order->id }}</a></td>

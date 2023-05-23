@@ -3,7 +3,6 @@
 namespace App\Services\API\Back;
 
 use App\Components\Method;
-use App\Models\Product;
 use App\Models\ProductType;
 
 class BackService
@@ -39,9 +38,8 @@ class BackService
 
     public function cart($cart)
     {
-        $productType_ids = array_keys($cart);
         $productTypes = ProductType::select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
-            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find($productType_ids);
+            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find(array_keys($cart));
         
         $productTypes->map(function($productType) use ($cart) {
             $productType->amount = $cart[$productType->id];

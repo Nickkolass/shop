@@ -2,11 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Traits\HasVerify;
 use Closure;
 use Illuminate\Http\Request;
 
 class SalerMiddleware
 {
+
+    use HasVerify;     
+
     /**
      * Handle an incoming request.
      *
@@ -16,10 +20,11 @@ class SalerMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        // session(['user_role' => 'admin']);
+        $this->verify();
         $role = session('user_role');
-        if ($role == 'admin' || $role == 'saler') {
-            return $next($request);
-        }
-        abort(404);
+
+        if ($role == 'saler' || $role == 'admin') return $next($request);
+        abort(403);
     }
 }

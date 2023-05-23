@@ -93,7 +93,7 @@
               <a class="nav-link" href="{{ route('api.support') }}">Поддержка</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.users.show', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
+              <a class="nav-link" href="{{ route('users.show', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();

@@ -19,27 +19,49 @@ class ProductTypeService
     }
 
 
-    public function storeType(Product $product, $type, ?bool $isNewProduct = true)
+    public function store(Product $product, $type, ?bool $isNewProduct = true)
     {
         DB::beginTransaction();
         try {
-            
-            $sync = $this->relationService->getSync($type);
+            $relations = $this->relationService->getRelations($type);
+
             $type['product_id'] = $product->id;
-            $type['is_published'] =  $type['count'] > 0 ?  $type['is_published'] ?? 0 : 0; 
+            $type['is_published'] =  $type['count'] > 0 ?  $type['is_published'] ?? 0 : 0;
+            $relations['optionValues'] = array_filter($relations['optionValues']);
 
             $this->imageService->previewImage($type['preview_image']);
 
             $productType = ProductType::create($type);
 
-            $this->imageService->productImages($productType, $sync['productImages']);
+            $this->imageService->productImages($productType, $relations['productImages'], $isNewProduct);
 
-            if ($isNewProduct) {
-                $productType->optionValues()->attach($sync['optionValues']);
-            } else {
-                $productType->optionValues()->attach($sync['optionValues']);
-                $product->optionValues()->sync($sync['optionValues'], false);
+            $attach = $this->relationService->relationsType($product, $productType, $relations, $isNewProduct);
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return $exception->getMessage();
+        }
+        return $attach;
+    }
+
+
+    public function update(ProductType $productType, $type)
+    {
+        $relations = $this->relationService->getRelations($type);
+
+        DB::beginTransaction();
+        try {
+
+            if (!empty($type['preview_image'])) $this->imageService->previewImage($type['preview_image'], $productType->preview_image);
+            if (!empty($relations['productImages'])) {
+                $productType->load('productImages:id,productType_id,file_path');
+                $this->imageService->productImages($productType, $relations['productImages'], false);
             }
+            
+            $productType->load('product:id')->update($type);
+
+            $productType->optionValues()->sync($relations['optionValues']);
+            $this->relationService->updateProductOVs($productType);
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -49,42 +71,16 @@ class ProductTypeService
     }
 
 
-    public function updateType(ProductType $productType, $type)
-    {
-        $sync = $this->relationService->getSync($type);
-
-        DB::beginTransaction();
-        try {
-
-            if (!empty($sync['productImages'])) {
-                $productType->load('productImages:productType_id,file_path');
-                $this->imageService->productImages($productType, $sync['productImages'], true);
-            }
-            empty($type['preview_image']) ?: $this->imageService->previewImage($type['preview_image'], $productType->preview_image);
-
-            $productType->update($type);
-            $productType->optionValues()->sync($sync['optionValues']);
-            $this->relationService->updateProductOVs($productType, $sync['optionValues']);
-
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
-    }
-
-
-    public function deleteType(ProductType $productType)
+    public function delete(ProductType $productType)
     {
         DB::beginTransaction();
         try {
 
-            $productType->load('productImages:productType_id,file_path', 'optionValues:optionValues.id');
-            $images = $productType->productImages->pluck('file_path')->push($productType->preview_image);
-
+            $productType->load('productImages:productType_id,file_path', 'product:id')->delete();
+            
+            $images = $productType->productImages->pluck('file_path')->push($productType->preview_image)->all();
             $this->imageService->deleteImages($images);
-            $productType->delete();
-            $this->relationService->updateProductOVs($productType, $productType->optionValues->pluck('id'));
+            $this->relationService->updateProductOVs($productType);
 
             DB::commit();
         } catch (\Exception $exception) {

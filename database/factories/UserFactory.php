@@ -18,7 +18,7 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'role' => 'saler',
+            'role' => 2,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => Hash::make(1), 
@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'card'=> $this->faker->numerify('################'),
             'postcode'=> $this->faker->postcode(),
             'address'=> $this->faker->address(),
-            'INN'=> $this->faker->numerify('##########'),
+            'INN'=> $this->faker->unique()->numerify('##########'),
             'registredOffice'=> $this->faker->address(),
         ];
     }

@@ -47,13 +47,10 @@
 
           <div class="form-group">
             <h5>Значения</h5>
-            @foreach($option->optionValues as $key => $optionValue)
-            <input type="text" name="optionValues[{{$key+500}}][value]" value="{{ $optionValue->value }}" class="form-control">
-            @endforeach
-            <div id="multi">
+            <div id="multi" data-old="{{json_encode($option->optionValues->toArray())}}">
               <div class="js-row input-group">
-                <input type="text" name="optionValues[0][value]" class="form-control">
-                <button type="button" class="js-add btn btn-outline-primary">+</button>
+                <input type="text" name="optionValues[0][value]" data-name="optionValues" class="form-control">
+                <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+</button>
               </div>
             </div>
           </div>

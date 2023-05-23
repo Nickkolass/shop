@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Product;
-use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -12,6 +11,15 @@ class ProductPolicy
     use HandlesAuthorization;
 
     /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+    
+    /**
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -19,7 +27,7 @@ class ProductPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->isSaler();
     }
 
     /**
@@ -31,7 +39,7 @@ class ProductPolicy
      */
     public function view(User $user, Product $product)
     {
-        return $user->id == $product->saler_id || $user->role == 'admin';
+        return $user->id == $product->saler_id;
     }
 
     /**
@@ -42,6 +50,7 @@ class ProductPolicy
      */
     public function create(User $user)
     {
+        return $user->isSaler();
     }
 
     /**
@@ -53,7 +62,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product)
     {
-        return $user->id == $product->saler_id || $user->role == 'admin';
+        return $user->id == $product->saler_id;
     }
 
     /**
@@ -65,7 +74,7 @@ class ProductPolicy
      */
     public function delete(User $user, Product $product)
     {
-        return $user->id == $product->saler_id || $user->role == 'admin';
+        return $user->id == $product->saler_id;
     }
 
     /**
@@ -77,7 +86,6 @@ class ProductPolicy
      */
     public function restore(User $user, Product $product)
     {
-        return $user->id == $product->saler_id || $user->role == 'admin';
     }
 
     /**
@@ -89,6 +97,5 @@ class ProductPolicy
      */
     public function forceDelete(User $user, Product $product)
     {
-        return $user->id == $product->saler_id || $user->role == 'admin';
     }
 }

@@ -19,8 +19,6 @@
 <!-- /.content-header -->
 
 <!-- Main content -->
-<h4 hidden>{{$i = 0}}</h4>
-
 <section class="content">
   <div class="container-fluid">
     <form action="{{ route('admin.products.store') }}" method="post" enctype="multipart/form-data">
@@ -28,15 +26,16 @@
       <div class="row align-items-start">
         <div class="col">
           @include('admin.product.errors')
-          <div id="multi">
+          <div id="multi" data-old="{{json_encode(old('types'))}}">
             <div class="js-row input-group">
               <div class="mr-auto" style="text-align:center;">
                 <label>Классификаторы</label><br>
                 @foreach($optionValues as $option => $values)
                 <select name="types[0][optionValues][]" data-name="optionValues" style="width:200px">
-                  <option disabled>{{ $option }}</option>
+                  <option value="">{{ $option }}</option>
                   @foreach($values as $value)
-                  <option value="{{ $value->id }}" @selected($value->value==($productType->optionValues[$option] ?? '' )) >{{ $value->value }}</option>
+                  <option value="{{ $value->id }}" @selected(in_array($value->id, old('types.0.optionValues') ?? []) )
+                    >{{ $value->value }}</option>
                   @endforeach
                 </select>
                 <div class="w-100"></div>
@@ -45,17 +44,20 @@
 
               <div class="mr-auto" style="text-align:center;">
                 <label>Цена</label>
-                <input type="number" name="types[0][price]" class="form-control" data-name="price" required>
+                <input type="number" name="types[0][price]" value="{{ old('types.0.price') }}" class="form-control"
+                  data-name="price" required>
 
               </div>
               <div class="mr-auto" style="text-align:center;">
                 <label>Остаток</label>
-                <input type="number" name="types[0][count]" class="form-control" data-name="count" required>
+                <input type="number" name="types[0][count]" value="{{ old('types.0.count') }}" class="form-control"
+                  data-name="count" required>
 
               </div>
               <div class="mr-auto" style="text-align:center;">
                 <label>Публикация</label>
-                <input type="checkbox" value="1" name="types[0][is_published]" class="form-control" data-name="is_published">
+                <input type="checkbox" value="1" name="types[0][is_published]" @checked(old('types.0.is_published'))
+                  class="form-control" data-name="is_published">
 
               </div>
               <div class="mr-auto" style="text-align:center;">
@@ -66,7 +68,8 @@
                       <div class="control-group">
                         <div class="controls">
                           <div class="entry input-group upload-input-group">
-                            <input name="types[0][preview_image]" type="file" class="form-control" data-name="preview_image" required>
+                            <input name="types[0][preview_image]" type="file" class="form-control"
+                              data-name="preview_image">
                           </div>
                         </div>
                       </div>
@@ -82,7 +85,8 @@
                       <div class="control-group">
                         <div class="controls">
                           <div class="entry input-group upload-input-group">
-                            <input class="form-control" data-name="productImages" name="types[0][productImages][]" type="file" multiple required>
+                            <input class="form-control" data-name="productImages" name="types[0][productImages][]"
+                              type="file" multiple>
                           </div>
                         </div>
                       </div>
@@ -90,7 +94,7 @@
                   </div>
                 </div>
               </div>
-              <button type="button" class="js-add btn btn-outline-primary">+</button>
+              <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+</button>
             </div>
           </div>
         </div>
@@ -103,61 +107,99 @@
 </section>
 <!-- /.content -->
 
+
 <script type="text/javascript">
-  var Multi = function(id) {
-    var container = document.getElementById(id);
-    var that = this;
+  var Multi = function (id) {
+  var container = document.getElementById(id);
+  var that = this;
+  old = JSON.parse(container.getAttribute('data-old'));
+  this.start = function (id) {
+    container.querySelector('.js-add').addEventListener('click', function () {
+      let newElement = container.querySelector('.js-row').cloneNode(true);
+      newElement.querySelector('.js-add').remove();
+      let removeButton = document.createElement('button');
+      removeButton.classList.add('js-remove');
+      removeButton.classList.add('btn');
+      removeButton.classList.add('btn-outline-danger');
+      removeButton.setAttribute('data-id', 1);
+      removeButton.append(document.createTextNode(" - "));
+      removeButton.addEventListener('click', function () {
+        this.parentElement.remove();
+      });
 
-    this.start = function(id) {
-        container.querySelector('.js-add').addEventListener('click', function() {
-          let newElement = container.querySelector('.js-row').cloneNode(true);
-          newElement.querySelector('.js-add').remove();
-          let removeButton = document.createElement('button');
-          removeButton.classList.add('js-remove');
-          removeButton.classList.add('btn');
-          removeButton.classList.add('btn-outline-danger');
-          removeButton.setAttribute('data-id', 1);
-          removeButton.append(document.createTextNode(" - "));
-          removeButton.addEventListener('click', function() {
-            this.parentElement.remove();
-            that.setNames();
-          });
+      newElement.append(removeButton);
+      container.append(newElement);
+      that.setNames();
+    });
+  },
 
-          newElement.append(removeButton);
-          container.append(newElement);
-          that.setNames();
-        });
-      },
-
-      this.setNames = function() {
-        let rows = container.querySelectorAll('.js-row');
-        let rowNum = 0;
-        for (let key in rows) {
-          if (rows.hasOwnProperty(key)) {
-            let inputs = rows[key].querySelectorAll('input');
-            let selects = rows[key].querySelectorAll('select');
-            for (let i in inputs) {
-              if (inputs.hasOwnProperty(i)) {
-                if (inputs[i].getAttribute('data-name') == 'productImages') {
-                  inputs[i].name = `types[${rowNum}][${inputs[i].getAttribute('data-name')}][]`;
-                } else {
-                  inputs[i].name = `types[${rowNum}][${inputs[i].getAttribute('data-name')}]`;
+    this.setNames = function () {
+      let rows = container.querySelectorAll('.js-row');
+      let rowNum = 0;
+      for (let key in rows) {
+        if (rows.hasOwnProperty(key)) {
+          let inputs = rows[key].querySelectorAll('input');
+          let selects = rows[key].querySelectorAll('select');
+          for (let i in inputs) {
+            if (inputs.hasOwnProperty(i)) {
+              var name = inputs[i].getAttribute('data-name');
+              if (name == 'productImages') {
+                inputs[i].name = `types[${rowNum}][${name}][]`;
+              } else {
+                inputs[i].name = `types[${rowNum}][${name}]`;
+                if (old != null) {
+                  if (old[rowNum] != null) {
+                    if (old[rowNum][name] != null) {
+                      if (name == 'price' || name == 'count') inputs[i].setAttribute('value', (old[rowNum][name]));
+                      if (name == 'is_published') inputs[i].checked = true;
+                    }
+                  }
                 }
               }
             }
-            for (let i in selects) {
-              if (selects.hasOwnProperty(i)) {
-                selects[i].name = `types[${rowNum}][${selects[i].getAttribute('data-name')}][]`;
+          }
+
+          for (let i in selects) {
+            if (selects.hasOwnProperty(i)) {
+              var name = selects[i].getAttribute('data-name');
+              selects[i].name = `types[${rowNum}][${name}][]`;
+              if (old != null) {
+                if (old[rowNum] != null) {
+                  if (old[rowNum][name] != null) {
+                    for (let j in selects[i].options) {
+                      if (inputs.hasOwnProperty(j)) {
+                        if (old[rowNum][name][i] != null) {
+                          if (selects[i].options[j].value == old[rowNum][name][i]) {
+                            selects[i].options[j].selected = true;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
-            rowNum++;
           }
+          rowNum++;
         }
       }
-  }
-  var o = new Multi('multi');
+    }
+}
+var o = new Multi('multi');
+o.start();
 
-  o.start();
+if (old != null) {
+  $(document).ready(function () {
+    let i = 1;
+    let j = old.length;
+    while (i < j) {
+      $("#load_old_types").click();
+      i++;
+    }
+  });
+}
 </script>
+
+
 
 @endsection

@@ -30,13 +30,15 @@
 
         <div class="col col-sm">
           <h3 class="m-2"><br>Характеристики<br><br></h3>
-          @foreach($propertyValues as $property => $values)
+          @foreach($properties as $property)
           <div class="col" style="padding: 5px;">
-            <label>{{$property}}</label>
-            <input class="form-control" name="propertyValues[{{$property}}]" value="{{ empty($ov = $values->intersectByKeys($productPV_ids)) ?: $ov->first() }}" list="datalistOptions[{{$property}}]" id="exampleDataList" style="width:500px">
-            <datalist id="datalistOptions[{{$property}}]">
-              @foreach($values as $value)
-              <option value={{$value}}>
+            <label>{{$property->title}}</label>
+            <input class="form-control" name="propertyValues[{{$property->id}}]"
+              value="{{ $property->propertyValues->whereIn('id', $productPV_ids)->first()->value ?? '' }}"
+              list="datalistOptions[{{$property->id}}]" id="exampleDataList" style="width:500px">
+            <datalist id="datalistOptions[{{$property->id}}]">
+              @foreach($property->propertyValues as $propertyValue)
+              <option value={{$propertyValue->value}}>
                 @endforeach
             </datalist>
           </div>

@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\Product\ProductUpdateController;
 
 Auth::routes();
 Route::get('/', HomeController::class);
+Route::resource('/users', UserController::class);
 
 Route::name('api.')->group(function () {
     Route::view('/about', 'api.about')->name('about');
@@ -51,7 +52,6 @@ Route::name('api.')->group(function () {
 
 Route::prefix('/admin')->name('admin.')->group(function () {
     Route::middleware('admin')->group(function () {
-        Route::resource('/users', UserController::class);
         Route::resource('/categories', CategoryController::class);
         Route::resource('/tags', TagController::class);
         Route::resource('/options', OptionController::class);
@@ -64,11 +64,12 @@ Route::prefix('/admin')->name('admin.')->group(function () {
             Route::get('/', ProductIndexController::class)->name('products.index');
             Route::get('/create', [ProductCreateController::class, 'index'])->name('products.create');
             Route::post('/create/properties', [ProductCreateController::class, 'properties'])->name('products.createProperties');
-            Route::post('/create/types', [ProductCreateController::class, 'types'])->name('products.createTypes');
+            Route::get('/create/types', [ProductCreateController::class, 'types'])->name('products.createTypes');
             Route::post('/', ProductStoreController::class)->name('products.store');
             Route::get('/{product}', ProductShowController::class)->name('products.show');
             Route::get('/{product}/edit', [ProductEditController::class, 'index'])->name('products.edit');
             Route::post('/{product}/edit/properties', [ProductEditController::class, 'properties'])->name('products.editProperties');
+            Route::patch('/{product}/publish', [ProductEditController::class, 'publish'])->name('products.publish');
             Route::patch('/{product}', ProductUpdateController::class)->name('products.update');
             Route::delete('/{product}', ProductDeleteController::class)->name('products.destroy');
 
@@ -78,7 +79,7 @@ Route::prefix('/admin')->name('admin.')->group(function () {
                 Route::get('/types/{productType}/edit', 'edit')->name('productTypes.edit');
                 Route::patch('/types/{productType}', 'update')->name('productTypes.update');
                 Route::delete('/types/{productType}', 'destroy')->name('productTypes.destroy');
-                Route::patch('/types/published/{productType}', 'published')->name('productTypes.published');
+                Route::patch('/types/publish/{productType}', 'publish')->name('productTypes.publish');
             });
         });
     });

@@ -19,7 +19,7 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $this->faker->sentence(5),
+            'title' => $this->faker->unique()->sentence(5),
             'description' => $this->faker->realText(),
             'category_id' => Category::latest('id')->pluck('id')['0'],
             'saler_id' => User::latest('id')->pluck('id')['0'],

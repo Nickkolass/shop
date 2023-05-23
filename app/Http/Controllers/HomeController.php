@@ -2,32 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
+use App\Models\Traits\HasVerify;
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        if (session()->has('user_role')) {
-            $this->middleware('auth');
-        }
-    }
+    use HasVerify;     
 
-    /**
+     /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function __invoke()
     {
-        if (session('user_role') != 'client') {
-            return redirect()->route('admin.index');
-        }
-        return redirect()->route('api.index');
+        $role = $this->verify();
+        return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.index');
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Services\Product;
 
 use App\Models\Product;
+use App\Models\ProductImage;
+use App\Models\ProductTypeOptionValue;
 use Illuminate\Support\Facades\DB;
 
 
@@ -18,20 +20,17 @@ class ProductService
 
     public function store($product, $types)
     {
-        $sync = $this->productTypeService->relationService->getSync($product);
-        $sync['optionValues'] = array_merge(...array_column($types, 'optionValues'));
+        $relations = $this->productTypeService->relationService->getRelations($product);
+        $relations['optionValues'] = array_filter(array_unique(array_merge(...array_column($types, 'optionValues'))));
         DB::beginTransaction();
         try {
 
-            $product = Product::firstOrCreate([
-                'title' => $product['title']
-            ], $product);
+            $product = Product::firstOrCreate(['title' => $product['title']], $product);
+            $this->productTypeService->relationService->relationsProduct($product, $relations);
+            foreach ($types as $type) $attach[] = $this->productTypeService->store($product, $type);
 
-            $this->productTypeService->relationService->sync($product, $sync);
-
-            foreach ($types as $type) {
-                $this->productTypeService->storeType($product, $type);
-            }
+            ProductTypeOptionValue::insert(array_merge(...array_column($attach, 'optionValues')));
+            ProductImage::insert(array_merge(...array_column($attach, 'productImages')));
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -41,13 +40,13 @@ class ProductService
     }
 
 
-    public function update(Product $product, $data, $sync)
+    public function update(Product $product, $data, $relations)
     {
         DB::beginTransaction();
         try {
 
             $product->update($data);
-            $this->productTypeService->relationService->sync($product, $sync);
+            $this->productTypeService->relationService->relationsProduct($product, $relations, false);
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -59,16 +58,13 @@ class ProductService
 
     public function delete(Product $product)
     {
-        $product->load(['productTypes' => function ($q) {
-            $q->select('id', 'product_id', 'preview_image')->with('productImages:productType_id,file_path');
-        }]);
-
-        $images = $product->productTypes->pluck('productImages.*.file_path')->push($product->productTypes->pluck('preview_image'))->flatten();
+        $product->load('productTypes.productImages:productType_id,file_path');
+        $images = $product->productTypes->pluck('productImages.*.file_path')->push($product->productTypes->pluck('preview_image'))->flatten()->all();
 
         DB::beginTransaction();
         try {
-            $this->productTypeService->imageService->deleteImages($images);
             $product->delete();
+            $this->productTypeService->imageService->deleteImages($images);
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

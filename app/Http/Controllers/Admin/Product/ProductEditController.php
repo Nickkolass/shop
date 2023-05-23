@@ -30,17 +30,24 @@ class ProductEditController extends Controller
         $data = $request->validated();
         session(['edit' => $data]);
 
-        $productPV_ids = $product->propertyValues()->pluck('property_value_id')->flip();
+        $productPV_ids = $product->propertyValues()->pluck('property_value_id');
         $productOV_ids = $product->optionValues()->pluck('optionValue_id');
 
-        $propertyValues = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function ($q) use ($data) {
+        $properties = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function ($q) use ($data) {
             $q->where('category_id', $data['category_id']);
         })->select('id', 'title')->get();
-        $propertyValues = Method::OVPs($propertyValues);
 
         $optionValues = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get();
         $optionValues = Method::OVPs($optionValues);
 
-        return view('admin.product.edit.properties_edit', compact('product', 'propertyValues', 'optionValues', 'productPV_ids', 'productOV_ids'));
+        return view('admin.product.edit.properties_edit', compact('product', 'properties', 'optionValues', 'productPV_ids', 'productOV_ids'));
+    }
+
+    
+    public function publish(Product $product)
+    {
+        $this->authorize('update', $product);
+        $product->productTypes()->update(['is_published' => request()->has('publish') ? 1 : 0]);
+        return back();
     }
 }

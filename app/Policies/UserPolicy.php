@@ -10,6 +10,15 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+
+    /**
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -17,6 +26,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
+        return false;
     }
 
     /**
@@ -28,7 +38,7 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        return $user->id == $model->id || $user->role == 'admin';
+        return $user->id == $model->id;
     }
 
     /**
@@ -39,6 +49,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
+        return !$user;
     }
 
     /**
@@ -50,7 +61,7 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        return $user->id == $model->id || $user->role == 'admin';
+        return $user->id == $model->id;
     }
 
     /**
@@ -62,7 +73,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
-        return $user->id == $model->id || $user->role == 'admin';
+        return $user->id == $model->id;
     }
 
     /**
@@ -74,7 +85,6 @@ class UserPolicy
      */
     public function restore(User $user, User $model)
     {
-        return $user->id == $model->id || $user->role == 'admin';
     }
 
     /**
@@ -86,6 +96,5 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model)
     {
-        return $user->id == $model->id || $user->role == 'admin';
     }
 }

@@ -29,7 +29,7 @@ class BackOrderController extends Controller
     public function index()
     {
         $orders = $this->service->index(request('user_id'), request('page'));
-        return OrdersResource::make($orders)->resolve();
+        if(isset($orders)) return OrdersResource::make($orders)->resolve();
     }
 
     /**

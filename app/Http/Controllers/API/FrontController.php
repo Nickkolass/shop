@@ -67,7 +67,6 @@ class FrontController extends Controller
             empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
         }
         return back();
-        // APIFrontService::scenarioAddToCart($addToCart);
     }
 
 

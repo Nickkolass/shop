@@ -33,10 +33,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Cache::forget('categories');
         
-        Cache::has('categories') ?: Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
+        if(!Cache::has('categories')) Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
         
         if (isset($_SERVER['REQUEST_URI'])) {
-            explode('/', $_SERVER['REQUEST_URI'])['1'] == 'admin' ?: View::share('categories', Cache::get('categories'));
+            if(explode('/', $_SERVER['REQUEST_URI'])['1'] != 'admin') View::share('categories', Cache::get('categories'));
         }
     }
 }

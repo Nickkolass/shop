@@ -44,7 +44,7 @@ class Method
     public static function OVPs($OVPs)
     {
         return $OVPs->mapWithKeys(function ($OVP) {
-            $value = $OVP->propertyValues ?? $OVP->optionValues;
+            $value = $OVP->optionValues ?? $OVP->propertyValues;
             return [$OVP->title => $value->pluck('value', 'id')];
         });
     }

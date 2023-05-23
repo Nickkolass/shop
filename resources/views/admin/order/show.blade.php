@@ -66,7 +66,7 @@
                         Стоимость: {{ $productType->price }}<br>
                         Продавец:
                         @if(session('user_role') == 'admin')
-                        <a class="linkclass disabled" href="{{ route('admin.users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a><br>
+                        <a class="linkclass disabled" href="{{ route('users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a><br>
                         <a href="{{ route('api.orders.show', $order->order_id) }}">Перейти к заказу</a>
                         @else
                         {{ $productType->saler->name }}
@@ -96,7 +96,6 @@
             @method('patch')
             <div class="form-group">
               <input type="submit" class="btn btn-primary" value="Подтвердить отправку" @disabled($order->status != 'В работе')>
-
             </div>
           </form>
         </div>

@@ -10,19 +10,19 @@ use App\Http\Resources\Product\ProductTypeResource;
 use App\Http\Resources\Product\ShowProductTypeResource;
 use App\Models\Category;
 use App\Models\ProductType;
-use App\Services\API\Back\BackProductService;
+use App\Services\API\Back\BackProductsService;
 use App\Services\API\Back\BackService;
 
 class BackController extends Controller
 {
     private $service;
-    private $productService;
+    private $productsService;
 
 
-    public function __construct(BackService $service, BackProductService $productService)
+    public function __construct(BackService $service, BackProductsService $productsService)
     {
         $this->service = $service;
-        $this->productService = $productService;
+        $this->productsService = $productsService;
     }
 
 
@@ -36,7 +36,7 @@ class BackController extends Controller
     public function products(Category $category, FilterRequest $request)
     {
         $data = $request->validated();
-        $this->productService->getData($data, $category);
+        $this->productsService->getData($data, $category);
         return DataResource::make($data)->resolve();
     }
 

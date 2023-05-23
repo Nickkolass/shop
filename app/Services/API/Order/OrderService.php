@@ -18,12 +18,11 @@ class OrderService
     public function index($user_id, $page)
     {
         $user = User::select('id', 'role')->find($user_id);
-        $orders = $user->role == 'admin' ?  Order::query() : $user->orders();
+        $orders = $user->isAdmin() ?  Order::query() : $user->orders();
         $orders = $orders->without('payment_status', 'payment')->with(['orderPerformers' => function ($q) {
             $q->withTrashed()->select('order_id', 'dispatch_time');
         }])->latest()->withTrashed()->simplePaginate(3, ['*'], 'page', $page)->withPath('');
-        
-        return $this->service->getProductsForIndex($orders);
+        if($orders->count() != 0) return $this->service->getProductsForIndex($orders);
     }
 
 

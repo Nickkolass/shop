@@ -53,7 +53,7 @@
                                         Статус: {{ $productType['status'] }}<br>
                                         Продавец:
                                         @if(session('user_role') == 'admin')
-                                        <a class="linkclass disabled" href="{{ route('admin.users.show', $productType['saler_id']) }}"> {{ $productType['saler'] }} </a><br>
+                                        <a class="linkclass disabled" href="{{ route('users.show', $productType['saler_id']) }}"> {{ $productType['saler'] }} </a><br>
                                         <a href="{{ route('admin.orders.show', $productType['orderPerformer_id']) }}">Перейти к заказу</a>
                                         @else
                                         {{ $productType['saler'] }}
@@ -85,13 +85,13 @@
             @csrf
             @method('patch')
             <div class="mr-3">
-                <input type="submit" class="btn btn-primary btn-lg" value="Подтвердить получение" @disabled($order['status'] !='В работе' || str_contains('Отправлен', $order['status']))>
+                <input type="submit" class="btn btn-primary btn-lg" value="Подтвердить получение" @disabled(str_starts_with($order['status'], 'Отменен') || str_starts_with($order['status'], 'Получен'))>
             </div>
         </form>
         <form action="{{route('api.orders.destroy', $order['id']) }}" method="post">
             @csrf
             @method('delete')
-            <input type="submit" class="btn btn-danger btn-lg" value="Отказаться" @disabled($order['status'] !='В работе' || str_contains('Отправлен', $order['status']) || !empty(array_diff(array_column($order['productTypes'], 'status' ), ['В работе'])))>
+            <input type="submit" class="btn btn-danger btn-lg" value="Отказаться" @disabled($order['status'] != 'В работе' || str_starts_with($order['status'], 'Отправлен') || !empty(array_diff(array_column($order['productTypes'], 'status' ), ['В работе'])))>
         </form>
     </div>
 </main>

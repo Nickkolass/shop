@@ -35,7 +35,7 @@
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
-      @if (session('user_role') == 'saler')
+      @if (session('user_role') == 'saler' || session('user_role') == 'admin')
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -57,7 +57,7 @@
           @else
           <div>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.users.show', $user = auth()->id()) }}">{{ auth()->user()->email }}</a>
+              <a class="nav-link" href="{{ route('users.show', $user = auth()->id()) }}">{{ auth()->user()->email }}</a>
             </li>
           </div>
           <div>
@@ -221,7 +221,7 @@
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('admin.users.index') }}" class="nav-link">
+              <a href="{{ route('users.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Пользователи</p>
               </a>

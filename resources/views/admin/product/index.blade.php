@@ -48,7 +48,7 @@
                   <td><a href="{{ route('admin.products.show', $product->id) }}">{{ $product->title }}</a></td>
                   <td>{{ $product->category->title_rus }}</td>
                   @if (session('user_role') == 'admin')
-                  <td><a href="{{ route('admin.users.show', $product->saler_id) }}">{{$product->saler_id}}</a></td>
+                  <td><a href="{{ route('users.show', $product->saler_id) }}">{{$product->saler_id}}</a></td>
                   @endif
                   <td>@foreach($product->productTypes as $productType)
                     <img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50' height='50' class="img img-responsive">

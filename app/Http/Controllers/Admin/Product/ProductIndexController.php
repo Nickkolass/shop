@@ -9,11 +9,13 @@ class ProductIndexController extends Controller
 {
     public function __invoke()
     {
+        $this->authorize('viewAny', Product::class);
+
         $products = session('user_role') == 'admin' ? Product::query() : auth()->user()->products();
         
         $products = $products->select('id', 'title', 'saler_id', 'category_id')->with(['category:id,title_rus', 'productTypes' => function($q) {
             $q->select('id', 'product_id', 'preview_image');
-        }])->simplePaginate(4);
+        }])->latest()->simplePaginate(4);
 
         return view('admin.product.index', compact('products'));
     }

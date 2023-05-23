@@ -118,5 +118,6 @@ class DatabaseSeeder extends Seeder
                 $productType->optionValues()->attach($optionValues[$key]);
             }
         }
+        User::where('id', 1)->update(['role' => 1, 'email' => '1@mail.ru', 'password' => '$2y$10$zEo/vVO3vfXIzHrTdDS1zesl3di.9XddQqXLSuJi1UJf9nVszUvzq']);
     }
 }

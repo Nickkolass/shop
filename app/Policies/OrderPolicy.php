@@ -11,6 +11,15 @@ class OrderPolicy
     use HandlesAuthorization;
 
     /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+
+    /**
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -18,6 +27,7 @@ class OrderPolicy
      */
     public function viewAny(User $user)
     {
+        return $user;
     }
 
     /**
@@ -29,7 +39,7 @@ class OrderPolicy
      */
     public function view(User $user, Order $order)
     {
-        return $order->user_id == $user->id || $user->role == 'admin';
+        return $order->user_id == $user->id;
     }
 
     /**
@@ -40,6 +50,7 @@ class OrderPolicy
      */
     public function create(User $user)
     {
+        return $user;
     }
 
     /**
@@ -51,7 +62,7 @@ class OrderPolicy
      */
     public function update(User $user, Order $order)
     {
-        return $order->user_id == $user->id || $user->role == 'admin';
+        return $order->user_id == $user->id;
     }
 
     /**
@@ -63,7 +74,7 @@ class OrderPolicy
      */
     public function delete(User $user, Order $order)
     {
-        return $order->user_id == $user->id || $user->role == 'admin';
+        return $order->user_id == $user->id;
     }
 
     /**
@@ -75,7 +86,6 @@ class OrderPolicy
      */
     public function restore(User $user, Order $order)
     {
-        return $order->user_id == $user->id || $user->role == 'admin';
     }
 
     /**
@@ -87,6 +97,5 @@ class OrderPolicy
      */
     public function forceDelete(User $user, Order $order)
     {
-        return $order->user_id == $user->id || $user->role == 'admin';
     }
 }

@@ -14,6 +14,7 @@ use App\Models\Tag;
 class ProductCreateController extends Controller
 {
     public function index () {
+        $this->authorize('create', Product::class);
         $tags = Tag::pluck('title', 'id');
         $categories = Category::pluck('title_rus', 'id');
         return view('admin.product.create.index_create', compact('tags', 'categories'));   
@@ -25,20 +26,21 @@ class ProductCreateController extends Controller
         $data = $request->validated();
         session(['create' => $data]);
 
-        $propertyValues = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function($q) use($data) {
+        $properties = Property::with('propertyValues:id,property_id,value')->whereHas('categories', function($q) use($data) {
             $q->where('category_id', $data['category_id']);
         })->select('id','title')->get();
-        $propertyValues = Method::OVPs($propertyValues);
 
         $optionValues = Option::with('optionValues:id,option_id,value')->select('id','title')->get();
         $optionValues = Method::OVPs($optionValues);
 
-        return view('admin.product.create.properties_create', compact('propertyValues', 'optionValues'));   
+        return view('admin.product.create.properties_create', compact('properties', 'optionValues'));   
     }
 
 
     public function types () {
-        
+        //в случае ошибки валидации редирект на пост роут невозможен, поэтому гет с проверкой внутри метода 
+        session()->has('create') & request()->has('propertyValues') & request()->has('optionValues') ?: abort(404);
+
         session(['create.propertyValues' => array_filter(request('propertyValues'))]);
 
         $optionValues = array_merge(...array_values(request('optionValues')));

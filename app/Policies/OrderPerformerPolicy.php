@@ -11,6 +11,15 @@ class OrderPerformerPolicy
     use HandlesAuthorization;
 
     /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+
+    /**
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -18,7 +27,7 @@ class OrderPerformerPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->isSaler();
     }
 
     /**
@@ -30,8 +39,7 @@ class OrderPerformerPolicy
      */
     public function view(User $user, OrderPerformer $orderPerformer)
     {
-        return $orderPerformer->saler_id == $user->id || $user->role == 'admin';
-
+        return $orderPerformer->saler_id == $user->id;
     }
 
     /**
@@ -54,7 +62,7 @@ class OrderPerformerPolicy
      */
     public function update(User $user, OrderPerformer $orderPerformer)
     {
-        return $orderPerformer->saler_id == $user->id || $user->role == 'admin';
+        return $orderPerformer->saler_id == $user->id;
     }
 
     /**
@@ -66,7 +74,7 @@ class OrderPerformerPolicy
      */
     public function delete(User $user, OrderPerformer $orderPerformer)
     {
-        return $orderPerformer->saler_id == $user->id || $user->role == 'admin';
+        return $orderPerformer->saler_id == $user->id;
     }
 
     /**
@@ -78,7 +86,6 @@ class OrderPerformerPolicy
      */
     public function restore(User $user, OrderPerformer $orderPerformer)
     {
-        return $orderPerformer->saler_id == $user->id || $user->role == 'admin';
     }
 
     /**
@@ -90,6 +97,5 @@ class OrderPerformerPolicy
      */
     public function forceDelete(User $user, OrderPerformer $orderPerformer)
     {
-        return $orderPerformer->saler_id == $user->id || $user->role == 'admin';
     }
 }

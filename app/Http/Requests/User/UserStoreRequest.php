@@ -24,7 +24,7 @@ class UserStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'email'=> 'required|string',
+            'email'=> 'required|string|email|unique:users',
             'password'=> 'required|string|confirmed',
             'name' => 'required|string',
             'surname' => 'required|string',
@@ -33,7 +33,7 @@ class UserStoreRequest extends FormRequest
             'age' => 'required|integer',
             'postcode' => 'nullable|integer',
             'address' => 'nullable|string',
-            'INN' => 'nullable|integer',
+            'INN' => 'nullable|integer|unique:users',
             'registredOffice' => 'nullable|string',
      
         ];

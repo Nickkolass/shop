@@ -25,9 +25,11 @@ class FrontOrderController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', Order::class);
+
         $data['page'] = request('page') ?? 1;
         $data['user_id'] = auth()->id();
-        
+
         $orders = $this->import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
@@ -40,8 +42,8 @@ class FrontOrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        url()->previous() == 'http://127.0.0.1:8876/cart' ?: abort(404);
+    { //нужен route:post но тогда без ресурсного контроллера, поэтому переход только из корзины  
+        if (url()->previous() != 'http://127.0.0.1:8876/cart' || !session()->has('cart')) abort(404);
         $totalPrice = request('totalPrice');
         return view('api.order.create', compact('totalPrice'));
     }
@@ -53,10 +55,12 @@ class FrontOrderController extends Controller
      */
     public function store(StoreFrontRequest $request)
     {
+        $this->authorize('create', Order::class);
+
         $data = $request->validated();
         //платежная система
-        $this->import->client->request('POST', 'api/orders/store', ['query' => $data])->getBody()->getContents();
 
+        $this->import->client->request('POST', 'api/orders/store', ['query' => $data])->getBody()->getContents();
         session()->forget(['cart', 'filter', 'paginate']);
 
         return redirect()->route('api.orders.index');

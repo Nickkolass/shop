@@ -39,14 +39,14 @@
           @csrf
 
           <div class="form-group">
-            <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="Название">
+            <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="Название" required>
           </div>
 
           <div class="form-group">
             <h5>Значения</h5>
-            <div id="multi">
+            <div id="multi" data-old="{{json_encode('')}}">
               <div class="js-row input-group">
-                <input type="text" name="optionValues[0][value]" value="{{ old('optionValues') }}" class="form-control">
+                <input type="text" name="optionValues[0][value]" data-name="optionValues" class="form-control">
                 <button type="button" class="js-add btn btn-outline-primary">+</button>
               </div>
             </div>

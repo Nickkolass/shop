@@ -18,7 +18,7 @@ class OptionValueFactory extends Factory
     public function definition()
     {
         return [
-            'value' => $this->faker->word(),
+            'value' => $this->faker->unique()->word(),
             'option_id' => Option::latest('id')->first()->id,
         ];
     }
