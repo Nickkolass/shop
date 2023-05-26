@@ -41,27 +41,6 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-
-
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|string',
-            'email' => 'required|string|unique:users',
-            'password' => 'required|string|confirmed',
-            'surname' => 'nullable|string',
-            'patronymic' => 'nullable|string',
-            'age' => 'nullable|integer',
-            'address' => 'nullable|string',
-            'gender' => 'nullable|integer',
-        ]);
-    }
 
     /**
      * Create a new user instance after a valid registration.
