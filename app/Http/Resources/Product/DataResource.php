@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class DataResource extends JsonResource
 {
     protected $preserveKeys = true;
-    
+
     /**
      * Transform the resource into an array.
      *
@@ -22,6 +22,7 @@ class DataResource extends JsonResource
             'filter' => $this['filter'],
             'filterable' => $this['filterable'],
             'category' => $this['category'],
+            'liked_ids' => $this['liked_ids'] ?? [],
         ];
     }
 }

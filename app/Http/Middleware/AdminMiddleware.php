@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class AdminMiddleware
 {
-    
-    use HasVerify;     
-    
+
+    use HasVerify;
+
     /**
      * Handle an incoming request.
      *
@@ -20,8 +20,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $this->verify();
-        if (session('user_role') == 'admin') return $next($request);
+        $role = session('user_role');
+        $this->verify($role);
+        if ($role == 'admin') return $next($request);
         abort(403);
     }
 }

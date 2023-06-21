@@ -17,19 +17,19 @@ class User extends Authenticatable
 
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
-    
+
     const ROLE_ADMIN = 1;
     const ROLE_SALER = 2;
     const ROLE_CLIENT = 3;
 
-    
+
     public static function getRoles()
     {
         return [
             self::ROLE_ADMIN => 'admin',
             self::ROLE_SALER => 'saler',
             self::ROLE_CLIENT => 'client',
-        ];    
+        ];
     }
 
     public function getRoleTitleAttribute()
@@ -59,7 +59,7 @@ class User extends Authenticatable
     {
         return self::getGenders()[$this->gender];
     }
-        
+
     public function products()
     {
         return $this->hasMany(Product::class, 'saler_id', 'id');
@@ -79,6 +79,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
     }
+
+    public function liked()
+    {
+        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id','productType_id');
+    }
+
+    public function ratingAndComments()
+    {
+        return $this->hasMany(RatingAndComments::class, 'user_id', 'id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

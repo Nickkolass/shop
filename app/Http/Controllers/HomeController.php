@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Traits\HasVerify;
 class HomeController extends Controller
 {
-    use HasVerify;     
+    use HasVerify;
 
      /**
      * Show the application dashboard.
@@ -14,7 +14,8 @@ class HomeController extends Controller
      */
     public function __invoke()
     {
-        $role = $this->verify();
+        $role = session('user_role');
+        $this->verify($role);
         return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.index');
     }
 }

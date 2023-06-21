@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Option\OptionStoreRequest;
-use App\Http\Requests\Option\OptionUpdateRequest;
+use App\Http\Requests\Option\CommentStoreRequest;
+use App\Http\Requests\Option\CommentUpdateRequest;
 use App\Models\Option;
 use App\Models\OptionValue;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +38,7 @@ class OptionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(OptionStoreRequest $request)
+    public function store(CommentStoreRequest $request)
     {
         $data = $request->validated();
 
@@ -86,7 +86,7 @@ class OptionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(OptionUpdateRequest $request, Option $option)
+    public function update(CommentUpdateRequest $request, Option $option)
     {
         $data = $request->validated();
 

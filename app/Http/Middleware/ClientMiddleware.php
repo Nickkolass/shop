@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 
 class ClientMiddleware
 {
-    
-    use HasVerify;     
+
+    use HasVerify;
 
     /**
      * Handle an incoming request.
@@ -20,7 +20,8 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $this->verify();
+        $role = session('user_role');
+        $this->verify($role);
         return $next($request);
     }
 }

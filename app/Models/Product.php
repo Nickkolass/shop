@@ -22,7 +22,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductType::class, 'product_id', 'id');
     }
-   
+
+    public function ratingAndComments()
+    {
+        return $this->hasMany(RatingAndComments::class, 'product_id', 'id');
+    }
+
     public function tags()
     {
         return $this->beLongsToMany(Tag::class, 'product_tags', 'product_id', 'tag_id');

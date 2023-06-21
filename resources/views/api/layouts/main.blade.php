@@ -12,9 +12,7 @@
   <title>Lumos</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="{{asset('vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
-
+  <link href="{{asset('adminlte/dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="{{asset('assets/css/fontawesome.css')}}">
@@ -22,7 +20,9 @@
   <link rel="stylesheet" href="{{asset('assets/css/owl.css')}}">
   <link rel="stylesheet" href="{{asset('assets/css/reset.css')}}">
   <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-  <link rel="stylesheet" href="{{asset('assets/css/qwe.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/qty.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/rating.css')}}">
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
 
 </head>
 
@@ -69,9 +69,6 @@
               </div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.about') }}" style="white-space: pre">О нас</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="{{ route('api.cart') }}">Корзина</a>
             </li>
             @guest
@@ -90,7 +87,13 @@
               <a class="nav-link" href="{{ route('api.orders.index') }}">Заказы</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="{{ route('api.liked') }}">Понравившиеся товары</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="{{ route('api.support') }}">Поддержка</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('api.about') }}" style="white-space: pre">О нас</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('users.show', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
@@ -144,8 +147,10 @@
     }
   </script>
 
-  <script src="{{asset('vendor/jquery/jquery.min.js')}}"></script>
-  <script src="{{asset('vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+  <script src="{{asset('adminlte/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
+  <script src="{{asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
   <!-- Additional Scripts -->
   <script src="{{asset('assets/js/custom.js')}}"></script>
@@ -153,12 +158,26 @@
   <script src="{{asset('assets/js/slick.js')}}"></script>
   <script src="{{asset('assets/js/isotope.js')}}"></script>
   <script src="{{asset('assets/js/accordions.js')}}"></script>
-  <script src="{{asset('assets/js/jquery-2.1.1.js')}}"></script>
   <script src="{{asset('assets/js/jquery.mixitup.min.js')}}"></script>
   <script src="{{asset('assets/js/main.js')}}"></script>
   <script src="{{asset('assets/js/modernizr.js')}}"></script>
-  <script src="{{asset('assets/js/qwe.js')}}"></script>
+  <script src="{{asset('assets/js/qty.js')}}"></script>
 
+  <script>
+      $(document).ready(function() {
+          $('#summernote').summernote({
+              toolbar: [
+                  // [groupName, [list of button]]
+                  ['style', ['bold', 'italic', 'underline', 'clear']],
+                  ['font', ['strikethrough', 'superscript', 'subscript']],
+                  ['fontsize', ['fontsize']],
+                  ['color', ['color']],
+                  ['para', ['ul', 'ol', 'paragraph']],
+                  ['height', ['height']]
+              ]
+          });
+      });
+  </script>
 </body>
 
 </html>

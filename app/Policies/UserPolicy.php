@@ -97,4 +97,15 @@ class UserPolicy
     public function forceDelete(User $user, User $model)
     {
     }
+
+    /**
+     * Determine whether the user can like productTypes.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function like(User $user)
+    {
+        return $user;
+    }
 }

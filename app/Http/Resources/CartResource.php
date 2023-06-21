@@ -27,6 +27,6 @@ class CartResource extends JsonResource
             'amount' => $this->amount,
             'totalPrice' => $this->totalPrice,
         ];
-           
+
     }
 }

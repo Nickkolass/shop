@@ -6,8 +6,8 @@
         <div class="product-item" style="text-align:center">
           <h4>{{$productType['product']['title']}}</h4><br>
           @include('api.product.components.carousel')
-          @include('api.product.components.types')
           @include('api.product.components.rating')
+          @include('api.product.components.types')
           @include('api.product.components.qty')
         </div>
       </div>

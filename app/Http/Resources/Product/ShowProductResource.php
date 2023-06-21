@@ -24,6 +24,10 @@ class ShowProductResource extends JsonResource
             'category' => $this->category,
             'property_values' => $this->propertyValues,
             'product_types' => ProductTypesResource::collection($this->productTypes)->resolve(),
+            'rating' => $this->rating,
+            'countRating' => $this->countRating,
+            'countComments' => $this->countComments,
+            'ratingAndComments' => RatingAndCommentsResource::collection($this->ratingAndComments)->resolve(),
         ];
 
     }

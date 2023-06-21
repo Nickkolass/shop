@@ -5,7 +5,7 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0">Продукт</h1>
+        <h1 class="m-0">{{$product->title}}</h1>
       </div><!-- /.col -->
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
@@ -39,7 +39,7 @@
                 class="btn btn-primary">Добавить вид</a>
               @endif
             </div>
-            
+
             <div class="mr-3">
               <form action="{{route('admin.products.publish', $product->id) }}" method="post">
                 @csrf
@@ -95,89 +95,125 @@
                 </tr>
 
                 <tr>
-                  <td>Характеристики</td>
-                  <td>
-                    @foreach ($product->propertyValues as $property => $value)
-                    {{$property . ': ' . $value}}<br>
-                    @endforeach
-                  </td>
+                    <td>Характеристики</td>
+                    <td>
+                        @foreach ($product->propertyValues as $property => $value)
+                            {{$property . ': ' . $value}}<br>
+                        @endforeach
+                    </td>
                 </tr>
                 <tr>
-                  <td>Классификаторы</td>
-                  <td>
-                    @foreach ($product->optionValues as $option => $values)
-                    {{$option . ': '}}
-                    @foreach ($values as $value)
-                    {{$value->value . ', '}}
-                    @endforeach
-                    <br>
-                    @endforeach
-                  </td>
+                    <td>Классификаторы</td>
+                    <td>
+                        @foreach ($product->optionValues as $option => $values)
+                            {{$option . ': '}}
+                            @foreach ($values as $value)
+                                {{$value->value . ', '}}
+                            @endforeach
+                            <br>
+                        @endforeach
+                    </td>
+                <tr>
+                    <td>
+                        Рейтинг
+                    </td>
+                    <td>
+                        @for($i=1; $i<=5; $i++)
+                            <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
+                        @endfor
+                    ({{ $product['countRating'] }})
+                    </td>
+                </tr>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h4 style="text-align:center"><br>Разновидности<br></h4>
+            <h4 style="text-align:center">Разновидности<br></h4>
 
-          <div class="card-body table-responsive p-0">
-            <table class="table table-hover text-nowrap">
-              <thead>
-                <tr style="text-align:center">
-                  <th>ID</th>
-                  <th>Классификаторы</th>
-                  <th>Заставка</th>
-                  <th>Изображения</th>
-                  <th>Цена</th>
-                  <th>Остаток</th>
-                  <th>Публикация</th>
-                  <th>Редакция</th>
-                  <th>Удаление</th>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                    <tr style="text-align:center">
+                        <th>ID</th>
+                        <th>Классификаторы</th>
+                        <th>Заставка</th>
+                        <th>Изображения</th>
+                        <th>Цена</th>
+                        <th>Остаток</th>
+                        <th>Добавлен <br> в избранное</th>
+                        <th>Публикация</th>
+                        <th>Редакция</th>
+                        <th>Удаление</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach ($product->productTypes as $productType)
                 <tr style="text-align:center">
-                  <td>{{$productType->id}}</td>
-                  <td>
-                    @foreach ($productType->optionValues as $option => $value)
-                    {{$option . ': ' . $value}}<br>
-                    @endforeach
-                  </td>
-                  <td><img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50' height='50'
-                      class="img img-responsive"></td>
-                  <td>
-                    @foreach($productType->productImages as $img)
-                    <img src="{{ asset('/storage/'.$img->file_path) }}" width='50' height='50'
-                      class="img img-responsive">
-                    @endforeach
-                  </td>
-                  <td>{{ $productType->price }}</td>
-                  <td>{{ $productType->count }}</td>
-                  <td>
-                    <form action="{{route('admin.productTypes.publish', $productType->id) }}" method="post">
-                      @csrf
-                      @method('patch')
-                      <input type="submit" class="btn btn-primary"
-                        value="{{ $productType->is_published == 0 ? 'Опубликовать' : 'Снять с публикации' }}"
-                        @disabled($productType->count <= 0 || $productType->
-                        optionValues->diffKeys($product->optionValues)->count() != 0)>
-                    </form>
-                  </td>
-                  <td><a href="{{ route('admin.productTypes.edit', $productType) }}"
-                      class="btn btn-primary">Редактировать</a></td>
-                  <td>
-                    <form action="{{route('admin.productTypes.destroy', $productType->id) }}" method="post">
-                      @csrf
-                      @method('delete')
-                      <input type="submit" class="btn btn-danger" value="Удалить">
-                    </form>
-                  </td>
+                    <td>{{$productType->id}}</td>
+                    <td>
+                        @foreach ($productType->optionValues as $option => $value)
+                            {{$option . ': ' . $value}}<br>
+                        @endforeach
+                    </td>
+                    <td><img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50' height='50'
+                             class="img img-responsive"></td>
+                    <td>
+                        @foreach($productType->productImages as $img)
+                            <img src="{{ asset('/storage/'.$img->file_path) }}" width='50' height='50'
+                                 class="img img-responsive">
+                        @endforeach
+                    </td>
+                    <td>{{ $productType->price }}</td>
+                    <td>{{ $productType->count }}</td>
+                    <td>{{ $productType->liked_count }}</td>
+                    <td>
+                        <form action="{{route('admin.productTypes.publish', $productType->id) }}" method="post">
+                            @csrf
+                            @method('patch')
+                            <input type="submit" class="btn btn-primary"
+                                   value="{{ $productType->is_published == 0 ? 'Опубликовать' : 'Снять с публикации' }}"
+                                @disabled($productType->count <= 0 || $productType->
+                                optionValues->diffKeys($product->optionValues)->count() != 0)>
+                        </form>
+                    </td>
+                    <td><a href="{{ route('admin.productTypes.edit', $productType) }}"
+                           class="btn btn-primary">Редактировать</a></td>
+                    <td>
+                        <form action="{{route('admin.productTypes.destroy', $productType->id) }}" method="post">
+                            @csrf
+                            @method('delete')
+                            <input type="submit" class="btn btn-danger" value="Удалить">
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
               </tbody>
-            </table>
-          </div>
+                </table>
+            </div>
+
+            <div class="down-content" id="comments" style="margin-inline: 50px">
+                <h4 style="text-align: center"> Оценки ({{$product->countComments}})</h4>
+                @if(!empty($product->ratingAndComments))
+                    @foreach( $product->ratingAndComments as $comment)
+                        <br>
+                        <div class="card" style="margin-inline: 50px">
+                            <div class="card-header" style="margin-inline: 50px">
+                                {{$comment->user->name . ', ' . $comment->created_at->diffForHumans()}}
+                                @for($i=1; $i<=5; $i++)
+                                    <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
+                                @endfor
+                            ({{ $product['countRating'] }})
+                            </div>
+                            @if(!empty($comment->message))
+                                <div class="card-body" style="margin-inline: 50px">
+                                    <p class="card-text">{!! $comment->message !!}</p>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @endif
+            </div>
         </div>
       </div>
     </div>

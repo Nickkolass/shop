@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class SalerMiddleware
 {
 
-    use HasVerify;     
+    use HasVerify;
 
     /**
      * Handle an incoming request.
@@ -21,9 +21,8 @@ class SalerMiddleware
     public function handle(Request $request, Closure $next)
     {
         // session(['user_role' => 'admin']);
-        $this->verify();
         $role = session('user_role');
-
+        $this->verify($role);
         if ($role == 'saler' || $role == 'admin') return $next($request);
         abort(403);
     }

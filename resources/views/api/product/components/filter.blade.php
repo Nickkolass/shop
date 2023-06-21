@@ -1,12 +1,12 @@
 <div class="cd-filter">
   <form action="{{ route('api.filter', $data['category']['title']) }}" method="post" enctype="multipart/form-data">
     @csrf
-    
+
     <div class="cd-filter-block">
       <h4>Поиск</h4>
       <div class="cd-filter-content">
         <input type="search"  name="filter[search]" value="{{$data['filter']['search'] ?? '' }}">
-      </div> 
+      </div>
     </div>
 
     <div class="cd-filter-block">
@@ -17,9 +17,9 @@
           <input class="filter" style="width:125px; padding: 5px;" name="filter[prices][{{$key}}]" type="number" min="0" max="{{$data['filterable']['prices']['max']}}" value="{{ $data['filter']['prices'][$key] ?? '' }}" placeholder="{{$data['filterable']['prices'][$key]}}">
           @endforeach
         </li>
-      </ul> 
+      </ul>
     </div>
-    
+
     <div class="cd-filter-block">
       <h4>Отображать на странице</h4>
       <ul class="cd-filter-content cd-filters list">
@@ -28,13 +28,17 @@
         <input class="filter" type="radio" name="paginate[perPage]" value={{$i}}  @checked($data['paginate']['perPage'] == $i)>
         <label class="radio-label" for="radio">По {{$i}}</label>
       </li>
-      @endfor 
-      </ul> 
+      @endfor
+      </ul>
     </div>
 
     <div class="cd-filter-block">
       <h4>Сортировка</h4>
       <ul class="cd-filter-content cd-filters list">
+        <li>
+          <input class="filter" type="radio" name="paginate[orderBy]" value='rating' @checked($data['paginate']['orderBy'] == 'rating')>
+          <label class="radio-label" for="radio">По рейтингу</label>
+        </li>
         <li>
           <input class="filter" type="radio" name="paginate[orderBy]" value='latest' @checked($data['paginate']['orderBy'] == 'latest')>
           <label class="radio-label" for="radio">По дате публикации</label>
@@ -47,9 +51,10 @@
           <input class="filter" type="radio" name="paginate[orderBy]" value='DESC' @checked($data['paginate']['orderBy'] == 'DESC')>
           <label class="radio-label" for="radio">По убыванию цены</label>
         </li>
-      </ul> 
+
+      </ul>
     </div>
-    
+
     <!-- Options -->
     @foreach($data['filterable']['optionValues'] as $option => $optionValues)
       <div class="cd-filter-block">
@@ -65,7 +70,7 @@
             <label class="checkbox-label">{{$optionValue['value']}}</label>
             </li>
           @endforeach
-        </ul> 
+        </ul>
       </div>
     @endforeach
 
@@ -83,11 +88,11 @@
             <label class="checkbox-label">{{$propertyValue['value']}}</label>
             </li>
           @endforeach
-        </ul> 
+        </ul>
       </div>
     @endforeach
-    
-       <div class="cd-filter-block">
+
+    <div class="cd-filter-block">
       <h4>Теги</h4>
       <ul class="cd-filter-content cd-filters list">
         @foreach ($data['filterable']['tags'] as $tag)
@@ -100,7 +105,7 @@
             <label class="checkbox-label">{{$tag['title']}}</label>
           </li>
         @endforeach
-      </ul> 
+      </ul>
     </div>
 
 
@@ -117,16 +122,16 @@
             <label class="checkbox-label">{{$saler['name']}}</label>
           </li>
         @endforeach
-      </ul> 
+      </ul>
     </div>
 
     <div class="form-group">
       <input type="submit" class="btn-btn-primary" value="Применить">
-      <a class="btn-btn-primary" href="{{ route('api.products', $data['category']['title']) }}">Очистить</a>
+      <input type="reset" class="btn-btn-primary" value="Очистить">
     </div>
   </form>
   <a href="#0" class="cd-close">Закрыть</a>
-</div> 
+</div>
 
 
 <a href="#0" class="cd-filter-trigger">Фильтры</a>

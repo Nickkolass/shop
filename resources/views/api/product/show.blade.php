@@ -1,6 +1,5 @@
 @extends('api.layouts.main')
 @section('content')
-
 <div class="page-heading {{$productType['product']['category']['title']}} header-text">
   <div class="container">
     <div class="row">
@@ -44,15 +43,15 @@
               @endforeach
             </tbody>
           </table>
-          @include('api.product.components.qty')
           @include('api.product.components.rating')
+            @include('api.product.components.qty')
         </div>
       </div>
       <p style="text-align:left">{{$productType['product']['description']}}</p>
       @include('api.product.components.types')
     </div>
+      @include('api.product.components.comments')
   </div>
 </main>
-
 
 @endsection

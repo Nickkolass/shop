@@ -21,6 +21,9 @@ Route::controller(BackController::class)->group(function () {
     Route::post('/user', function (Request $request) {return $request->user();});
     Route::post('/cart', 'cart');
     Route::post('/products', 'index');
+    Route::post('/products/liked', 'liked');
+    Route::post('/products/liked/{productType}/toggle', 'likedToggle');
+    Route::post('/products/{product}/comment', 'commentStore');
     Route::post('/products/{category:title}', 'products');
     Route::post('/products/{category:title}/{productType}', 'product');
 });

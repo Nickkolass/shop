@@ -23,6 +23,7 @@ class ShowProductTypeResource extends JsonResource
             'preview_image' => $this->preview_image,
             'product_images' => $this->productImages->pluck('file_path'),
             'option_values' => $this->optionValues,
+            'liked' => $this->liked_count,
             'product' => ShowProductResource::make($this->product)->resolve(),
         ];
     }

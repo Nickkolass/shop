@@ -14,15 +14,56 @@
           </div>
         </a>
       </div>
-      @endforeach
+        @endforeach
     </div>
   </div>
 </div>
 
-@if(!empty($productTypes))
-<div style="text-align: center">
-  <h4>Просмотренные товары</h4>
-</div>
-@include('api.product.components.index')
+@if(!empty($data['viewed']))
+    <div style="text-align: center">
+        <h4>Просмотренные товары</h4>
+    </div>
+    <div class="latest-products">
+        <div class="container-fluid">
+            <div class="row">
+                @foreach ($data['viewed'] as $productType)
+                    <div class="col-md-3">
+                        <div class="product-item" style="text-align:center">
+                            <h4>{{$productType['product']['title']}}</h4><br>
+                            @include('api.product.components.carousel')
+                            @include('api.product.components.rating')
+                            @include('api.product.components.types')
+                            @include('api.product.components.qty')
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
 @endif
+
+
+@if(!empty($data['liked']))
+    <div style="text-align: center">
+        <h4>Понравившиеся товары</h4>
+    </div>
+    <div class="latest-products">
+        <div class="container-fluid">
+            <div class="row">
+                @foreach ($data['liked'] as $productType)
+                    <div class="col-md-3">
+                        <div class="product-item" style="text-align:center">
+                            <h4>{{$productType['product']['title']}}</h4><br>
+                            @include('api.product.components.carousel')
+                            @include('api.product.components.rating')
+                            @include('api.product.components.types')
+                            @include('api.product.components.qty')
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
+
 @endsection

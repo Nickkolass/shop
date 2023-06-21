@@ -16,7 +16,7 @@ class ImportDataClient
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => '172.28.64.1:8876',
+            'base_uri' => '172.21.80.1:8876',
             'timeout' => 2.0,
             'verify' => false,
         ]);

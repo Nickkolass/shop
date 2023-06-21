@@ -13,6 +13,7 @@
     </div>
   </div>
 </div>
+
 <main class="cd-main-content">
   @include('api.product.components.filter')
   <div>

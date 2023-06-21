@@ -11,16 +11,20 @@
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link href="{{asset('adminlte/dist/css/bootstrap.min.css')}}" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{asset('assets/css/fontawesome.css')}}">
   <!-- Select2 -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2/css/select2.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-  <!-- Image -->
-  <!-- @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js']) -->
+  <!-- rating -->
+ <link rel="stylesheet" href="{{asset('assets/css/rating.css')}}">
+
+    <!-- @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js']) -->
 
 </head>
 
@@ -235,7 +239,6 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-    <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
     <div class="content-wrapper">
       <div id="app">
         @yield('content')

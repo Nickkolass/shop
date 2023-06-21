@@ -3,6 +3,7 @@
 namespace App\Components;
 
 use App\Models\Product;
+use App\Models\ProductType;
 
 class Method
 {
@@ -14,29 +15,29 @@ class Method
     }
 
 
-    public static function valuesToKeys(&$product, $relationship, ?bool $value_id = false)
+    public static function valuesToKeys(&$product, $relation, ?bool $value_id = false)
     {
-        $product->setRelation($relationship, Method::toKeys($product->$relationship, $value_id));
+        $product->setRelation($relation, Method::toKeys($product->$relation, $value_id));
     }
 
-    public static function toKeys($relationship, ?bool $value_id = false)
+    public static function toKeys($relation, ?bool $value_id = false)
     {
-        return $relationship->mapWithKeys(function ($value) use ($value_id) {
+        return $relation->mapWithKeys(function ($value) use ($value_id) {
                 $key = !empty($value_id) ? $value->option_id ?? $value->property_id : $value->option->title ?? $value->property->title;
                 return [$key => $value->value];
             }
         );
     }
 
-    public static function valuesToGroups(&$product, $relationship)
+    public static function valuesToGroups(&$product, $relation)
     {
-        $product->setRelation($relationship, Method::toGroups($product->$relationship));
+        $product->setRelation($relation, Method::toGroups($product->$relation));
     }
 
 
-    public static function toGroups($relationship)
+    public static function toGroups($relation)
     {
-        return $relationship->mapToGroups(function ($value) {
+        return $relation->mapToGroups(function ($value) {
             return [$value->option->title ?? $value->property->title => $value->unsetRelations()];
         });
     }
@@ -48,4 +49,22 @@ class Method
             return [$OVP->title => $value->pluck('value', 'id')];
         });
     }
+
+    public static function mapAfterGettingProducts(&$productTypes)
+    {
+        $productTypes->map(function ($productType) {
+            Method::valuesToGroups($productType, 'optionValues');
+            Method::countingRatingAndComments($productType);
+        });
+    }
+
+    public static function countingRatingAndComments(ProductType &$productType)
+    {
+        $productType->product->rating = round(($productType->product->ratingAndComments->avg('rating') ?? 0)*2)/2;
+        $productType->product->countRating = $productType->product->ratingAndComments->count();
+        $productType->product->countComments = $productType->product->ratingAndComments->pluck('message')->filter()->count();
+    }
+
+
+
 }

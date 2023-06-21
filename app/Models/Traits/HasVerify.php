@@ -6,10 +6,10 @@ use App\Models\User;
 
 trait HasVerify
 {
-    public function verify()
+    public function verify($role)
     {
-        if (!session()->has('user_role')) {
-            auth()->check() ? session(['user_role' => User::getRoles()[auth()->user()->role]]) : $this->middleware('auth');
-        }
+        if (!$role)
+            if (auth()->check()) session(['user_role' => User::getRoles()[auth()->user()->role]]);
+            else abort(redirect('login'));
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\FrontLikeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,20 +34,24 @@ use App\Http\Controllers\Admin\Product\ProductUpdateController;
 */
 
 Auth::routes();
-Route::get('/', HomeController::class);
+Route::get('/', HomeController::class)->name('home');
 Route::resource('/users', UserController::class);
 
 Route::name('api.')->group(function () {
     Route::view('/about', 'api.about')->name('about');
     Route::resource('/orders', FrontOrderController::class)->middleware('client')->except('edit')->withTrashed();
+    Route::resource('/products/{category}/{productType}/comments', FrontController::class)->except('edit');
     Route::controller(FrontController::class)->group(function () {
+        Route::get('/support', 'support')->name('support')->middleware('client');
+        Route::get('/cart', 'cart')->name('cart');
+        Route::post('/cart', 'addToCart')->name('addToCart');
         Route::get('/products', 'index')->name('index');
+        Route::get('/products/liked', 'liked')->name('liked');
+        Route::post('/products/liked/{productType}/toggle', 'likedToggle')->name('liked.toggle');
         Route::get('/products/{category}', 'products')->name('products');
         Route::post('/products/{category}', 'products')->name('filter');
         Route::get('/products/{category}/{productType}', 'product')->name('product');
-        Route::post('/cart', 'addToCart')->name('addToCart');
-        Route::get('/cart', 'cart')->name('cart');
-        Route::get('/support', 'support')->name('support')->middleware('client');
+        Route::post('/products/{product}/comment', 'commentStore')->name('comment.store')->middleware('client');
     });
 });
 
