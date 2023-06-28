@@ -1,10 +1,7 @@
 <?php
 
-use App\Http\Controllers\API\Order\StoreController;
-use App\Http\Controllers\API\Product\ApiIndexController;
-use App\Http\Controllers\API\Product\FilterListController;
-use App\Http\Controllers\API\Product\ShowController;
-use App\Http\Controllers\GetController;
+use App\Http\Controllers\API\BackController;
+use App\Http\Controllers\API\BackOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,16 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:guest'])->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::controller(BackController::class)->group(function () {
+    Route::post('/cart', 'cart');
+    Route::post('/products', 'index');
+    Route::post('/products/liked', 'liked');
+    Route::post('/products/liked/{productType}/toggle', 'likedToggle');
+    Route::post('/products/{product}/comment', 'commentStore');
+    Route::post('/products/{category:title}', 'products');
+    Route::post('/products/{category:title}/{productType}', 'product');
 });
 
-
-
-Route::middleware('auth:guest')->group(function () {
-        Route::get('/get', GetController::class);
-    Route::post('/products', ApiIndexController::class);
-    Route::post('/orders', StoreController::class);
-    Route::get('/products/filters', FilterListController::class);
-    Route::get('/products/{product}', ShowController::class);
+Route::controller(BackOrderController::class)->group(function () {
+    Route::post('/orders', 'index');
+    Route::post('/orders/store', 'store');
+    Route::post('/orders/{order}', 'show')->withTrashed();
+    Route::patch('/orders/{order}', 'update');
+    Route::delete('/orders/{order}', 'destroy');
 });

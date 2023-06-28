@@ -15,10 +15,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->index()->constrained('users');
-            $table->jsonb('products');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->jsonb('productTypes');
+            $table->string('delivery');
             $table->integer('total_price');
-            $table->unsignedSmallInteger('payment_status')->default('1');
+            $table->boolean('payment');
+            $table->boolean('payment_status');
+            $table->string('status')->default('В работе');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

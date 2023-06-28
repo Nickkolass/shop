@@ -12,23 +12,84 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    const GENDER_MALE = 1;
-    const GENDER_FEMALE = 2;
-
     protected $table = 'users';
     protected $guarded = false;
 
-    static function getGenders(){
+    const GENDER_MALE = 1;
+    const GENDER_FEMALE = 2;
+
+    const ROLE_ADMIN = 1;
+    const ROLE_SALER = 2;
+    const ROLE_CLIENT = 3;
+
+
+    public static function getRoles()
+    {
+        return [
+            self::ROLE_ADMIN => 'admin',
+            self::ROLE_SALER => 'saler',
+            self::ROLE_CLIENT => 'client',
+        ];
+    }
+
+    public function getRoleTitleAttribute()
+    {
+        return self::getRoles()[$this->role];
+    }
+
+    public function isAdmin()
+    {
+        return self::getRoles()[$this->role] == 'admin';
+    }
+
+    public function isSaler()
+    {
+        return self::getRoles()[$this->role] == 'saler';
+    }
+
+    static function getGenders()
+    {
         return [
             self::GENDER_MALE => 'Мужской',
             self::GENDER_FEMALE => 'Женский',
         ];
     }
 
-
-    public function getGenderTitleAttribute(){
+    public function getGenderTitleAttribute()
+    {
         return self::getGenders()[$this->gender];
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'saler_id', 'id');
+    }
+
+    public function productTypes()
+    {
+        return $this->hasManyThrough(ProductType::class, Product::class, 'saler_id', 'product_id', 'id', 'id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id');
+    }
+
+    public function orderPerformers()
+    {
+        return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
+    }
+
+    public function liked()
+    {
+        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id','productType_id');
+    }
+
+    public function ratingAndComments()
+    {
+        return $this->hasMany(RatingAndComment::class, 'user_id', 'id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -43,6 +104,11 @@ class User extends Authenticatable
         'age',
         'address',
         'gender',
+        'card',
+        'postcode',
+        'address',
+        'INN',
+        'registredOffice',
     ];
 
     /**
@@ -63,6 +129,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    
 }

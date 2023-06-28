@@ -2,11 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Traits\HasVerify;
 use Closure;
 use Illuminate\Http\Request;
 
 class AdminMiddleware
 {
+
+    use HasVerify;
+
     /**
      * Handle an incoming request.
      *
@@ -16,10 +20,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->role == 'admin') {
-            return $next($request);
-        } else {
-            return redirect()->route('dashboard');
-        }
+        $role = session('user_role');
+        $this->verify($role);
+        if ($role == 'admin') return $next($request);
+        abort(403);
     }
 }

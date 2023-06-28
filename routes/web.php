@@ -2,61 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Client\ClientIndexController;
-use App\Http\Controllers\ProfileController;
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\API\FrontController;
+use App\Http\Controllers\API\FrontOrderController;
 
-
-use App\Http\Controllers\Main\MainIndexController;
-
-use App\Http\Controllers\Category\CategoryCreateController;
-use App\Http\Controllers\Category\CategoryDeleteController;
-use App\Http\Controllers\Category\CategoryEditController;
-use App\Http\Controllers\Category\CategoryShowController;
-use App\Http\Controllers\Category\CategoryStoreController;
-use App\Http\Controllers\Category\CategoryUpdateController;
-use App\Http\Controllers\Category\CategoryIndexController;
-
-use App\Http\Controllers\Color\ColorCreateController;
-use App\Http\Controllers\Color\ColorDeleteController;
-use App\Http\Controllers\Color\ColorEditController;
-use App\Http\Controllers\Color\ColorIndexController;
-use App\Http\Controllers\Color\ColorShowController;
-use App\Http\Controllers\Color\ColorStoreController;
-use App\Http\Controllers\Color\ColorUpdateController;
-
-use App\Http\Controllers\Tag\TagCreateController;
-use App\Http\Controllers\Tag\TagDeleteController;
-use App\Http\Controllers\Tag\TagEditController;
-use App\Http\Controllers\Tag\TagIndexController;
-use App\Http\Controllers\Tag\TagShowController;
-use App\Http\Controllers\Tag\TagStoreController;
-use App\Http\Controllers\Tag\TagUpdateController;
-
-use App\Http\Controllers\User\UserCreateController;
-use App\Http\Controllers\User\UserDeleteController;
-use App\Http\Controllers\User\UserEditController;
-use App\Http\Controllers\User\UserIndexController;
-use App\Http\Controllers\User\UserShowController;
-use App\Http\Controllers\User\UserStoreController;
-use App\Http\Controllers\User\UserUpdateController;
-
-use App\Http\Controllers\Product\ProductCreateController;
-use App\Http\Controllers\Product\ProductDeleteController;
-use App\Http\Controllers\Product\ProductEditController;
-use App\Http\Controllers\Product\ProductIndexController;
-use App\Http\Controllers\Product\ProductShowController;
-use App\Http\Controllers\Product\ProductStoreController;
-use App\Http\Controllers\Product\ProductUpdateController;
-
-use App\Http\Controllers\Group\GroupCreateController;
-use App\Http\Controllers\Group\GroupDeleteController;
-use App\Http\Controllers\Group\GroupEditController;
-use App\Http\Controllers\Group\GroupIndexController;
-use App\Http\Controllers\Group\GroupShowController;
-use App\Http\Controllers\Group\GroupStoreController;
-use App\Http\Controllers\Group\GroupUpdateController;
-
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OptionController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\Product\ProductTypeController;
+use App\Http\Controllers\Admin\Product\ProductCreateController;
+use App\Http\Controllers\Admin\Product\ProductDeleteController;
+use App\Http\Controllers\Admin\Product\ProductEditController;
+use App\Http\Controllers\Admin\Product\ProductIndexController;
+use App\Http\Controllers\Admin\Product\ProductShowController;
+use App\Http\Controllers\Admin\Product\ProductStoreController;
+use App\Http\Controllers\Admin\Product\ProductUpdateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,88 +32,59 @@ use App\Http\Controllers\Group\GroupUpdateController;
 |
 */
 
-require __DIR__.'/auth.php';
-
 Auth::routes();
+Route::get('/', HomeController::class)->name('home');
+Route::resource('/users', UserController::class);
 
-// Route::get('/homer', [ClientIndexController::class])->name('homer');
-
-
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-
-
-Route::group(['prefix' => 'admin', 'middleware' => 'saler'], function () {
-    Route::get('/', MainIndexController::class)->name('main.index_main');
-    Route::group(['prefix' => '/products'], function () {
-        Route::get('/', ProductIndexController::class)->name('product.index_product');
-        Route::get('/create', ProductCreateController::class)->name('product.create_product');
-        Route::post('/', ProductStoreController::class)->name('product.store_product');
-        Route::get('/{product}', ProductShowController::class)->name('product.show_product');
-        Route::get('/{product}/edit', ProductEditController::class)->name('product.edit_product');
-        Route::patch('/{product}', ProductUpdateController::class)->name('product.update_product');
-        Route::delete('/{product}', ProductDeleteController::class)->name('product.delete_product');
+Route::name('api.')->group(function () {
+    Route::view('/about', 'api.about')->name('about');
+    Route::resource('/orders', FrontOrderController::class)->middleware('client')->except('edit')->withTrashed();
+    Route::resource('/products/{category}/{productType}/comments', FrontController::class)->except('edit');
+    Route::controller(FrontController::class)->group(function () {
+        Route::get('/support', 'support')->name('support')->middleware('client');
+        Route::get('/cart', 'cart')->name('cart');
+        Route::post('/cart', 'addToCart')->name('addToCart');
+        Route::get('/products', 'index')->name('index');
+        Route::get('/products/liked', 'liked')->name('liked');
+        Route::post('/products/liked/{productType}/toggle', 'likedToggle')->name('liked.toggle');
+        Route::get('/products/{category}', 'products')->name('products');
+        Route::post('/products/{category}', 'products')->name('filter');
+        Route::get('/products/{category}/{productType}', 'product')->name('product');
+        Route::post('/products/{product}/comment', 'commentStore')->name('comment.store')->middleware('client');
     });
 });
 
-Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
-
-    Route::group(['prefix' => 'users'], function () {
-        Route::get('/', UserIndexController::class)->name('user.index_user');
-        Route::get('/create', UserCreateController::class)->name('user.create_user');
-        Route::post('/', UserStoreController::class)->name('user.store_user');
-        Route::get('/{user}', UserShowController::class)->name('user.show_user');
-        Route::get('/{user}/edit', UserEditController::class)->name('user.edit_user');
-        Route::patch('/{user}', UserUpdateController::class)->name('user.update_user');
-        Route::delete('/{user}', UserDeleteController::class)->name('user.delete_user');
+Route::prefix('/admin')->name('admin.')->group(function () {
+    Route::middleware('admin')->group(function () {
+        Route::resource('/categories', CategoryController::class);
+        Route::resource('/tags', TagController::class);
+        Route::resource('/options', OptionController::class);
     });
+    Route::middleware('saler')->group(function () {
+        Route::view('/', 'admin.index')->name('index');
+        Route::get('/support', [UserController::class, 'support'])->name('support');
+        Route::resource('/orders', OrderController::class)->withTrashed()->only(['index', 'show', 'update', 'destroy']);
+        Route::prefix('/products')->group(function () {
+            Route::get('/', ProductIndexController::class)->name('products.index');
+            Route::get('/create', [ProductCreateController::class, 'index'])->name('products.create');
+            Route::post('/create/properties', [ProductCreateController::class, 'properties'])->name('products.createProperties');
+            Route::get('/create/types', [ProductCreateController::class, 'types'])->name('products.createTypes');
+            Route::post('/', ProductStoreController::class)->name('products.store');
+            Route::get('/{product}', ProductShowController::class)->name('products.show');
+            Route::get('/{product}/edit', [ProductEditController::class, 'index'])->name('products.edit');
+            Route::post('/{product}/edit/properties', [ProductEditController::class, 'properties'])->name('products.editProperties');
+            Route::patch('/{product}/publish', [ProductEditController::class, 'publish'])->name('products.publish');
+            Route::patch('/{product}', ProductUpdateController::class)->name('products.update');
+            Route::delete('/{product}', ProductDeleteController::class)->name('products.destroy');
 
-    Route::group(['prefix' => 'categories'], function () {
-        Route::get('/', CategoryIndexController::class)->name('category.index_category');
-        Route::get('/create', CategoryCreateController::class)->name('category.create_category');
-        Route::post('/', CategoryStoreController::class)->name('category.store_category');
-        Route::get('/{category}', CategoryShowController::class)->name('category.show_category');
-        Route::get('/{category}/edit', CategoryEditController::class)->name('category.edit_category');
-        Route::patch('/{category}', CategoryUpdateController::class)->name('category.update_category');
-        Route::delete('/{category}', CategoryDeleteController::class)->name('category.delete_category');
-    });
-
-    Route::group(['prefix' => 'colors'], function () {
-        Route::get('/', ColorIndexController::class)->name('color.index_color');
-        Route::get('/create', ColorCreateController::class)->name('color.create_color');
-        Route::post('/', ColorStoreController::class)->name('color.store_color');
-        Route::get('/{color}', ColorShowController::class)->name('color.show_color');
-        Route::get('/{color}/edit', ColorEditController::class)->name('color.edit_color');
-        Route::patch('/{color}', ColorUpdateController::class)->name('color.update_color');
-        Route::delete('/{color}', ColorDeleteController::class)->name('color.delete_color');
-    });
-
-    Route::group(['prefix' => 'tags'], function () {
-        Route::get('/', TagIndexController::class)->name('tag.index_tag');
-        Route::get('/create', TagCreateController::class)->name('tag.create_tag');
-        Route::post('/', TagStoreController::class)->name('tag.store_tag');
-        Route::get('/{tag}', TagShowController::class)->name('tag.show_tag');
-        Route::get('/{tag}/edit', TagEditController::class)->name('tag.edit_tag');
-        Route::patch('/{tag}', TagUpdateController::class)->name('tag.update_tag');
-        Route::delete('/{tag}', TagDeleteController::class)->name('tag.delete_tag');
-    });
-
-    Route::group(['prefix' => 'groups'], function () {
-        Route::get('/', GroupIndexController::class)->name('group.index_group');
-        Route::get('/create', GroupCreateController::class)->name('group.create_group');
-        Route::post('/', GroupStoreController::class)->name('group.store_group');
-        Route::get('/{group}', GroupShowController::class)->name('group.show_group');
-        Route::get('/{group}/edit', GroupEditController::class)->name('group.edit_group');
-        Route::patch('/{group}', GroupUpdateController::class)->name('group.update_group');
-        Route::delete('/{group}', GroupDeleteController::class)->name('group.delete_group');
+            Route::controller(ProductTypeController::class)->group(function () {
+                Route::get('{product}/types/create/', 'create')->name('productTypes.create');
+                Route::post('/{product}/types', 'store')->name('productTypes.store');
+                Route::get('/types/{productType}/edit', 'edit')->name('productTypes.edit');
+                Route::patch('/types/{productType}', 'update')->name('productTypes.update');
+                Route::delete('/types/{productType}', 'destroy')->name('productTypes.destroy');
+                Route::patch('/types/publish/{productType}', 'publish')->name('productTypes.publish');
+            });
+        });
     });
 });
