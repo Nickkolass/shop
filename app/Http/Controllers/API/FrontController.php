@@ -8,6 +8,7 @@ use App\Http\Requests\API\Product\ProductsRequest;
 use App\Http\Requests\API\RatingAndComment\StoreRequest;
 use App\Models\User;
 use App\Services\API\APIFrontService;
+use Illuminate\Http\UploadedFile;
 
 class FrontController extends Controller
 {
@@ -35,6 +36,7 @@ class FrontController extends Controller
 
     public function products($category, ProductsRequest $request)
     {
+        $queryParams = $request->validated();
         APIFrontService::scenarioGetProducts($queryParams);
 
         $data = $this->import->client->request('POST', 'api/products/' . $category, ['query' => $queryParams])->getBody()->getContents();
@@ -104,6 +106,17 @@ class FrontController extends Controller
     {
         $this->authorize('like', User::class);
         $data = $request->validated();
+
+        if (!empty($data['commentImages'])){
+            foreach($data['commentImages'] as &$img) {
+                $img = [
+                    'path' => $img->getPathname(),
+                    'originalName' => $img->getClientOriginalName(),
+                    'mimeType' => $img->getClientMimeType(),
+                ];
+            }
+        }
+
         $this->import->client->request('POST', 'api/products/' . $product_id . '/comment', ['query' => $data]);
         return back();
     }

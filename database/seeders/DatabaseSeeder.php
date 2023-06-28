@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\CommentImage;
 use App\Models\Option;
 use App\Models\OptionValue;
 use App\Models\Product;
@@ -12,6 +13,7 @@ use App\Models\ProductImage;
 use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\PropertyValue;
+use App\Models\RatingAndComment;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -94,6 +96,8 @@ class DatabaseSeeder extends Seeder
                 Product::factory(1)
                     ->has(ProductType::factory(4)
                         ->has(ProductImage::factory(3)))
+                    ->has(RatingAndComment::factory(1)
+                        ->has(CommentImage::factory(3)))
                     ->hasAttached($tags->random(random_int(3, 5)))
                     ->hasAttached($ov)
                     ->hasAttached($pv->pluck(0))
@@ -110,6 +114,7 @@ class DatabaseSeeder extends Seeder
             $optionValues = $optionValues->pop()->crossJoin(...$optionValues);
 
             foreach ($product->productTypes as $key => $productType) {
+                if (rand(1, 100) < 30) $productType->liked()->attach(User::take(random_int(1, User::count()))->get());
                 $productImage = $productType->productImages['0']->file_path;
                 $previewImage = str_replace('product_images/' . $product->id, 'preview_images', $productImage);
                 Storage::copy('public/' . $productImage, 'public/' . $previewImage);

@@ -45,7 +45,7 @@
 
 @if(!empty($data['liked']))
     <div style="text-align: center">
-        <h4>Понравившиеся товары</h4>
+        <h4>Отложенное</h4>
     </div>
     <div class="latest-products">
         <div class="container-fluid">

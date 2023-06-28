@@ -24,12 +24,11 @@ class ProductTypeService
         DB::beginTransaction();
         try {
             $relations = $this->relationService->getRelations($type);
+            $relations['optionValues'] = array_filter($relations['optionValues']);
 
             $type['product_id'] = $product->id;
             $type['is_published'] =  $type['count'] > 0 ?  $type['is_published'] ?? 0 : 0;
-            $relations['optionValues'] = array_filter($relations['optionValues']);
-
-            $this->imageService->previewImage($type['preview_image']);
+            $type['preview_image'] = $this->imageService->previewImage($type['preview_image']);
 
             $productType = ProductType::create($type);
 
@@ -37,11 +36,11 @@ class ProductTypeService
 
             $attach = $this->relationService->relationsType($product, $productType, $relations, $isNewProduct);
             DB::commit();
+            return $attach;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
         }
-        return $attach;
     }
 
 
@@ -57,7 +56,7 @@ class ProductTypeService
                 $productType->load('productImages:id,productType_id,file_path');
                 $this->imageService->productImages($productType, $relations['productImages'], false);
             }
-            
+
             $productType->load('product:id')->update($type);
 
             $productType->optionValues()->sync($relations['optionValues']);
@@ -77,7 +76,7 @@ class ProductTypeService
         try {
 
             $productType->load('productImages:productType_id,file_path', 'product:id')->delete();
-            
+
             $images = $productType->productImages->pluck('file_path')->push($productType->preview_image)->all();
             $this->imageService->deleteImages($images);
             $this->relationService->updateProductOVs($productType);

@@ -4,6 +4,7 @@ namespace App\Services\Product;
 
 use App\Models\ProductImage;
 use App\Models\ProductType;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -17,7 +18,6 @@ class ImageService
                 'productType_id' => $productType->id,
                 'file_path' => $filePath,
                 'size' => $productImage->getSize(),
-                'productType_id' => $productType->id,
             ];
         }
         if (!$isNewProduct) {
@@ -30,10 +30,10 @@ class ImageService
     }
 
 
-    public function previewImage(&$preview_image, ?string $old_preview_image = null)
+    public function previewImage(UploadedFile $preview_image, ?string $old_preview_image = null)
     {
         if (!empty($old_preview_image)) $this->deleteImages($old_preview_image);
-        $preview_image = $preview_image->storePublicly('preview_images', 'public');
+        return $preview_image->storePublicly('preview_images', 'public');
     }
 
 

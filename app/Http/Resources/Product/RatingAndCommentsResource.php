@@ -18,6 +18,7 @@ class RatingAndCommentsResource extends JsonResource
             'message' => $this->message,
             'rating' => $this->rating,
             'user' => $this->user->name,
+            'commentImages' => $this->commentImages->pluck('file_path'),
             'created_at' => $this->created_at->diffForHumans(),
         ];
     }

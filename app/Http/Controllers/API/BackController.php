@@ -12,10 +12,12 @@ use App\Http\Resources\Product\DataResource;
 use App\Http\Resources\Product\ProductTypeResource;
 use App\Http\Resources\Product\ShowProductTypeResource;
 use App\Models\Category;
+use App\Models\CommentImage;
 use App\Models\ProductType;
-use App\Models\RatingAndComments;
+use App\Models\RatingAndComment;
 use App\Services\API\Back\BackProductsService;
 use App\Services\API\Back\BackService;
+use Illuminate\Http\UploadedFile;
 
 class BackController extends Controller
 {
@@ -72,7 +74,15 @@ class BackController extends Controller
 
     public function commentStore(StoreRequest $request)
     {
-        RatingAndComments::create($request->validated());
-    }
+        $data = $request->validated();
 
+        if (empty($data['commentImages'])) RatingAndComment::create($data);
+        else {
+            foreach ($data['commentImages'] as $img) $commentImages[] = new UploadedFile(...$img);
+            unset($data['commentImages']);
+            $comment_id = RatingAndComment::create($data)->id;
+            $this->service->commentImages($commentImages, $data['product_id'], $comment_id);
+            CommentImage::insert($commentImages);
+        }
+    }
 }

@@ -117,6 +117,10 @@ a.filled-button:hover {
 	background-image: url(../../storage/view/cart.jpg);
 }
 
+.orders {
+	background-image: url(../../storage/view/orders.jpg);
+}
+
 .liked {
     background-image: url(../../storage/view/liked.jpg);
 }

@@ -87,7 +87,7 @@
               <a class="nav-link" href="{{ route('api.orders.index') }}">Заказы</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('api.liked') }}">Понравившиеся товары</a>
+              <a class="nav-link" href="{{ route('api.liked') }}">Отложенное</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('api.support') }}">Поддержка</a>
@@ -147,7 +147,7 @@
     }
   </script>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="{{asset('adminlte/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
   <script src="{{asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
@@ -162,22 +162,7 @@
   <script src="{{asset('assets/js/main.js')}}"></script>
   <script src="{{asset('assets/js/modernizr.js')}}"></script>
   <script src="{{asset('assets/js/qty.js')}}"></script>
-
-  <script>
-      $(document).ready(function() {
-          $('#summernote').summernote({
-              toolbar: [
-                  // [groupName, [list of button]]
-                  ['style', ['bold', 'italic', 'underline', 'clear']],
-                  ['font', ['strikethrough', 'superscript', 'subscript']],
-                  ['fontsize', ['fontsize']],
-                  ['color', ['color']],
-                  ['para', ['ul', 'ol', 'paragraph']],
-                  ['height', ['height']]
-              ]
-          });
-      });
-  </script>
+  <script src="{{asset('assets/js/summernote.js')}}"></script>
 </body>
 
 </html>

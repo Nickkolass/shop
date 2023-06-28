@@ -41,7 +41,7 @@ class BackService
             $q->with([
                 'saler:id,name', 'optionValues.option:id,title', 'category:id,title,title_rus', 'propertyValues.property:id,title',
                 'productTypes:id,product_id,is_published,preview_image', 'ratingAndComments' => function ($q) {
-                    $q->with('user:id,name');
+                    $q->with(['user:id,name', 'commentImages:comment_id,file_path']);
                 }
             ]);
         }]);
@@ -62,5 +62,16 @@ class BackService
             Method::valuesToKeys($productType, 'optionValues');
         });
         return $productTypes;
+    }
+
+    public function commentImages(&$commentImages, $product_id, $comment_id)
+    {
+        foreach ($commentImages as &$image) {
+            $image = [
+                'comment_id' => $comment_id,
+                'size' => $image->getSize(),
+                'file_path' => $image->storePublicly('comments/' . $product_id . '/' . $comment_id, 'public'),
+            ];
+        }
     }
 }

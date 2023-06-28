@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="text-content">
-          <h4>Понравившиеся товары</h4>
+          <h4>Отложенное</h4>
           <h2>LUMOS</h2>
         </div>
       </div>

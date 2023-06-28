@@ -62,5 +62,5 @@
 </section>
 <!-- /.content -->
 
-@include('admin.option.row')
+<script src="{{asset('assets/js/optionRow.js')}}"></script>
 @endsection

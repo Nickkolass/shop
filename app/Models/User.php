@@ -87,7 +87,7 @@ class User extends Authenticatable
 
     public function ratingAndComments()
     {
-        return $this->hasMany(RatingAndComments::class, 'user_id', 'id');
+        return $this->hasMany(RatingAndComment::class, 'user_id', 'id');
     }
 
     /**

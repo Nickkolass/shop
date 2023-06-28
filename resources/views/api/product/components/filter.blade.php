@@ -127,11 +127,11 @@
 
     <div class="form-group">
       <input type="submit" class="btn-btn-primary" value="Применить">
-      <input type="reset" class="btn-btn-primary" value="Очистить">
+      <a type="button" class="btn-btn-primary" href="{{ route('api.products', $data['category']['title']) }}">Очистить</a>
     </div>
   </form>
   <a href="#0" class="cd-close">Закрыть</a>
 </div>
 
-
 <a href="#0" class="cd-filter-trigger">Фильтры</a>
+

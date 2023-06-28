@@ -15,7 +15,7 @@ class ProductShowController extends Controller
         $product->load([
             'category:id,title,title_rus', 'propertyValues.property:id,title', 'optionValues.option:id,title', 'tags:id,title',
             'ratingAndComments' => function ($q) {
-                $q->with('user:id,name');
+                $q->with(['user:id,name', 'commentImages:comment_id,file_path']);
             },
             'productTypes' => function ($q) {
                 $q->select('id', 'product_id', 'count', 'price', 'is_published', 'preview_image')->withCount('liked')

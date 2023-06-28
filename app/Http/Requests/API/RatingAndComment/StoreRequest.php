@@ -23,8 +23,9 @@ class StoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-
-        if(empty($this->user_id)) $this->merge(['user_id' => auth()->id(), 'product_id' => request()->route()->parameter('product')]);
+        if(empty($this->user_id)) {
+            $this->merge(['user_id' => auth()->id(), 'product_id' => request()->route()->parameter('product')]);
+        }
     }
 
     /**
@@ -39,6 +40,7 @@ class StoreRequest extends FormRequest
             'product_id' => 'required|integer',
             'rating' => 'required|integer',
             'message' => 'nullable|string',
+            'commentImages' => 'nullable|array',
         ];
     }
 }

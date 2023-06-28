@@ -25,7 +25,7 @@ class Product extends Model
 
     public function ratingAndComments()
     {
-        return $this->hasMany(RatingAndComments::class, 'product_id', 'id');
+        return $this->hasMany(RatingAndComment::class, 'product_id', 'id');
     }
 
     public function tags()
