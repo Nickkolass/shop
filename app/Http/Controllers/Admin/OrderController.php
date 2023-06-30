@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -14,9 +16,9 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $this->authorize('viewAny', OrderPerformer::class);
 
@@ -39,10 +41,10 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param  OrderPerformer  $order
+     * @return View
      */
-    public function show(OrderPerformer $order)
+    public function show(OrderPerformer $order): View
     {
         $this->authorize('view', $order);
 
@@ -64,14 +66,14 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param  OrderPerformer  $order
+     * @return RedirectResponse
      */
-    public function update(OrderPerformer $order)
+    public function update(OrderPerformer $order): RedirectResponse
     {
         $this->authorize('update', $order);
         $order->update(['status' => 'Отправлен ' . now()]);
-       
+
         $order->order()->whereHas('orderPerformers', function ($q) use ($order) {
             $q->where('order_id', $order->order_id)->where('status', '!=', 'В работе');
         })->update(['status' => 'Отправлен']);
@@ -81,10 +83,10 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param  OrderPerformer  $order
+     * @return RedirectResponse
      */
-    public function destroy(OrderPerformer $order)
+    public function destroy(OrderPerformer $order): RedirectResponse|string
     {
         $this->authorize('delete', $order);
         DB::beginTransaction();

@@ -5,11 +5,12 @@ namespace App\Services\API\Order;
 use App\Components\Method;
 use App\Models\Order;
 use App\Models\ProductType;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class OrderProductService
 {
 
-    public function getProductsForShow(Order $order)
+    public function getProductsForShow(Order $order): Order
     {
         $productTypes = json_decode($order->productTypes, true);
 
@@ -35,7 +36,7 @@ class OrderProductService
     }
 
 
-    public function getProductsForIndex($orders)
+    public function getProductsForIndex($orders): ?Paginator
     {
         foreach ($orders as $order) {
             $ordersProductTypes[] = json_decode($order->productTypes, true);
@@ -53,6 +54,5 @@ class OrderProductService
             $orders[$key]->productTypes = $productTypes;
         }
         return $orders;
-
     }
 }
