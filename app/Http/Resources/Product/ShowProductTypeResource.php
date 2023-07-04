@@ -19,11 +19,11 @@ class ShowProductTypeResource extends JsonResource
             'product_id' => $this->product_id,
             'price' => $this->price,
             'count' => $this->count,
-            'is_published' => $this->is_published,
+            'is_published' => (bool) $this->is_published,
             'preview_image' => $this->preview_image,
             'product_images' => $this->productImages->pluck('file_path'),
             'option_values' => $this->optionValues,
-            'liked' => $this->liked_count,
+            'liked' => (bool) $this->liked_count,
             'product' => ShowProductResource::make($this->product)->resolve(),
         ];
     }
