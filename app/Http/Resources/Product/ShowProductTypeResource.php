@@ -14,6 +14,7 @@ class ShowProductTypeResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
@@ -23,7 +24,7 @@ class ShowProductTypeResource extends JsonResource
             'preview_image' => $this->preview_image,
             'product_images' => $this->productImages->pluck('file_path'),
             'option_values' => $this->optionValues,
-            'liked' => (bool) $this->liked_count,
+            'liked' => $this->liked_exists,
             'product' => ShowProductResource::make($this->product)->resolve(),
         ];
     }

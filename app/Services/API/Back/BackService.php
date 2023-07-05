@@ -37,9 +37,9 @@ class BackService
 
     public function product(ProductType &$productType): void
     {
-        $productType->loadCount('liked')->load(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
+        $productType->loadExists('liked')->load(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
             $q->with([
-                'saler:id,name', 'optionValues.option:id,title', 'category:id,title,title_rus', 'propertyValues.property:id,title',
+                'optionValues.option:id,title', 'category:id,title,title_rus', 'propertyValues.property:id,title',
                 'productTypes:id,product_id,is_published,preview_image', 'ratingAndComments' => function ($q) {
                     $q->with(['user:id,name', 'commentImages:comment_id,file_path']);
                 }

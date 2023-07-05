@@ -78,25 +78,8 @@ class BackProductsService
 
     private function getProductTypes(array &$data): BackProductsService
     {
-        return $this->sortPrices($data['filter']['prices'], $data['category'])->productTypes($data, $data['category']->id);
-    }
-
-
-    private function sortPrices(?array &$prices, Category $category): BackProductsService
-    {
-        if (!empty($prices)) {
-            $prices['min'] = $prices['min'] ?? $category->productTypes()->min('price');
-            $prices['max'] = $prices['max'] ?? $category->productTypes()->max('price');
-            $prices['min'] > $prices['max'] ? $prices['min'] = $prices['max'] : '';
-            asort($prices);
-        }
-        return $this;
-    }
-
-    private function productTypes(array &$data, int $category_id): BackProductsService
-    {
         if (!empty($data['filter']['search'])) $data['filter']['search'] = Product::search($data['filter']['search'])->get('id')->pluck('id');
-        $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($data['filter']), ['category' => $category_id])]);
+        $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($data['filter']), ['category' => $data['category']->id])]);
 
         $data['productTypes'] = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
