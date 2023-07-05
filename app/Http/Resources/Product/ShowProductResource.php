@@ -18,8 +18,6 @@ class ShowProductResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'saler_id' => $this->saler_id,
-            'saler' => $this->saler,
             'option_values' => $this->optionValues,
             'category' => $this->category,
             'property_values' => $this->propertyValues,
