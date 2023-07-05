@@ -8,19 +8,20 @@ use App\Http\Requests\API\Product\ProductsRequest;
 use App\Http\Requests\API\RatingAndComment\StoreRequest;
 use App\Models\User;
 use App\Services\API\APIFrontService;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class FrontController extends Controller
 {
 
-    private $import;
+    private ImportDataClient $import;
 
     public function __construct(ImportDataClient $import)
     {
         $this->import = $import;
     // $response = Http::get('192.168.32.1:8876/api/products/'.$category, $request);
     }
-    public function index()
+    public function index(): View
     {
         $data['user_id'] = auth()->id();
         $data['viewed'] = array_slice(array_keys(session('viewed') ?? []), 0, 12);
@@ -34,12 +35,12 @@ class FrontController extends Controller
     }
 
 
-    public function products($category, ProductsRequest $request)
+    public function products(string $category_title, ProductsRequest $request): View
     {
         $queryParams = $request->validated();
         APIFrontService::scenarioGetProducts($queryParams);
 
-        $data = $this->import->client->request('POST', 'api/products/' . $category, ['query' => $queryParams])->getBody()->getContents();
+        $data = $this->import->client->request('POST', 'api/products/' . $category_title, ['query' => $queryParams])->getBody()->getContents();
         $data = json_decode($data, true);
         $productTypes = APIFrontService::afterGetProducts($data);
 
@@ -47,9 +48,9 @@ class FrontController extends Controller
     }
 
 
-    public function product($category, $productType_id)
+    public function product(string $category_title, int $productType_id): View
     {
-        $productType = $this->import->client->request('POST', 'api/products/' . $category . '/' . $productType_id)->getBody()->getContents();
+        $productType = $this->import->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id)->getBody()->getContents();
         $productType = json_decode($productType, true);
 
         $data['page'] = session('paginate.page');
@@ -60,7 +61,7 @@ class FrontController extends Controller
     }
 
 
-    public function addToCart()
+    public function addToCart(): RedirectResponse
     {
         foreach(request('addToCart') as $productType_id => $amount){
             empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
@@ -69,7 +70,7 @@ class FrontController extends Controller
     }
 
 
-    public function cart()
+    public function cart(): View
     {
         $productTypes = $totalPrice = null;
         if ($cart = session('cart')) {
@@ -80,7 +81,7 @@ class FrontController extends Controller
         return view('api.cart', compact('productTypes', 'totalPrice'));
     }
 
-    public function liked()
+    public function liked(): View
     {
         $this->authorize('like', User::class);
         $productTypes = $this->import->client->request('POST', 'api/products/liked', ['query' => ['user_id' => auth()->id()]])->getBody()->getContents();
@@ -89,7 +90,7 @@ class FrontController extends Controller
         return view('api.liked', compact('productTypes', 'data'));
     }
 
-    public function likedToggle($productType_id)
+    public function likedToggle(int $productType_id): RedirectResponse
     {
         $this->authorize('like', User::class);
         $this->import->client->request('POST', 'api/products/liked/' . $productType_id . '/toggle', ['query' => ['user_id' => auth()->id()]]);
@@ -97,12 +98,12 @@ class FrontController extends Controller
     }
 
 
-    public function support()
+    public function support(): View
     {
         return view('api.support');
     }
 
-    public function commentStore($product_id, StoreRequest $request)
+    public function commentStore(int $product_id, StoreRequest $request): RedirectResponse
     {
         $this->authorize('like', User::class);
         $data = $request->validated();
@@ -116,7 +117,6 @@ class FrontController extends Controller
                 ];
             }
         }
-
         $this->import->client->request('POST', 'api/products/' . $product_id . '/comment', ['query' => $data]);
         return back();
     }

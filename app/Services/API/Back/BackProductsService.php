@@ -17,25 +17,25 @@ use App\Models\User;
 class BackProductsService
 {
 
-    public function getData(&$data, Category $category)
+    public function getData(array &$data, Category $category): void
     {
         $data['filter'] = $data['filter'] ?? [];
         $data['category'] = $category;
         $this->getPaginate($data)->getProductTypes($data)->getFilterable($data)->getliked($data);
     }
 
-    private function getliked(&$data)
+    private function getliked(array &$data): BackProductsService
     {
         if (isset($data['user_id'])) {
             $data['liked_ids'] = ProductTypeUserLike::where('user_id', $data['user_id'])
                 ->whereHas('productType.category', function ($q) use ($data) {
                     $q->where('category_id', $data['category']->id);
                 })->pluck('productType_id')->flip()->all();
-            return $this;
         }
+        return $this;
     }
 
-    private function getPaginate(&$data)
+    private function getPaginate(array &$data): BackProductsService
     {
         $data['paginate']['orderBy'] = $data['paginate']['orderBy'] ?? 'rating';
         $data['paginate']['perPage'] = $data['paginate']['perPage'] ?? 8;
@@ -43,7 +43,7 @@ class BackProductsService
         return $this;
     }
 
-    private function getFilterable(&$data)
+    private function getFilterable(array &$data): BackProductsService
     {
         $products_ids = $data['category']->products()->pluck('id');
 
@@ -76,13 +76,13 @@ class BackProductsService
         return $this;
     }
 
-    private function getProductTypes(&$data)
+    private function getProductTypes(array &$data): BackProductsService
     {
         return $this->sortPrices($data['filter']['prices'], $data['category'])->productTypes($data, $data['category']->id);
     }
 
 
-    private function sortPrices(&$prices, Category $category)
+    private function sortPrices(?array &$prices, Category $category): BackProductsService
     {
         if (!empty($prices)) {
             $prices['min'] = $prices['min'] ?? $category->productTypes()->min('price');
@@ -93,7 +93,7 @@ class BackProductsService
         return $this;
     }
 
-    private function productTypes(&$data, $category_id)
+    private function productTypes(array &$data, int $category_id): BackProductsService
     {
         if (!empty($data['filter']['search'])) $data['filter']['search'] = Product::search($data['filter']['search'])->get('id')->pluck('id');
         $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($data['filter']), ['category' => $category_id])]);

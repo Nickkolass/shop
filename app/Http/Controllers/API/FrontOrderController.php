@@ -6,10 +6,12 @@ use App\Components\ImportDataClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use App\Models\Order;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class FrontOrderController extends Controller
 {
-    private $import;
+    private ImportDataClient $import;
 
     public function __construct(ImportDataClient $import)
     {
@@ -20,10 +22,10 @@ class FrontOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
 
-    public function index()
+    public function index(): View
     {
         $this->authorize('viewAny', Order::class);
 
@@ -39,10 +41,10 @@ class FrontOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create()
-    { //нужен route:post но тогда без ресурсного контроллера, поэтому переход только из корзины  
+    public function create(): View
+    { //нужен route:post но тогда без ресурсного контроллера, поэтому переход только из корзины
         if (url()->previous() != 'http://127.0.0.1:8876/cart' || !session()->has('cart')) abort(404);
         $totalPrice = request('totalPrice');
         return view('api.order.create', compact('totalPrice'));
@@ -51,9 +53,10 @@ class FrontOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return RedirectResponse
      */
-    public function store(StoreFrontRequest $request)
+    public function store(StoreFrontRequest $request): RedirectResponse
     {
         $this->authorize('create', Order::class);
 
@@ -69,10 +72,10 @@ class FrontOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $order_id
+     * @return View
      */
-    public function show($order_id)
+    public function show(int $order_id): View
     {
         $this->authorize('view', Order::withTrashed()->find($order_id));
         $order = $this->import->client->request('POST', 'api/orders/' . $order_id)->getBody()->getContents();
@@ -81,23 +84,12 @@ class FrontOrderController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($order_id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $order_id
+     * @return RedirectResponse
      */
-    public function update($order_id)
+    public function update(int $order_id): RedirectResponse
     {
         $this->authorize('update', Order::find($order_id));
         $this->import->client->request('PATCH', 'api/orders/' . $order_id);
@@ -107,10 +99,10 @@ class FrontOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $order_id
+     * @return RedirectResponse
      */
-    public function destroy($order_id)
+    public function destroy(int $order_id): RedirectResponse
     {
         $this->authorize('delete', Order::find($order_id));
         $this->import->client->request('DELETE', 'api/orders/' . $order_id)->getBody()->getContents();
