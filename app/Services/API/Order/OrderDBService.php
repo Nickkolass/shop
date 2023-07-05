@@ -9,12 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class OrderDBService
 {
-    public function store($data)
+    public function store(array $data): ?string
     {
         DB::beginTransaction();
         try {
             $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -22,13 +23,14 @@ class OrderDBService
     }
 
 
-    public function update(Order $order)
+    public function update(Order $order): ?string
     {
         DB::beginTransaction();
         try {
             $order->update(['status' => 'Получен ' . now()]);
             $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -36,7 +38,7 @@ class OrderDBService
     }
 
 
-    public function delete(Order $order)
+    public function delete(Order $order): ?string
     {
         DB::beginTransaction();
         try {
@@ -46,6 +48,7 @@ class OrderDBService
             $order->delete();
             //возврат денег
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -53,18 +56,18 @@ class OrderDBService
     }
 
 
-    private function productCountUpdate(&$cart)
+    private function productCountUpdate(array &$cart): OrderDBService
     {
         $productType_ids = array_keys($cart);
         $productTypes = ProductType::select('id', 'count', 'price', 'product_id', 'is_published')->with('product:id,saler_id')->find($productType_ids);
 
         foreach ($cart as $productType_id => $amount) {
             $pT = $productTypes->where('id', $productType_id)->first();
-            
+
             $update[$productType_id]['id'] =  $pT->id;
             $update[$productType_id]['count'] = $pT->count - $amount;
             $update[$productType_id]['is_published'] = $update[$productType_id]['count'] > 0 ? $pT->is_published : 0;
-            
+
             $cart[$productType_id] = [
                 'productType_id' => $productType_id,
                 'amount' => $amount,
@@ -77,7 +80,7 @@ class OrderDBService
     }
 
 
-    private function orderStore(&$data)
+    private function orderStore(array &$data): OrderDBService
     {
         $data['order'] = Order::create([
             'user_id' => $data['user_id'],
@@ -91,7 +94,7 @@ class OrderDBService
     }
 
 
-    private function orderPerformerStore($data)
+    private function orderPerformerStore(array $data): OrderDBService
     {
         $data['cart'] = collect($data['cart'])->groupBy('saler_id');
 

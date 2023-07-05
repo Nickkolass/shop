@@ -21,8 +21,8 @@ use Illuminate\Http\UploadedFile;
 
 class BackController extends Controller
 {
-    private $service;
-    private $productsService;
+    private BackService $service;
+    private BackProductsService $productsService;
 
 
     public function __construct(BackService $service, BackProductsService $productsService)
@@ -31,7 +31,7 @@ class BackController extends Controller
         $this->productsService = $productsService;
     }
 
-    public function index(IndexRequest $request)
+    public function index(IndexRequest $request): array
     {
         $data = $request->validated();
         empty($data['user_id']) ?: $data['liked'] = $this->service->getLiked($data['user_id']);
@@ -40,7 +40,7 @@ class BackController extends Controller
     }
 
 
-    public function products(Category $category, FilterRequest $request)
+    public function products(Category $category, FilterRequest $request): array
     {
         $data = $request->validated();
         $this->productsService->getData($data, $category);
@@ -48,31 +48,31 @@ class BackController extends Controller
     }
 
 
-    public function product($category, ProductType $productType)
+    public function product(string $category_title, ProductType $productType): array
     {
         $this->service->product($productType);
         return ShowProductTypeResource::make($productType)->resolve();
     }
 
 
-    public function cart()
+    public function cart(): array
     {
         $productTypes = $this->service->cart(request('cart'));
         return CartResource::collection($productTypes)->resolve();
     }
 
-    public function liked()
+    public function liked(): array
     {
         $productTypes = $this->service->getLiked(request('user_id'));
         return ProductTypeResource::collection($productTypes)->resolve();
     }
 
-    public function likedToggle(ProductType $productType)
+    public function likedToggle(ProductType $productType): void
     {
         $productType->liked()->toggle(request('user_id'));
     }
 
-    public function commentStore(StoreRequest $request)
+    public function commentStore(StoreRequest $request): void
     {
         $data = $request->validated();
 

@@ -10,6 +10,8 @@ use App\Models\Option;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Product\ProductTypeService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProductTypeController extends Controller
 {
@@ -25,9 +27,10 @@ class ProductTypeController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param  Product $product
+     * @return View
      */
-    public function create(Product $product)
+    public function create(Product $product): View
     {
         $this->authorize('update', $product);
 
@@ -45,9 +48,10 @@ class ProductTypeController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Product $product
+     * @return RedirectResponse
      */
-    public function store(ProductTypeStoreRequest $request, Product $product)
+    public function store(ProductTypeStoreRequest $request, Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
         $data = $request->validated();
@@ -58,10 +62,10 @@ class ProductTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Http\Response
+     * @param  ProductType $productType
+     * @return View
      */
-    public function edit(ProductType $productType)
+    public function edit(ProductType $productType): View
     {
         $this->authorize('update', $productType);
 
@@ -79,11 +83,11 @@ class ProductTypeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param  ProductType $productType
+     * @return RedirectResponse
      */
-    public function update(ProductTypeUpdateRequest $request, ProductType $productType)
+    public function update(ProductTypeUpdateRequest $request, ProductType $productType): RedirectResponse
     {
         $this->authorize('update', $productType);
         $data = $request->validated();
@@ -94,10 +98,10 @@ class ProductTypeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Http\Response
+     * @param  ProductType $productType
+     * @return RedirectResponse
      */
-    public function publish(ProductType $productType)
+    public function publish(ProductType $productType): RedirectResponse
     {
         $this->authorize('update', $productType);
         $productType->update(['is_published' => $productType->is_published == 0 ? 1 : 0]);
@@ -108,10 +112,10 @@ class ProductTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Http\Response
+     * @param  ProductType $productType
+     * @return RedirectResponse
      */
-    public function destroy(ProductType $productType)
+    public function destroy(ProductType $productType): RedirectResponse
     {
         $this->authorize('delete', $productType);
         $this->productTypeService->delete($productType);

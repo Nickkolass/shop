@@ -18,7 +18,7 @@ class ProductService
     }
 
 
-    public function store($product, $types)
+    public function store($product, $types): ?string
     {
         $relations = $this->productTypeService->relationService->getRelations($product);
         $relations['optionValues'] = array_filter(array_unique(array_merge(...array_column($types, 'optionValues'))));
@@ -33,6 +33,7 @@ class ProductService
             ProductImage::insert(array_merge(...array_column($attach, 'productImages')));
 
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -40,7 +41,7 @@ class ProductService
     }
 
 
-    public function update(Product $product, $data, $relations)
+    public function update(Product $product, $data, $relations): ?string
     {
         DB::beginTransaction();
         try {
@@ -49,6 +50,7 @@ class ProductService
             $this->productTypeService->relationService->relationsProduct($product, $relations, false);
 
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -56,7 +58,7 @@ class ProductService
     }
 
 
-    public function delete(Product $product)
+    public function delete(Product $product): ?string
     {
         $product->load('productTypes.productImages:productType_id,file_path');
         $images = $product->productTypes->pluck('productImages.*.file_path')->push($product->productTypes->pluck('preview_image'))->flatten()->all();
@@ -66,6 +68,7 @@ class ProductService
             $product->delete();
             $this->productTypeService->imageService->deleteImages($images);
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();

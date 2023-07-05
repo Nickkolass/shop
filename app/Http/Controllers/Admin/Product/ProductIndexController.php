@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
-use App\Components\Method;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Contracts\View\View;
 
 class ProductIndexController extends Controller
 {
-    public function __invoke()
+    public function __invoke(): View
     {
         $this->authorize('viewAny', Product::class);
 
