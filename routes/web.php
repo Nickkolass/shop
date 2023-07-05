@@ -32,7 +32,7 @@ use App\Http\Controllers\Admin\Product\ProductUpdateController;
 |
 */
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 Route::get('/', HomeController::class)->name('home');
 Route::resource('/users', UserController::class);
 

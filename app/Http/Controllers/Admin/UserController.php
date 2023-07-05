@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Mail\MailRegistered;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -50,9 +53,11 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        User::firstOrCreate([
+        $user = User::firstOrCreate([
             'email' => $data['email']
         ], $data);
+        event(new Registered($user));
+        Mail::to($user->email)->send(new MailRegistered());
         return $this->index();
     }
 
