@@ -4,11 +4,12 @@ namespace App\Services\API\Back;
 
 use App\Components\Method;
 use App\Models\ProductType;
+use Illuminate\Support\Collection;
 
 class BackService
 {
 
-    public function getViewed($productType_ids)
+    public function getViewed(?array $productType_ids): ?Collection
     {
         $productTypes = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
@@ -20,9 +21,8 @@ class BackService
         return $productTypes;
     }
 
-    public function getLiked($user_id)
+    public function getLiked(int $user_id): ?Collection
     {
-
         $productTypes = ProductType::whereHas('liked', function ($q) use ($user_id) {
             $q->where('user_id', $user_id);
         })->select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
@@ -35,7 +35,7 @@ class BackService
     }
 
 
-    public function product(ProductType &$productType)
+    public function product(ProductType &$productType): void
     {
         $productType->loadExists('liked')->load(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
             $q->with([
@@ -51,7 +51,7 @@ class BackService
     }
 
 
-    public function cart($cart)
+    public function cart(?array $cart): ?Collection
     {
         $productTypes = ProductType::select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
             ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find(array_keys($cart));
@@ -64,7 +64,7 @@ class BackService
         return $productTypes;
     }
 
-    public function commentImages(&$commentImages, $product_id, $comment_id)
+    public function commentImages(array &$commentImages, int $product_id, int $comment_id): void
     {
         foreach ($commentImages as &$image) {
             $image = [

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Option\CommentStoreRequest;
-use App\Http\Requests\Option\CommentUpdateRequest;
 use App\Http\Requests\Option\OptionStoreRequest;
+use App\Http\Requests\Option\OptionUpdateRequest;
 use App\Models\Option;
 use App\Models\OptionValue;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 
 class OptionController extends Controller
@@ -15,9 +15,9 @@ class OptionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $options = Option::all();
         return view('admin.option.index', compact('options'));
@@ -26,9 +26,9 @@ class OptionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.option.create');
     }
@@ -37,9 +37,9 @@ class OptionController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function store(OptionStoreRequest $request)
+    public function store(OptionStoreRequest $request): View|string
     {
         $data = $request->validated();
 
@@ -49,20 +49,20 @@ class OptionController extends Controller
             foreach ($data['optionValues'] as &$oV) $oV['option_id'] = $option_id;
             OptionValue::insert($data['optionValues']);
             DB::commit();
+            return $this->index();
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
         }
-        return $this->index();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Option $option
+     * @return View
      */
-    public function show(Option $option)
+    public function show(Option $option): View
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.show', compact('option'));
@@ -71,10 +71,10 @@ class OptionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Option $option
+     * @return View
      */
-    public function edit(Option $option)
+    public function edit(Option $option): View
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.edit', compact('option'));
@@ -84,10 +84,10 @@ class OptionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Option $option
+     * @return View
      */
-    public function update(CommentUpdateRequest $request, Option $option)
+    public function update(OptionUpdateRequest $request, Option $option): View|string
     {
         $data = $request->validated();
 
@@ -103,21 +103,20 @@ class OptionController extends Controller
             OptionValue::insert($data['optionValues']);
             $option->update(['title' => $data['title']]);
             DB::commit();
+            return $this->show($option);
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
         }
-
-        return $this->show($option);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Option $option
+     * @return View
      */
-    public function destroy(Option $option)
+    public function destroy(Option $option): View
     {
         $option->delete();
         return $this->index();

@@ -19,7 +19,7 @@ class ShowOrderProductsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'amount' => $this->amount,
+            'amount' => (int) $this->amount,
             'price' => $this->price,
             'optionValues' => $this->optionValues,
             'title' => $this->product->title,

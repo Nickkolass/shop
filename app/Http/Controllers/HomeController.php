@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Traits\HasVerify;
+use Illuminate\Http\RedirectResponse;
+
 class HomeController extends Controller
 {
     use HasVerify;
@@ -10,9 +12,9 @@ class HomeController extends Controller
      /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return RedirectResponse
      */
-    public function __invoke()
+    public function __invoke(): RedirectResponse
     {
         $role = session('user_role');
         $this->verify($role);
