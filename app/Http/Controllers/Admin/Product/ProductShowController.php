@@ -19,7 +19,7 @@ class ProductShowController extends Controller
                 $q->with(['user:id,name', 'commentImages:comment_id,file_path']);
             },
             'productTypes' => function ($q) {
-                $q->select('id', 'product_id', 'count', 'price', 'is_published', 'preview_image')->withExists('liked')
+                $q->select('id', 'product_id', 'count', 'price', 'is_published', 'preview_image')->withCount('liked')
                     ->with('productImages:productType_id,file_path', 'optionValues.option:id,title');
             }
         ]);

@@ -50,7 +50,7 @@ class BackController extends Controller
 
     public function product(string $category_title, ProductType $productType): array
     {
-        $this->service->product($productType);
+        $this->service->product($productType, request('user_id'));
         return ShowProductTypeResource::make($productType)->resolve();
     }
 

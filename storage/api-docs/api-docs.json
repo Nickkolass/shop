@@ -1,0 +1,1784 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Back API doc",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/": {},
+        "/api/cart": {
+            "post": {
+                "tags": [
+                    "cart"
+                ],
+                "summary": "просмотр корзины",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cart": {
+                                        "properties": {
+                                            "443224": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "product_id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": "300"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": "5"
+                                        },
+                                        "is_published": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "preview_image": {
+                                            "type": "string",
+                                            "example": "preview_images/1.jpg"
+                                        },
+                                        "option_values": {
+                                            "properties": {
+                                                "Цвет": {
+                                                    "type": "string",
+                                                    "example": "красный"
+                                                },
+                                                "Размер": {
+                                                    "type": "string",
+                                                    "example": "300 грамм"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "category": {
+                                            "type": "string",
+                                            "example": "chokolate"
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Cool chokolate"
+                                        },
+                                        "amount": {
+                                            "type": "integer",
+                                            "example": "2"
+                                        },
+                                        "totalPrice": {
+                                            "type": "integer",
+                                            "example": "600"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/orders": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "просмотр заказов",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "page": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "productTypes": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "preview_image": {
+                                                                    "type": "string",
+                                                                    "example": "preview_images/1.jpg"
+                                                                },
+                                                                "category": {
+                                                                    "type": "string",
+                                                                    "example": "chokolate"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "delivery": {
+                                                        "type": "string",
+                                                        "example": "post. Получатель: Lebsack Clotilde Parker Cecelia DuBuque. Адрес: 522 Renner Isle\\nLake Demarco, ME 81738-5083"
+                                                    },
+                                                    "total_price": {
+                                                        "type": "integer",
+                                                        "example": "5000"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "В работе"
+                                                    },
+                                                    "created_at": {
+                                                        "format": "date",
+                                                        "example": "2023-07-03"
+                                                    },
+                                                    "dispatch_time": {
+                                                        "format": "date",
+                                                        "example": "2023-07-25"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "next_page_url": {
+                                            "type": "integer|null",
+                                            "example": "null"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": "8"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "integer|null",
+                                            "example": "null"
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/orders/store": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "создание заказа",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "total_price": {
+                                        "type": "integer",
+                                        "example": 1000
+                                    },
+                                    "payment_status": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "payment": {
+                                        "type": "string",
+                                        "example": "card"
+                                    },
+                                    "cart": {
+                                        "properties": {
+                                            "662341": {
+                                                "type": "integer",
+                                                "example": "2"
+                                            },
+                                            "115521": {
+                                                "type": "integer",
+                                                "example": "3"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            }
+        },
+        "/api/orders/{order}": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "просмотр заказа",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "productTypes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "amount": {
+                                                        "type": "integer",
+                                                        "example": "3"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": "400"
+                                                    },
+                                                    "optionValues": {
+                                                        "properties": {
+                                                            "Цвет": {
+                                                                "type": "string",
+                                                                "example": "красный"
+                                                            },
+                                                            "Размер": {
+                                                                "type": "string",
+                                                                "example": "300 грамм"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Cool chokolate"
+                                                    },
+                                                    "saler_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "saler": {
+                                                        "type": "string",
+                                                        "example": "Ivan Ivanov"
+                                                    },
+                                                    "preview_image": {
+                                                        "type": "string",
+                                                        "example": "preview_images/1.jpg"
+                                                    },
+                                                    "category": {
+                                                        "type": "string",
+                                                        "example": "chokolate"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "Отправлен 2023-07-03 10:55:50"
+                                                    },
+                                                    "orderPerformer_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "delivery": {
+                                            "type": "string",
+                                            "example": "post. Получатель: Lebsack Clotilde Parker Cecelia DuBuque. Адрес: 522 Renner Isle\\nLake Demarco, ME 81738-5083"
+                                        },
+                                        "total_price": {
+                                            "type": "integer",
+                                            "example": "5000"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "В работе"
+                                        },
+                                        "created_at": {
+                                            "format": "date",
+                                            "example": "2023-07-03"
+                                        },
+                                        "dispatch_time": {
+                                            "format": "date",
+                                            "example": "2023-07-25"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Отмена заказа",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "отметка о получении заказа",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "главная страница",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "viewed": {
+                                        "type": "object",
+                                        "example": [
+                                            1,
+                                            2
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "liked_ids": {
+                                            "properties": {
+                                                "662341": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "115521": {
+                                                    "type": "integer",
+                                                    "example": "2"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "liked": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "product_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": "100"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": "5"
+                                                    },
+                                                    "is_published": {
+                                                        "type": "boolean",
+                                                        "example": "true"
+                                                    },
+                                                    "preview_image": {
+                                                        "type": "string",
+                                                        "example": "preview_images/1.jpg"
+                                                    },
+                                                    "product_images": {
+                                                        "type": "object",
+                                                        "example": [
+                                                            "product_images/1.jpg",
+                                                            "product_images/2.jpg"
+                                                        ]
+                                                    },
+                                                    "option_values": {
+                                                        "properties": {
+                                                            "Цвет": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "option_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "value": {
+                                                                            "type": "string",
+                                                                            "example": "красный"
+                                                                        },
+                                                                        "created_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        },
+                                                                        "updated_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "product": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "cool chokolate"
+                                                            },
+                                                            "category": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string",
+                                                                        "example": "chokolate"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": "5"
+                                                            },
+                                                            "countRating": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "countComments": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "product_types": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "product_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "preview_image": {
+                                                                            "type": "string",
+                                                                            "example": "preview_images/1.jpg"
+                                                                        },
+                                                                        "is_published": {
+                                                                            "type": "boolean",
+                                                                            "example": "true"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "viewed": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "product_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": "100"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": "5"
+                                                    },
+                                                    "is_published": {
+                                                        "type": "boolean",
+                                                        "example": "true"
+                                                    },
+                                                    "preview_image": {
+                                                        "type": "string",
+                                                        "example": "preview_images/1.jpg"
+                                                    },
+                                                    "product_images": {
+                                                        "type": "object",
+                                                        "example": [
+                                                            "product_images/1.jpg",
+                                                            "product_images/2.jpg"
+                                                        ]
+                                                    },
+                                                    "option_values": {
+                                                        "properties": {
+                                                            "Цвет": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "option_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "value": {
+                                                                            "type": "string",
+                                                                            "example": "красный"
+                                                                        },
+                                                                        "created_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        },
+                                                                        "updated_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "product": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "cool chokolate"
+                                                            },
+                                                            "category": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string",
+                                                                        "example": "chokolate"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": "5"
+                                                            },
+                                                            "countRating": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "countComments": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "product_types": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "product_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "preview_image": {
+                                                                            "type": "string",
+                                                                            "example": "preview_images/1.jpg"
+                                                                        },
+                                                                        "is_published": {
+                                                                            "type": "boolean",
+                                                                            "example": "true"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{category}": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "просмотр товаров по категории",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "description": "title категории",
+                        "required": true,
+                        "example": "chokolate"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "filter": {
+                                        "properties": {
+                                            "tags": {
+                                                "type": "object",
+                                                "example": [
+                                                    1,
+                                                    2
+                                                ]
+                                            },
+                                            "salers": {
+                                                "type": "object",
+                                                "example": [
+                                                    1,
+                                                    2
+                                                ]
+                                            },
+                                            "optionValues": {
+                                                "properties": {
+                                                    "1": {
+                                                        "type": "object",
+                                                        "example": [
+                                                            1,
+                                                            2
+                                                        ]
+                                                    },
+                                                    "2": {
+                                                        "type": "object",
+                                                        "example": [
+                                                            6,
+                                                            7
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "prices": {
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "example": "1000"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "example": "9000"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "search": {
+                                                "type": "string",
+                                                "example": "cool chokolate"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "paginate": {
+                                        "properties": {
+                                            "orderBy": {
+                                                "type": "string",
+                                                "example": "rating"
+                                            },
+                                            "perPage": {
+                                                "type": "integer",
+                                                "example": "8"
+                                            },
+                                            "page": {
+                                                "type": "integer",
+                                                "example": "1"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "cart": {
+                                        "properties": {
+                                            "662341": {
+                                                "type": "integer",
+                                                "example": "2"
+                                            },
+                                            "115521": {
+                                                "type": "integer",
+                                                "example": "3"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "productTypes": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "product_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "price": {
+                                                                "type": "integer",
+                                                                "example": "100"
+                                                            },
+                                                            "count": {
+                                                                "type": "integer",
+                                                                "example": "5"
+                                                            },
+                                                            "is_published": {
+                                                                "type": "boolean",
+                                                                "example": "true"
+                                                            },
+                                                            "preview_image": {
+                                                                "type": "string",
+                                                                "example": "preview_images/1.jpg"
+                                                            },
+                                                            "product_images": {
+                                                                "type": "object",
+                                                                "example": [
+                                                                    "product_images/1.jpg",
+                                                                    "product_images/2.jpg"
+                                                                ]
+                                                            },
+                                                            "option_values": {
+                                                                "properties": {
+                                                                    "Цвет": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "id": {
+                                                                                    "type": "integer",
+                                                                                    "example": "1"
+                                                                                },
+                                                                                "option_id": {
+                                                                                    "type": "integer",
+                                                                                    "example": "1"
+                                                                                },
+                                                                                "value": {
+                                                                                    "type": "string",
+                                                                                    "example": "красный"
+                                                                                },
+                                                                                "created_at": {
+                                                                                    "format": "date",
+                                                                                    "example": "2023-06-28T12:03:41.000000Z"
+                                                                                },
+                                                                                "updated_at": {
+                                                                                    "format": "date",
+                                                                                    "example": "2023-06-28T12:03:41.000000Z"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "product": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string",
+                                                                        "example": "cool chokolate"
+                                                                    },
+                                                                    "category": {
+                                                                        "type": "string",
+                                                                        "example": ""
+                                                                    },
+                                                                    "rating": {
+                                                                        "type": "integer",
+                                                                        "example": "5"
+                                                                    },
+                                                                    "countRating": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "countComments": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "product_types": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "id": {
+                                                                                    "type": "integer",
+                                                                                    "example": "1"
+                                                                                },
+                                                                                "product_id": {
+                                                                                    "type": "integer",
+                                                                                    "example": "1"
+                                                                                },
+                                                                                "preview_image": {
+                                                                                    "type": "string",
+                                                                                    "example": "preview_images/1.jpg"
+                                                                                },
+                                                                                "is_published": {
+                                                                                    "type": "boolean",
+                                                                                    "example": "true"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "next_page_url": {
+                                                    "type": "integer|null",
+                                                    "example": "null"
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": "8"
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "integer|null",
+                                                    "example": "null"
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "paginate": {
+                                            "properties": {
+                                                "orderBy": {
+                                                    "type": "string",
+                                                    "example": "rating"
+                                                },
+                                                "perPage": {
+                                                    "type": "integer",
+                                                    "example": "8"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "filter": {
+                                            "properties": {
+                                                "tags": {
+                                                    "type": "object",
+                                                    "example": [
+                                                        1,
+                                                        2
+                                                    ]
+                                                },
+                                                "salers": {
+                                                    "type": "object",
+                                                    "example": [
+                                                        1,
+                                                        2
+                                                    ]
+                                                },
+                                                "optionValues": {
+                                                    "type": "object",
+                                                    "example": [
+                                                        1,
+                                                        2
+                                                    ]
+                                                },
+                                                "propertyValues": {
+                                                    "type": "object",
+                                                    "example": [
+                                                        1,
+                                                        2
+                                                    ]
+                                                },
+                                                "prices": {
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "example": "100"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "example": "1000"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "search": {
+                                                    "type": "string",
+                                                    "example": "cool chokolate"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "filterable": {
+                                            "properties": {
+                                                "tags": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "some tag"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "salers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Best goods"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "optionValues": {
+                                                    "properties": {
+                                                        "Цвет": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "option_id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "value": {
+                                                                        "type": "string",
+                                                                        "example": "Белый"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "propertyValues": {
+                                                    "properties": {
+                                                        "Упаковка": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "property_id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "value": {
+                                                                        "type": "string",
+                                                                        "example": "Коробка"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "prices": {
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "example": "100"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "example": "1000"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "category": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "chokolate"
+                                                },
+                                                "title_rus": {
+                                                    "type": "string",
+                                                    "example": "Шоколад ручной работы"
+                                                },
+                                                "created_at": {
+                                                    "format": "date",
+                                                    "example": "2023-06-28T12:03:41.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "format": "date",
+                                                    "example": "2023-06-28T12:03:41.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "liked_ids": {
+                                            "properties": {
+                                                "662341": {
+                                                    "type": "integer",
+                                                    "example": "2"
+                                                },
+                                                "115521": {
+                                                    "type": "integer",
+                                                    "example": "3"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/liked": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "просмотр понравившихся товаров",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "product_id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": "100"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": "5"
+                                        },
+                                        "is_published": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "preview_image": {
+                                            "type": "string",
+                                            "example": "preview_images/1.jpg"
+                                        },
+                                        "product_images": {
+                                            "type": "object",
+                                            "example": [
+                                                "product_images/1.jpg",
+                                                "product_images/2.jpg"
+                                            ]
+                                        },
+                                        "option_values": {
+                                            "properties": {
+                                                "Цвет": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "option_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "value": {
+                                                                "type": "string",
+                                                                "example": "красный"
+                                                            },
+                                                            "created_at": {
+                                                                "format": "date",
+                                                                "example": "2023-06-28T12:03:41.000000Z"
+                                                            },
+                                                            "updated_at": {
+                                                                "format": "date",
+                                                                "example": "2023-06-28T12:03:41.000000Z"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "product": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "cool chokolate"
+                                                },
+                                                "category": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "chokolate"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "rating": {
+                                                    "type": "integer",
+                                                    "example": "5"
+                                                },
+                                                "countRating": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "countComments": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "product_types": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "product_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "preview_image": {
+                                                                "type": "string",
+                                                                "example": "preview_images/1.jpg"
+                                                            },
+                                                            "is_published": {
+                                                                "type": "boolean",
+                                                                "example": "true"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/liked/{productType}/toggle": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "добавление (исключение) понравившегося товара",
+                "parameters": [
+                    {
+                        "name": "productType",
+                        "in": "path",
+                        "description": "ID типа продукта",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            }
+        },
+        "/api/products/{category}/{productType}": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "просмотр товара",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "description": "title категории",
+                        "required": true,
+                        "example": "chokolate"
+                    },
+                    {
+                        "name": "productType",
+                        "in": "path",
+                        "description": "ID типа продукта",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "product_id": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": "100"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": "5"
+                                        },
+                                        "is_published": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "preview_image": {
+                                            "type": "string",
+                                            "example": "preview_images/1.jpg"
+                                        },
+                                        "product_images": {
+                                            "type": "object",
+                                            "example": [
+                                                "product_images/1.jpg",
+                                                "product_images/2.jpg"
+                                            ]
+                                        },
+                                        "option_values": {
+                                            "properties": {
+                                                "Цвет": {
+                                                    "type": "string",
+                                                    "example": "Красный"
+                                                },
+                                                "Упаковка": {
+                                                    "type": "string",
+                                                    "example": "Коробка"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "liked": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "product": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "cool chokolate"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "It's very cool chokolate"
+                                                },
+                                                "saler_id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "saler": {
+                                                    "type": "string",
+                                                    "example": "Ivanov Ivan"
+                                                },
+                                                "option_values": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "option_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "value": {
+                                                                "type": "string",
+                                                                "example": "красный"
+                                                            },
+                                                            "created_at": {
+                                                                "format": "date",
+                                                                "example": "2023-06-28T12:03:41.000000Z"
+                                                            },
+                                                            "updated_at": {
+                                                                "format": "date",
+                                                                "example": "2023-06-28T12:03:41.000000Z"
+                                                            },
+                                                            "option": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string",
+                                                                        "example": "Цвет"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "category": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "chokolate"
+                                                        },
+                                                        "title_rus": {
+                                                            "type": "string",
+                                                            "example": "Шоколад ручной работы"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "property_values": {
+                                                    "properties": {
+                                                        "Высота": {
+                                                            "type": "string",
+                                                            "example": "10 см"
+                                                        },
+                                                        "Ширина": {
+                                                            "type": "string",
+                                                            "example": "5 см"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "product_types": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "product_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "preview_image": {
+                                                                "type": "string",
+                                                                "example": "preview_images/1.jpg"
+                                                            },
+                                                            "is_published": {
+                                                                "type": "boolean",
+                                                                "example": "true"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "rating": {
+                                                    "type": "integer",
+                                                    "example": "5"
+                                                },
+                                                "countRating": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "countComments": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "ratingAndComments": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "message": {
+                                                                "type": "string",
+                                                                "example": "so sweety"
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": "5"
+                                                            },
+                                                            "user": {
+                                                                "type": "string",
+                                                                "example": "Petrov Petr"
+                                                            },
+                                                            "commentImages": {
+                                                                "type": "object",
+                                                                "example": [
+                                                                    "comments/1.jpg",
+                                                                    "comments/2.jpg"
+                                                                ]
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "example": "2 hours ago"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{product}/comment": {
+            "post": {
+                "tags": [
+                    "products"
+                ],
+                "summary": "добавление комментария",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "ID продукта",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "So sweety"
+                                    },
+                                    "commentImages": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": "tmp/asdjhew"
+                                                },
+                                                "originalName": {
+                                                    "type": "string",
+                                                    "example": "1.jpg"
+                                                },
+                                                "mimeType": {
+                                                    "type": "string",
+                                                    "example": "image/jpeg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            }
+        }
+    }
+}

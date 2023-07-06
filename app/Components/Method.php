@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\PropertyValue;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 class Method
@@ -55,7 +56,7 @@ class Method
         });
     }
 
-    public static function mapAfterGettingProducts(Collection &$productTypes): void
+    public static function mapAfterGettingProducts(Paginator|Collection &$productTypes): void
     {
         $productTypes->map(function (ProductType $productType) {
             Method::valuesToGroups($productType, 'optionValues');

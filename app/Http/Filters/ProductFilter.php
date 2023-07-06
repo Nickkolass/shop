@@ -32,7 +32,7 @@ class ProductFilter extends AbstractFilter
 
     public function search(Builder $builder, $value)
     {
-        $builder->whereIn('product_id', $value);
+        $builder->whereIn('productTypes.product_id', $value);
     }
 
     public function category(Builder $builder, $value)

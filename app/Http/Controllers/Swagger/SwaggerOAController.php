@@ -545,7 +545,7 @@ use App\Http\Controllers\Controller;
  *
  * @OA\Post(
  *     path="/api/products/{category}/{productType}",
- *     summary="просмотр понравившихся товаров",
+ *     summary="просмотр товара",
  *     tags={"products"},
  *
  *     @OA\Parameter(
@@ -561,6 +561,12 @@ use App\Http\Controllers\Controller;
  *         name="productType",
  *         required=true,
  *         example=1,
+ *     ),
+ *
+ *     @OA\RequestBody(
+ *         @OA\JsonContent(
+ *             @OA\Property(property="user_id", type="integer", example="1"),
+ *         ),
  *     ),
  *
  *     @OA\Response(

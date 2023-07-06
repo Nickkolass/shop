@@ -78,8 +78,9 @@ class BackProductsService
 
     private function getProductTypes(array &$data): BackProductsService
     {
-        if (!empty($data['filter']['search'])) $data['filter']['search'] = Product::search($data['filter']['search'])->get('id')->pluck('id');
-        $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($data['filter']), ['category' => $data['category']->id])]);
+        if (!empty($data['filter']['search'])) $search = ['search' => Product::search($data['filter']['search'])->keys()->all()];
+        $queryParams = array_merge(array_filter($data['filter']), ['category' => $data['category']->id], $search ?? []);
+        $filter = app()->make(ProductFilter::class, ['queryParams' => $queryParams]);
 
         $data['productTypes'] = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {

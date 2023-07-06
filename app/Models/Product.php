@@ -54,7 +54,7 @@ class Product extends Model
     }
 
     // #[SearchUsingPrefix(['id', 'email'])]
-    #[SearchUsingFullText(['title', 'description'])]
+    #[SearchUsingFullText(['products_title_description_fulltext'])]
     public function toSearchableArray()
     {
         return [

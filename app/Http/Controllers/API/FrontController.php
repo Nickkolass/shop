@@ -50,7 +50,7 @@ class FrontController extends Controller
 
     public function product(string $category_title, int $productType_id): View
     {
-        $productType = $this->import->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id)->getBody()->getContents();
+        $productType = $this->import->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id, ['query' => ['user_id' => auth()->id()]])->getBody()->getContents();
         $productType = json_decode($productType, true);
 
         $data['page'] = session('paginate.page');
