@@ -26,9 +26,8 @@ class BackProductsService
 
     private function getliked(array &$data): BackProductsService
     {
-        if (isset($data['user_id'])) {
-            $data['liked_ids'] = ProductTypeUserLike::where('user_id', $data['user_id'])
-                ->whereHas('productType.category', function ($q) use ($data) {
+        if ($user = auth('api')->user()) {
+            $data['liked_ids'] = $user->liked()->whereHas('category', function ($q) use ($data) {
                     $q->where('category_id', $data['category']->id);
                 })->pluck('productType_id')->flip()->all();
         }

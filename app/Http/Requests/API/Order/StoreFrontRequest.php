@@ -22,7 +22,6 @@ class StoreFrontRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'user_id' => auth()->id(),
             'cart' => session('cart'),
             'payment_status' => true,
         ]);
@@ -36,13 +35,12 @@ class StoreFrontRequest extends FormRequest
     public function rules()
     {
         return [
-            'delivery' => 'string',
-            'payment' => 'string',
-            'offer' => 'string',
-            'total_price' => 'string',
-            'user_id' => 'integer',
-            'cart' => 'array',
-            'payment_status' => 'bool',
+            'delivery' => 'required|string',
+            'payment' => 'required|string',
+            'offer' => 'required|string',
+            'total_price' => 'required|string',
+            'cart' => 'required|array',
+            'payment_status' => 'required|bool',
 
         ];
     }

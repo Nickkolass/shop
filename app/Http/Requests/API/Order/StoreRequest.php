@@ -22,9 +22,9 @@ class StoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $user = User::select('surname', 'name', 'patronymic', 'address')->find($this->user_id);
-
+        $user = auth('api')->user();
         $this->merge([
+            'user_id' => $user->id,
             'delivery' => $this->delivery . '. Получатель: ' . $user->surname . ' ' . $user->name . ' ' . $user->patronymic . '. Адрес: ' . $user->address,
         ]);
     }

@@ -57,7 +57,6 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example=1),
  *             @OA\Property(property="page", type="integer", example=1),
  *         ),
  *     ),
@@ -104,7 +103,6 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example=1),
  *             @OA\Property(property="total_price", type="integer", example=1000),
  *             @OA\Property(property="payment_status", type="bool", example=true),
  *             @OA\Property(property="payment", type="string", example="card"),
@@ -209,7 +207,6 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example="1"),
  *             @OA\Property(property="viewed", type="object", example={1, 2}),
  *         ),
  *     ),
@@ -345,7 +342,6 @@ use App\Http\Controllers\Controller;
  *                 @OA\Property(property="662341", type="integer", example="2"),
  *                 @OA\Property(property="115521", type="integer", example="3"),
  *             ),
- *             @OA\Property(property="user_id", type="integer", example=1),
  *         ),
  *     ),
  *
@@ -473,13 +469,6 @@ use App\Http\Controllers\Controller;
  *     summary="просмотр понравившихся товаров",
  *     tags={"products"},
  *
- *
- *     @OA\RequestBody(
- *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example="1"),
- *         ),
- *     ),
- *
  *     @OA\Response(
  *         response=200,
  *         description="ok",
@@ -563,12 +552,6 @@ use App\Http\Controllers\Controller;
  *         example=1,
  *     ),
  *
- *     @OA\RequestBody(
- *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example="1"),
- *         ),
- *     ),
- *
  *     @OA\Response(
  *         response=200,
  *         description="ok",
@@ -584,7 +567,7 @@ use App\Http\Controllers\Controller;
  *                 @OA\Property(property="Цвет", type="string", example="Красный"),
  *                 @OA\Property(property="Упаковка", type="string", example="Коробка"),
  *             ),
- *             @OA\Property(property="liked", type="bool", example="true"),
+ *             @OA\Property(property="likeable", type="bool", example="true"),
  *             @OA\Property(property="product", type="object",
  *                 @OA\Property(property="id", type="integer", example="1"),
  *                 @OA\Property(property="title", type="string", example="cool chokolate"),
@@ -624,11 +607,15 @@ use App\Http\Controllers\Controller;
  *                 @OA\Property(property="rating", type="integer", example="5"),
  *                 @OA\Property(property="countRating", type="integer", example="1"),
  *                 @OA\Property(property="countComments", type="integer", example="1"),
+ *                 @OA\Property(property="commentable", type="bool", example="true"),
  *                 @OA\Property(property="ratingAndComments", type="array",
  *                     @OA\Items(type="object",
  *                         @OA\Property(property="message", type="string", example="so sweety"),
  *                         @OA\Property(property="rating", type="integer", example="5"),
- *                         @OA\Property(property="user", type="string", example="Petrov Petr"),
+ *                         @OA\Property(property="user", type="object",
+ *                             @OA\Property(property="id", type="integer", example="1"),
+ *                             @OA\Property(property="name", type="string", example="Petrov Petr"),
+ *                         ),
  *                         @OA\Property(property="commentImages", type="object", example={"comments/1.jpg", "comments/2.jpg"}),
  *                         @OA\Property(property="created_at", type="string", example="2 hours ago"),
  *                     ),
@@ -652,8 +639,6 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
- *             @OA\Property(property="user_id", type="integer", example="1"),
- *             @OA\Property(property="product_id", type="integer", example="1"),
  *             @OA\Property(property="rating", type="integer", example="1"),
  *             @OA\Property(property="message", type="string", example="So sweety"),
  *             @OA\Property(property="commentImages", type="array",

@@ -25,6 +25,7 @@ class ShowProductResource extends JsonResource
             'rating' => $this->rating,
             'countRating' => $this->countRating,
             'countComments' => $this->countComments,
+            'commentable' => !$this->rating_and_comments_exists,
             'ratingAndComments' => RatingAndCommentsResource::collection($this->ratingAndComments)->resolve(),
         ];
 

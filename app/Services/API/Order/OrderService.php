@@ -16,9 +16,9 @@ class OrderService
         $this->service = $service;
     }
 
-    public function index(int $user_id, int $page): ?Paginator
+    public function index(int $page): ?Paginator
     {
-        $user = User::select('id', 'role')->find($user_id);
+        $user = auth('api')->user();
         $orders = $user->isAdmin() ?  Order::query() : $user->orders();
         $orders = $orders->without('payment_status', 'payment')->with(['orderPerformers' => function ($q) {
             $q->withTrashed()->select('order_id', 'dispatch_time');
