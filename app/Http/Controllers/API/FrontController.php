@@ -8,10 +8,7 @@ use App\Http\Requests\API\RatingAndComment\StoreFrontRequest;
 use App\Services\API\APIFrontService;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\View\View;
-use Illuminate\Cookie\CookieJar;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cookie;
 
 class FrontController extends Controller
 {

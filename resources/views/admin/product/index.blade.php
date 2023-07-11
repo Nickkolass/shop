@@ -61,13 +61,6 @@
                                                  class="img img-responsive">
                                         @endforeach
                                     </td>
-                                    <td>{{ $product->rating . ' (' . $product->countRating . ')' }}</td>
-                                    <td>
-                                        @for($i=1; $i<=5; $i++)
-                                            <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
-                                        @endfor
-                                    ({{ $product['countRating'] }})
-                                    </td>
                                     <td>
                                         @for($i=1; $i<=5; $i++)
                                             <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>

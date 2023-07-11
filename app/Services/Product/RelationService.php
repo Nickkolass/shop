@@ -39,9 +39,15 @@ class RelationService
 
     public function relationsProduct(Product $product, $relations, ?bool $isNewProduct = true): void
     {
-        foreach ($relations['propertyValues'] as $property_id => &$value) {
-            $value = PropertyValue::firstOrCreate(['property_id' => $property_id, 'value' => $value])->id;
+        $query = PropertyValue::query();
+        foreach ($relations['propertyValues'] as $property_id => $value) {
+            $propertyValues[$property_id] = ['property_id' => $property_id, 'value' => $value];
+            $query->orWhere(function($b) use ($propertyValues, $property_id) {
+                $b->where($propertyValues[$property_id]);
+            });
         }
+        PropertyValue::upsert($propertyValues, ['property_id', 'value']);
+        $relations['propertyValues'] = $query->pluck('id')->all();
 
         if ($isNewProduct) foreach ($relations as $relation => $keys) $product->$relation()->attach($keys);
         else foreach ($relations as $relation => $keys) $detached[$relation] = $product->$relation()->sync($keys)['detached'];
