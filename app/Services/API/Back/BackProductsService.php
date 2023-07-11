@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\OptionValue;
 use App\Models\ProductType;
-use App\Models\ProductTypeUserLike;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
@@ -26,9 +25,8 @@ class BackProductsService
 
     private function getliked(array &$data): BackProductsService
     {
-        if (isset($data['user_id'])) {
-            $data['liked_ids'] = ProductTypeUserLike::where('user_id', $data['user_id'])
-                ->whereHas('productType.category', function ($q) use ($data) {
+        if ($user = auth('api')->user()) {
+            $data['liked_ids'] = $user->liked()->whereHas('category', function ($q) use ($data) {
                     $q->where('category_id', $data['category']->id);
                 })->pluck('productType_id')->flip()->all();
         }
@@ -60,10 +58,8 @@ class BackProductsService
         $data['filterable']['optionValues'] = Method::toGroups($data['filterable']['optionValues']);
         $data['filterable']['propertyValues'] = Method::toGroups($data['filterable']['propertyValues']);
 
-        $data['filterable']['prices'] = [
-            'min' => $data['category']->productTypes()->min('price'),
-            'max' => $data['category']->productTypes()->max('price'),
-        ];
+        $prices = $data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->first();
+        $data['filterable']['prices'] = ['min' => $prices->min, 'max' => $prices->max];
 
         $data['filterable']['salers'] = User::whereHas('products', function ($b) use ($products_ids) {
             $b->whereIn('id', $products_ids);

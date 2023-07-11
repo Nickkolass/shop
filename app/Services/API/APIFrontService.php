@@ -18,7 +18,6 @@ class APIFrontService
             $queryParams['paginate'] = $queryParams['paginate'] ?? null;
         }
         $queryParams['cart'] = session('cart');
-        $queryParams['user_id'] = auth()->id();
     }
 
 

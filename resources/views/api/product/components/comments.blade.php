@@ -31,7 +31,7 @@
             </div>
 
             <textarea name="message" id="summernote"> {{old('message')}} </textarea>
-            <input type="submit" class="btn btn-primary btn-lg">
+            <input type="submit" class="btn btn-primary btn-lg" @disabled(!$productType['product']['commentable'])>
 
         </form>
     @else
@@ -44,7 +44,7 @@
             <br>
             <div class="card">
                 <div class="card-header">
-                    {{$comment['user'] . ', ' . $comment['created_at']}}
+                    {{$comment['user']['name'] . ', ' . $comment['created_at']}}
                     @for($i=1; $i<=5; $i++)
                         <i class="fa fa-star{{$i-1<$comment['rating'] & $comment['rating']<$i ? '-half' : ''}}{{$comment['rating']<$i ? '-o' : ''}}"></i>
                     @endfor

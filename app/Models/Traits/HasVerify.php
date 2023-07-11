@@ -9,7 +9,12 @@ trait HasVerify
     public function verify($role)
     {
         if (!$role)
-            if (auth()->check()) session(['user_role' => User::getRoles()[auth()->user()->role]]);
+            if ($user = auth()->user()) {
+                session([
+                    'user_role' => User::getRoles()[$user->role],
+                    'jwt' => 'bearer '. auth('api')->fromUser($user),
+                ]);
+            }
             else abort(redirect('login'));
     }
 }

@@ -39,7 +39,6 @@ class FilterRequest extends FormRequest
                 'page.integer' => '',
             ],
             'cart' => 'array',
-            'user_id' => 'int|nullable',
         ];
     }
 }

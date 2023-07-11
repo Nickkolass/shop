@@ -17,7 +17,7 @@ class RatingAndCommentsResource extends JsonResource
         return [
             'message' => $this->message,
             'rating' => $this->rating,
-            'user' => $this->user->name,
+            'user' => $this->user,
             'commentImages' => $this->commentImages->pluck('file_path'),
             'created_at' => $this->created_at->diffForHumans(),
         ];

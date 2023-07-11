@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Components\ImportDataClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
-use App\Models\Order;
+use GuzzleHttp\Client;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class FrontOrderController extends Controller
 {
-    private ImportDataClient $import;
+    private Client $client;
 
-    public function __construct(ImportDataClient $import)
+    public function __construct()
     {
-        $this->import = $import;
+        $this->client = new Client(config('guzzle'));
     }
-
 
     /**
      * Display a listing of the resource.
@@ -27,12 +25,9 @@ class FrontOrderController extends Controller
 
     public function index(): View
     {
-        $this->authorize('viewAny', Order::class);
-
         $data['page'] = request('page') ?? 1;
-        $data['user_id'] = auth()->id();
 
-        $orders = $this->import->client->request('POST', 'api/orders', ['query' => $data])->getBody()->getContents();
+        $orders = $this->client->request('POST', 'api/orders', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
         return view('api.order.index', compact('orders'));
@@ -58,12 +53,10 @@ class FrontOrderController extends Controller
      */
     public function store(StoreFrontRequest $request): RedirectResponse
     {
-        $this->authorize('create', Order::class);
-
         $data = $request->validated();
         //платежная система
 
-        $this->import->client->request('POST', 'api/orders/store', ['query' => $data])->getBody()->getContents();
+        $this->client->request('POST', 'api/orders/store', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         session()->forget(['cart', 'filter', 'paginate']);
 
         return redirect()->route('api.orders.index');
@@ -77,8 +70,7 @@ class FrontOrderController extends Controller
      */
     public function show(int $order_id): View
     {
-        $this->authorize('view', Order::withTrashed()->find($order_id));
-        $order = $this->import->client->request('POST', 'api/orders/' . $order_id)->getBody()->getContents();
+        $order = $this->client->request('POST', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $order = json_decode($order, true);
         return view('api.order.show', compact('order'));
     }
@@ -91,8 +83,7 @@ class FrontOrderController extends Controller
      */
     public function update(int $order_id): RedirectResponse
     {
-        $this->authorize('update', Order::find($order_id));
-        $this->import->client->request('PATCH', 'api/orders/' . $order_id);
+        $this->client->request('PATCH', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
 
@@ -104,8 +95,7 @@ class FrontOrderController extends Controller
      */
     public function destroy(int $order_id): RedirectResponse
     {
-        $this->authorize('delete', Order::find($order_id));
-        $this->import->client->request('DELETE', 'api/orders/' . $order_id)->getBody()->getContents();
+        $this->client->request('DELETE', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
 }
