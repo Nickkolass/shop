@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -14,13 +16,16 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $this->authorize('viewAny', OrderPerformer::class);
 
-        $orders = session('user_role') == 'admin' ? OrderPerformer::with('user:id,name') : auth()->user()->orderPerformers();
+        $user = session('user');
+        $orders = $user['role'] == 'admin' ? OrderPerformer::with('user:id,name') : OrderPerformer::whereHas('saler', function($q) use($user) {
+            $q->where('id', $user['id']);
+        });;
         $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
         if ($orders->count() != 0) {
             foreach ($orders as $order) $ordersProductTypes[] = json_decode($order->productTypes);
@@ -39,24 +44,23 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param OrderPerformer $order
+     * @return View
      */
-    public function show(OrderPerformer $order)
+    public function show(OrderPerformer $order): View
     {
         $this->authorize('view', $order);
 
         $order->load('saler:users.id,name');
         $pTs = collect(json_decode($order->productTypes));
         $order->productTypes = ProductType::whereIn('id', $pTs->pluck('productType_id'))->select('id', 'product_id', 'preview_image')
-            ->with(['category:categories.id,title_rus', 'optionValues.option:id,title', 'product:id,title'])->get();
-
-        $order->productTypes->map(function ($productType) use ($pTs) {
-            $pT = $pTs->where('productType_id', $productType->id)->first();
-            $productType->amount = $pT->amount;
-            $productType->price = $pT->price;
-            Method::valuesToKeys($productType, 'optionValues');
-        });
+            ->with(['category:categories.id,title_rus', 'optionValues.option:id,title', 'product:id,title'])->get()
+            ->each(function ($productType) use ($pTs) {
+                $pT = $pTs->where('productType_id', $productType->id)->first();
+                $productType->amount = $pT->amount;
+                $productType->price = $pT->price;
+                Method::valuesToKeys($productType, 'optionValues');
+            });
 
         return view('admin.order.show', compact('order'));
     }
@@ -64,14 +68,14 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param OrderPerformer $order
+     * @return RedirectResponse
      */
-    public function update(OrderPerformer $order)
+    public function update(OrderPerformer $order): RedirectResponse
     {
         $this->authorize('update', $order);
         $order->update(['status' => 'Отправлен ' . now()]);
-       
+
         $order->order()->whereHas('orderPerformers', function ($q) use ($order) {
             $q->where('order_id', $order->order_id)->where('status', '!=', 'В работе');
         })->update(['status' => 'Отправлен']);
@@ -81,10 +85,10 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\OrderPerformer  $order
-     * @return \Illuminate\Http\Response
+     * @param OrderPerformer $order
+     * @return RedirectResponse
      */
-    public function destroy(OrderPerformer $order)
+    public function destroy(OrderPerformer $order): RedirectResponse|string
     {
         $this->authorize('delete', $order);
         DB::beginTransaction();

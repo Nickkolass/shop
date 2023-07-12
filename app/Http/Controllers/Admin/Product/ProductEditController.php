@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\ProductRequest;
+use App\Http\Requests\Admin\Product\ProductRequest;
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\Option;
+use App\Models\Product;
 use App\Models\Property;
 use App\Models\Tag;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProductEditController extends Controller
 {
-    public function index(Product $product)
+    public function index(Product $product): View
     {
         $this->authorize('update', $product);
 
@@ -25,7 +27,7 @@ class ProductEditController extends Controller
     }
 
 
-    public function properties(Product $product, ProductRequest $request)
+    public function properties(Product $product, ProductRequest $request): View
     {
         $data = $request->validated();
         session(['edit' => $data]);
@@ -43,8 +45,8 @@ class ProductEditController extends Controller
         return view('admin.product.edit.properties_edit', compact('product', 'properties', 'optionValues', 'productPV_ids', 'productOV_ids'));
     }
 
-    
-    public function publish(Product $product)
+
+    public function publish(Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
         $product->productTypes()->update(['is_published' => request()->has('publish') ? 1 : 0]);

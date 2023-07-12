@@ -19,7 +19,7 @@ class ProductTypeService
     }
 
 
-    public function store(Product $product, $type, ?bool $isNewProduct = true)
+    public function store(Product $product, $type, ?bool $isNewProduct = true): array|string
     {
         DB::beginTransaction();
         try {
@@ -44,7 +44,7 @@ class ProductTypeService
     }
 
 
-    public function update(ProductType $productType, $type)
+    public function update(ProductType $productType, $type): ?string
     {
         $relations = $this->relationService->getRelations($type);
 
@@ -61,8 +61,8 @@ class ProductTypeService
 
             $productType->optionValues()->sync($relations['optionValues']);
             $this->relationService->updateProductOVs($productType);
-
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
@@ -70,7 +70,7 @@ class ProductTypeService
     }
 
 
-    public function delete(ProductType $productType)
+    public function delete(ProductType $productType): ?string
     {
         DB::beginTransaction();
         try {
@@ -82,6 +82,7 @@ class ProductTypeService
             $this->relationService->updateProductOVs($productType);
 
             DB::commit();
+            return null;
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();

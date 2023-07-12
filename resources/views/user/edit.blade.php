@@ -1,11 +1,11 @@
 @extends(
-session('user_role') == 'client'
-? 'api.layouts.main'
-: 'admin.layouts.main'
+$user->role == 'admin' || $user->role == 'saler'
+? 'admin.layouts.main'
+: 'api.layouts.main'
 )
 @section('content')
 <!-- Content Header (Page header) -->
-@if(session('user_role') == 'client')
+@if($user->role == 'client')
 <br><br><br><br><br><br>
 @else
 <div class="content-header">
@@ -89,7 +89,7 @@ session('user_role') == 'client'
               <input type="text" value="{{ $user->email }}" name="email" class="form-control" placeholder="Email" required>
             </div>
           </div>
-          @if(session('user_role') == 'saler' || session('user_role') == 'admin')
+          @if($user->role == 'saler' || $user->role == 'admin')
           <div class="row mb-3">
             <label for="INN" class="col-md-6 col-form-label text-md-end">{{ __('ИНН') }}</label>
             <div class="col-md-6">

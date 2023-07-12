@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\Category;
 use App\Models\CommentImage;
 use App\Models\Option;
@@ -17,6 +15,7 @@ use App\Models\RatingAndComment;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -47,13 +46,6 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Габариты'],
 
         ];
-
-        // ['title' => 'Вес'],
-        // ['title' => 'Вес'],
-
-        // ['title' => 'is_published'],
-        // ['title' => 'count'],
-        // ['title' => 'Цена'],
 
         for ($k = 1; $k <= 10; $k++) {
             Property::factory(1)
@@ -124,5 +116,6 @@ class DatabaseSeeder extends Seeder
             }
         }
         User::where('id', 1)->update(['role' => 1, 'email' => '1@mail.ru', 'password' => '$2y$10$zEo/vVO3vfXIzHrTdDS1zesl3di.9XddQqXLSuJi1UJf9nVszUvzq']);
+        Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
     }
 }

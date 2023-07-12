@@ -3,9 +3,11 @@
 namespace App\Services\API;
 
 
+use App\Models\ProductType;
+
 class APIFrontService
 {
-    public static function scenarioGetProducts(&$queryParams)
+    public static function scenarioGetProducts(?array &$queryParams): void
     {
         if (!empty($queryParams['page'])) {
             $queryParams['filter'] = session('filter') ?? null;
@@ -16,11 +18,10 @@ class APIFrontService
             $queryParams['paginate'] = $queryParams['paginate'] ?? null;
         }
         $queryParams['cart'] = session('cart');
-        $queryParams['user_id'] = auth()->id();
     }
 
 
-    public static function afterGetProducts(&$data)
+    public static function afterGetProducts(array &$data): ?array
     {
         $data['cart'] = session('cart');
         session(['filter' => $data['filter']]);

@@ -12,8 +12,8 @@ use App\Services\API\Order\OrderService;
 
 class BackOrderController extends Controller
 {
-    private $service;
-    private $DBservice;
+    private OrderService $service;
+    private OrderDBService $DBservice;
 
     public function __construct(OrderService $service, OrderDBService $DBservice)
     {
@@ -24,32 +24,25 @@ class BackOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return ?array
      */
-    public function index()
+    public function index(): ?array
     {
-        $orders = $this->service->index(request('user_id'), request('page'));
+        $this->authorize('viewAny', Order::class);
+        $orders = $this->service->index(request('page'));
         if(isset($orders)) return OrdersResource::make($orders)->resolve();
+        return null;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
+     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): void
     {
+        $this->authorize('create', Order::class);
         $data = $request->validated();
         $this->DBservice->store($data);
     }
@@ -57,45 +50,38 @@ class BackOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param  Order  $order
+     * @return array
      */
-    public function show(Order $order)
+    public function show(Order $order): array
     {
+        $this->authorize('view', $order);
         $order = $this->service->show($order);
         return ShowOrderResource::make($order)->resolve();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param  Order  $order
+     * @return void
      */
-    public function update(Order $order)
+    public function update(Order $order): void
     {
+        $this->authorize('update', $order);
         $this->DBservice->update($order);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param  Order  $order
+     * @return void
      */
-    public function destroy(Order $order)
+    public function destroy(Order $order): void
     {
+        $this->authorize('delete', $order);
         $this->DBservice->delete($order);
     }
 }

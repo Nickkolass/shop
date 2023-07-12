@@ -11,7 +11,7 @@ use App\Models\PropertyValue;
 class RelationService
 {
 
-    public function getRelations(&$product)
+    public function getRelations(&$product): array
     {
         foreach ($product as $relation => $keys) {
             if (is_array($keys)) {
@@ -23,26 +23,31 @@ class RelationService
     }
 
 
-    public function relationsType(Product $product, ProductType $productType, $relations, $isNewProduct)
+    public function relationsType(Product $product, ProductType $productType, $relations, $isNewProduct): array
     {
         if ($isNewProduct) {
             $relations['optionValues'] = array_map(function($optionValue) use ($productType) {
                 return ['productType_id' => $productType->id, 'optionValue_id' => $optionValue];
             }, $relations['optionValues']);
-
-            return $relations;
         } else {
             $productType->optionValues()->attach($relations['optionValues']);
             $product->optionValues()->sync($relations['optionValues'], false);
         }
+        return $relations;
     }
 
 
-    public function relationsProduct(Product $product, $relations, ?bool $isNewProduct = true)
+    public function relationsProduct(Product $product, $relations, ?bool $isNewProduct = true): void
     {
-        foreach ($relations['propertyValues'] as $property_id => &$value) {
-            $value = PropertyValue::firstOrCreate(['property_id' => $property_id, 'value' => $value])->id;
+        $query = PropertyValue::query();
+        foreach ($relations['propertyValues'] as $property_id => $value) {
+            $propertyValues[$property_id] = ['property_id' => $property_id, 'value' => $value];
+            $query->orWhere(function($b) use ($propertyValues, $property_id) {
+                $b->where($propertyValues[$property_id]);
+            });
         }
+        PropertyValue::upsert($propertyValues, ['property_id', 'value']);
+        $relations['propertyValues'] = $query->pluck('id')->all();
 
         if ($isNewProduct) foreach ($relations as $relation => $keys) $product->$relation()->attach($keys);
         else foreach ($relations as $relation => $keys) $detached[$relation] = $product->$relation()->sync($keys)['detached'];
@@ -54,7 +59,7 @@ class RelationService
     }
 
 
-    public function updateProductOVs(ProductType $productType)
+    public function updateProductOVs(ProductType $productType): void
     {
         $optionValue_ids = OptionValue::whereHas('productTypes', function ($pT) use ($productType) {
             $pT->where('product_id', $productType->product_id);

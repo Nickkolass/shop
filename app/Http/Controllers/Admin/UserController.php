@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\UserStoreRequest;
-use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Requests\Admin\User\UserStoreRequest;
+use App\Http\Requests\Admin\User\UserUpdateRequest;
+use App\Mail\MailRegistered;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -14,15 +18,15 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'support']);
-        $this->middleware('admin')->only('index');
+        $this->middleware('admin')->only('index', 'create', 'store');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $this->authorize('viewAny', User::class);
         $users = User::simplePaginate(5);
@@ -32,9 +36,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('user.create');
     }
@@ -43,25 +47,27 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function store(UserStoreRequest $request)
+    public function store(UserStoreRequest $request): View
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        User::firstOrCreate([
+        $user = User::firstOrCreate([
             'email' => $data['email']
         ], $data);
+        event(new Registered($user));
+        Mail::to($user->email)->send(new MailRegistered());
         return $this->index();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  User  $user
+     * @return View
      */
-    public function show(User $user)
+    public function show(User $user): View
     {
         $this->authorize('view', $user);
         return view('user.show', compact('user'));
@@ -70,10 +76,10 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  User  $user
+     * @return View
      */
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         $this->authorize('update', $user);
         return view('user.edit', compact('user'));
@@ -83,10 +89,10 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  User  $user
+     * @return View
      */
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request, User $user): View
     {
         $this->authorize('update', $user);
         $data = $request->validated();
@@ -98,10 +104,10 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  User  $user
+     * @return View
      */
-    public function destroy(User $user)
+    public function destroy(User $user): View
     {
         $this->authorize('delete', $user);
         $user->delete();
@@ -111,9 +117,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function support()
+    public function support(): View
     {
         return view('admin.support');
     }

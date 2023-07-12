@@ -32,7 +32,7 @@ class ProductFilter extends AbstractFilter
 
     public function search(Builder $builder, $value)
     {
-        $builder->whereIn('product_id', $value);
+        $builder->whereIn('productTypes.product_id', $value);
     }
 
     public function category(Builder $builder, $value)
@@ -60,7 +60,9 @@ class ProductFilter extends AbstractFilter
 
     public function prices(Builder $builder, $value)
     {
-        $builder->whereBetween('price', $value);
+        if(count($value) == 2) $builder->whereBetween('price', $value);
+        elseif(isset($value['min'])) $builder->where('price', '>', $value['min']);
+        elseif(isset($value['max'])) $builder->where('price', '<', $value['max']);
     }
 
     public function optionValues(Builder $builder, $value)

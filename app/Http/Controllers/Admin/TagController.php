@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Tag\TagStoreRequest;
-use App\Http\Requests\Tag\TagUpdateRequest;
+use App\Http\Requests\Admin\Tag\TagStoreRequest;
+use App\Http\Requests\Admin\Tag\TagUpdateRequest;
 use App\Models\Tag;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View;
 
 class TagController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $tags = Tag::all();
         return view('admin.tag.index', compact('tags'));
@@ -24,9 +24,9 @@ class TagController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.tag.create');
     }
@@ -35,9 +35,9 @@ class TagController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function store(TagStoreRequest $request)
+    public function store(TagStoreRequest $request): View
     {
         $data = $request->validated();
         Tag::firstOrCreate($data);
@@ -47,46 +47,46 @@ class TagController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Tag $tag
+     * @return View
      */
-    public function show(Tag $tag)
+    public function show(Tag $tag): View
     {
-        return view('admin.tag.show', compact('tag'));   
+        return view('admin.tag.show', compact('tag'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Tag $tag
+     * @return View
      */
-    public function edit(Tag $tag)
+    public function edit(Tag $tag): View
     {
-        return view('admin.tag.edit', compact('tag'));   
+        return view('admin.tag.edit', compact('tag'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Tag $tag
+     * @return View
      */
-    public function update(TagUpdateRequest $request, Tag $tag)
+    public function update(TagUpdateRequest $request, Tag $tag): View
     {
         $data = $request->validated();
         $tag->update($data);
-        return view('admin.tag.show', compact('tag'));   
+        return view('admin.tag.show', compact('tag'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Tag $tag
+     * @return View
      */
-    public function destroy(Tag $tag)
+    public function destroy(Tag $tag): View
     {
         $tag->products()->detach();
         $tag->delete();

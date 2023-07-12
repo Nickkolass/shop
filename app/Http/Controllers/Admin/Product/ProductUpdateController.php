@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Http\Requests\Admin\Product\UpdateRequest;
 use App\Models\Product;
-use App\Http\Controllers\Admin\Product\DBProductController;
-use App\Http\Requests\Product\UpdateRequest;
+use Illuminate\Http\RedirectResponse;
 
 class ProductUpdateController extends DBProductController
 {
-    public function __invoke(Product $product, UpdateRequest $request)
+    public function __invoke(Product $product, UpdateRequest $request): RedirectResponse
     {
         $this->authorize('update', $product);
 

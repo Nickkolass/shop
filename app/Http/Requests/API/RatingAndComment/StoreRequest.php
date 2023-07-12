@@ -23,9 +23,7 @@ class StoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        if(empty($this->user_id)) {
-            $this->merge(['user_id' => auth()->id(), 'product_id' => request()->route()->parameter('product')]);
-        }
+        $this->merge(['user_id' => auth('api')->id(), 'product_id' => $this->route()->parameter('product')]);
     }
 
     /**

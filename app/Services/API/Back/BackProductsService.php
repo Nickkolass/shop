@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\OptionValue;
 use App\Models\ProductType;
-use App\Models\ProductTypeUserLike;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
@@ -17,25 +16,24 @@ use App\Models\User;
 class BackProductsService
 {
 
-    public function getData(&$data, Category $category)
+    public function getData(array &$data, Category $category): void
     {
         $data['filter'] = $data['filter'] ?? [];
         $data['category'] = $category;
         $this->getPaginate($data)->getProductTypes($data)->getFilterable($data)->getliked($data);
     }
 
-    private function getliked(&$data)
+    private function getliked(array &$data): BackProductsService
     {
-        if (isset($data['user_id'])) {
-            $data['liked_ids'] = ProductTypeUserLike::where('user_id', $data['user_id'])
-                ->whereHas('productType.category', function ($q) use ($data) {
+        if ($user = auth('api')->user()) {
+            $data['liked_ids'] = $user->liked()->whereHas('category', function ($q) use ($data) {
                     $q->where('category_id', $data['category']->id);
                 })->pluck('productType_id')->flip()->all();
-            return $this;
         }
+        return $this;
     }
 
-    private function getPaginate(&$data)
+    private function getPaginate(array &$data): BackProductsService
     {
         $data['paginate']['orderBy'] = $data['paginate']['orderBy'] ?? 'rating';
         $data['paginate']['perPage'] = $data['paginate']['perPage'] ?? 8;
@@ -43,7 +41,7 @@ class BackProductsService
         return $this;
     }
 
-    private function getFilterable(&$data)
+    private function getFilterable(array &$data): BackProductsService
     {
         $products_ids = $data['category']->products()->pluck('id');
 
@@ -60,10 +58,8 @@ class BackProductsService
         $data['filterable']['optionValues'] = Method::toGroups($data['filterable']['optionValues']);
         $data['filterable']['propertyValues'] = Method::toGroups($data['filterable']['propertyValues']);
 
-        $data['filterable']['prices'] = [
-            'min' => $data['category']->productTypes()->min('price'),
-            'max' => $data['category']->productTypes()->max('price'),
-        ];
+        $prices = $data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->first();
+        $data['filterable']['prices'] = ['min' => $prices->min, 'max' => $prices->max];
 
         $data['filterable']['salers'] = User::whereHas('products', function ($b) use ($products_ids) {
             $b->whereIn('id', $products_ids);
@@ -76,27 +72,11 @@ class BackProductsService
         return $this;
     }
 
-    private function getProductTypes(&$data)
+    private function getProductTypes(array &$data): BackProductsService
     {
-        return $this->sortPrices($data['filter']['prices'], $data['category'])->productTypes($data, $data['category']->id);
-    }
-
-
-    private function sortPrices(&$prices, Category $category)
-    {
-        if (!empty($prices)) {
-            $prices['min'] = $prices['min'] ?? $category->productTypes()->min('price');
-            $prices['max'] = $prices['max'] ?? $category->productTypes()->max('price');
-            $prices['min'] > $prices['max'] ? $prices['min'] = $prices['max'] : '';
-            asort($prices);
-        }
-        return $this;
-    }
-
-    private function productTypes(&$data, $category_id)
-    {
-        if (!empty($data['filter']['search'])) $data['filter']['search'] = Product::search($data['filter']['search'])->get('id')->pluck('id');
-        $filter = app()->make(ProductFilter::class, ['queryParams' => array_merge(array_filter($data['filter']), ['category' => $category_id])]);
+        if (!empty($data['filter']['search'])) $search = ['search' => Product::search($data['filter']['search'])->keys()->all()];
+        $queryParams = array_merge(array_filter($data['filter']), ['category' => $data['category']->id], $search ?? []);
+        $filter = app()->make(ProductFilter::class, ['queryParams' => $queryParams]);
 
         $data['productTypes'] = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\BackController;
 use App\Http\Controllers\API\BackOrderController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,21 +16,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::prefix('auth')->controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+    Route::post('me', 'me');
+});
 
 Route::controller(BackController::class)->group(function () {
     Route::post('/cart', 'cart');
     Route::post('/products', 'index');
-    Route::post('/products/liked', 'liked');
-    Route::post('/products/liked/{productType}/toggle', 'likedToggle');
-    Route::post('/products/{product}/comment', 'commentStore');
+    Route::post('/products/liked', 'liked')->middleware('jwt.auth');
+    Route::post('/products/liked/{productType}/toggle', 'likedToggle')->middleware('jwt.auth');
+    Route::post('/products/{product}/comment', 'commentStore')->middleware('jwt.auth');
     Route::post('/products/{category:title}', 'products');
     Route::post('/products/{category:title}/{productType}', 'product');
 });
 
-Route::controller(BackOrderController::class)->group(function () {
-    Route::post('/orders', 'index');
-    Route::post('/orders/store', 'store');
-    Route::post('/orders/{order}', 'show')->withTrashed();
-    Route::patch('/orders/{order}', 'update');
-    Route::delete('/orders/{order}', 'destroy');
+Route::middleware('jwt.auth')->group(function () {
+    Route::controller(BackOrderController::class)->group(function () {
+        Route::post('/orders', 'index');
+        Route::post('/orders/store', 'store');
+        Route::post('/orders/{order}', 'show')->withTrashed();
+        Route::patch('/orders/{order}', 'update');
+        Route::delete('/orders/{order}', 'destroy');
+    });
 });

@@ -20,8 +20,7 @@ class SalerMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // session(['user_role' => 'admin']);
-        $role = session('user_role');
+        $role = session('user.role');
         $this->verify($role);
         if ($role == 'saler' || $role == 'admin') return $next($request);
         abort(403);
