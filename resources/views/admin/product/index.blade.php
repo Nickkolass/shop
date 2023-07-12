@@ -35,7 +35,7 @@
                                 <th>ID</th>
                                 <th>Продукты</th>
                                 <th>Категория</th>
-                                @if (session('user_role') == 'admin')
+                                @if (session('user.role') == 'admin')
                                     <th>Продавец</th>
                                 @endif
                                 <th>Виды</th>
@@ -50,7 +50,7 @@
                                         <a href="{{ route('admin.products.show', $product->id) }}">{{ $product->title }}</a>
                                     </td>
                                     <td>{{ $product->category->title_rus }}</td>
-                                    @if (session('user_role') == 'admin')
+                                    @if (session('user.role') == 'admin')
                                         <td>
                                             <a href="{{ route('users.show', $product->saler_id) }}">{{$product->saler_id}}</a>
                                         </td>

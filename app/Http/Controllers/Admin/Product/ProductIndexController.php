@@ -12,7 +12,10 @@ class ProductIndexController extends Controller
     {
         $this->authorize('viewAny', Product::class);
 
-        $products = session('user_role') == 'admin' ? Product::query() : auth()->user()->products();
+        $user = session('user');
+        $products = $user['role'] == 'admin' ? Product::query() : Product::whereHas('saler', function($q) use($user) {
+            $q->where('id', $user['id']);
+        });
 
         $products = $products->select('id', 'title', 'saler_id', 'category_id')->latest()
             ->with(['category:id,title_rus', 'productTypes:id,product_id,preview_image', 'ratingAndComments'])->simplePaginate(4);

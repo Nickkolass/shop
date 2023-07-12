@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Tag;
+namespace App\Http\Requests\Admin\Tag;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagStoreRequest extends FormRequest
+class TagUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

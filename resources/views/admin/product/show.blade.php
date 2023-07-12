@@ -69,7 +69,7 @@
                                     <td>{{ $product->id }}</td>
                                 </tr>
 
-                                @if (session('user_role') == 'admin')
+                                @if (session('user.role') == 'admin')
                                     <tr>
                                         <td>Продавец</td>
                                         <td>{{ $product->saler_id }}</td>

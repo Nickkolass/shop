@@ -20,7 +20,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $role = session('user_role');
+        $role = session('user.role');
         $this->verify($role);
         if ($role == 'admin') return $next($request);
         abort(403);

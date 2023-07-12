@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductType\ProductTypeStoreRequest;
-use App\Http\Requests\ProductType\ProductTypeUpdateRequest;
+use App\Http\Requests\Admin\Product\ProductType\ProductTypeStoreRequest;
+use App\Http\Requests\Admin\Product\ProductType\ProductTypeUpdateRequest;
 use App\Models\Option;
 use App\Models\Product;
 use App\Models\ProductType;

@@ -22,7 +22,10 @@ class OrderController extends Controller
     {
         $this->authorize('viewAny', OrderPerformer::class);
 
-        $orders = session('user_role') == 'admin' ? OrderPerformer::with('user:id,name') : auth()->user()->orderPerformers();
+        $user = session('user');
+        $orders = $user['role'] == 'admin' ? OrderPerformer::with('user:id,name') : OrderPerformer::whereHas('saler', function($q) use($user) {
+            $q->where('id', $user['id']);
+        });;
         $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
         if ($orders->count() != 0) {
             foreach ($orders as $order) $ordersProductTypes[] = json_decode($order->productTypes);

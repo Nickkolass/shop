@@ -3,7 +3,7 @@
 
     @include('admin.product.errors')
 
-    @if(session()->has('user_role'))
+    @if(session()->has('user'))
         <form action="{{route('api.comment.store', $productType['product_id'])}}" method="post"
               enctype="multipart/form-data">
             @csrf

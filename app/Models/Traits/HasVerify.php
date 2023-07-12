@@ -6,12 +6,16 @@ use App\Models\User;
 
 trait HasVerify
 {
-    public function verify($role)
+    public function verify(&$role)
     {
         if (!$role)
             if ($user = auth()->user()) {
                 session([
-                    'user_role' => User::getRoles()[$user->role],
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'role' => $role = User::getRoles()[$user->role]
+                    ],
                     'jwt' => 'bearer '. auth('api')->fromUser($user),
                 ]);
             }

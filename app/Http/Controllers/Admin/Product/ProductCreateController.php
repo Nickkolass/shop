@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\ProductRequest;
+use App\Http\Requests\Admin\Product\ProductRequest;
 use App\Models\Category;
 use App\Models\Option;
 use App\Models\OptionValue;

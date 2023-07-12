@@ -20,7 +20,7 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $role = session('user_role');
+        $role = session('user.role');
         $this->verify($role);
         return $next($request);
     }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Option;
+namespace App\Http\Requests\Admin\Product\ProductType;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OptionStoreRequest extends FormRequest
+class ProductTypeUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,15 +21,12 @@ class OptionStoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $oVs = [];
-        foreach ($this->optionValues as $oV) {
-            if (isset($oV['value']) & (array_search($oV, $oVs) === false)) {
-                $oVs[] = $oV;
-            }
-        }
-        $this->merge(['optionValues' => $oVs]);
+        $this->merge([
+            'is_published' => $this->count > 0 ? $this->is_published ?? 0 : 0,
+            'optionValues' => array_filter($this->optionValues),
+        ]);
     }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -38,9 +35,12 @@ class OptionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
+            'price' => 'required|string',
+            'count' => 'required|integer',
+            'is_published' => 'bool',
+            'preview_image' => 'file',
+            'productImages' => 'array',
             'optionValues' => 'required|array',
-            'optionValues.*.value' => 'required|string',
         ];
     }
 }

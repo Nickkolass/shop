@@ -55,7 +55,7 @@
                                 @include('api.product.components.qty')
                             </td>
                             <td style="vertical-align: middle">{{$productType['totalPrice']}} руб.</td>
-                            <td style="vertical-align: middle"> 
+                            <td style="vertical-align: middle">
                             <form action="{{route('api.addToCart', ['addToCart' => [$productType['id'] => 'amount']]) }}" method="post">
                                 @csrf
                                 <input type="submit" class="btn btn-danger" value="Удалить">
@@ -69,10 +69,10 @@
     <div style="text-align: center">
         <h4>Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4><br>
         <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"
-            href="{{ ($block ?? false) ? '#' : (session()->has('user_role') ? route('api.orders.create', ['totalPrice' => $totalPrice]) : route('login')) }}">
+            href="{{ ($block ?? false) ? '#' : (session()->has('user') ? route('api.orders.create', ['totalPrice' => $totalPrice]) : route('login')) }}">
             <h4
-                style="padding: 10px;margin-left: {{session()->has('user_role') ? '0px' : '-15px'}}; text-align: center">
-                {{($block ?? false) ? 'Имеются недоступные товары' : (session()->has('user_role') ? 'Перейти к оформлению' :
+                style="padding: 10px;margin-left: {{session()->has('user') ? '0px' : '-15px'}}; text-align: center">
+                {{($block ?? false) ? 'Имеются недоступные товары' : (session()->has('user') ? 'Перейти к оформлению' :
                 'Зарегистрируйтесь или войдите')}}</h4>
         </a>
     </div>

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
-use App\Http\Requests\Product\StoreRequest;
+use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 

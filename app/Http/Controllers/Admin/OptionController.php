@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Option\OptionStoreRequest;
-use App\Http\Requests\Option\OptionUpdateRequest;
+use App\Http\Requests\Admin\Option\OptionStoreRequest;
+use App\Http\Requests\Admin\Option\OptionUpdateRequest;
 use App\Models\Option;
 use App\Models\OptionValue;
 use Illuminate\Contracts\View\View;

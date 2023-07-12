@@ -96,7 +96,7 @@
               <a class="nav-link" href="{{ route('api.about') }}" style="white-space: pre">О нас</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('users.show', auth()->id()) }}" style="white-space: pre">{{ auth()->user()->name }}</a>
+              <a class="nav-link" href="{{ route('users.show', session('user.id')) }}" style="white-space: pre">{{ session('user.name') }}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();

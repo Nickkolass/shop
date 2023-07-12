@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\UserStoreRequest;
-use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Requests\Admin\User\UserStoreRequest;
+use App\Http\Requests\Admin\User\UserUpdateRequest;
 use App\Mail\MailRegistered;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -18,7 +18,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'support']);
-        $this->middleware('admin')->only('index');
+        $this->middleware('admin')->only('index', 'create', 'store');
     }
 
     /**

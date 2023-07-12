@@ -39,13 +39,11 @@
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
-      @if (session('user_role') == 'saler' || session('user_role') == 'admin')
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
       </ul>
-      @endif
 
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
@@ -61,7 +59,7 @@
           @else
           <div>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('users.show', $user = auth()->id()) }}">{{ auth()->user()->email }}</a>
+              <a class="nav-link" href="{{ route('users.show', session('user.id')) }}">{{ session('user.name') }}</a>
             </li>
           </div>
           <div>
@@ -202,7 +200,7 @@
               </a>
             </li>
 
-            @if (session('user_role') == 'admin')
+            @if (session('user.role') == 'admin')
             <li class="nav-item">
               <a href="{{ route('admin.categories.index') }}" class="nav-link">
                 <i class="nav-icon far fa-image"></i>

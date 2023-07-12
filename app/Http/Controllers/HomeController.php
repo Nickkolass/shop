@@ -16,7 +16,7 @@ class HomeController extends Controller
      */
     public function __invoke(): RedirectResponse
     {
-        $role = session('user_role');
+        $role = session('user.role');
         $this->verify($role);
         return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.index');
     }

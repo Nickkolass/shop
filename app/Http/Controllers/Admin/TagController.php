@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Tag\TagStoreRequest;
-use App\Http\Requests\Tag\TagUpdateRequest;
+use App\Http\Requests\Admin\Tag\TagStoreRequest;
+use App\Http\Requests\Admin\Tag\TagUpdateRequest;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
 

@@ -14,7 +14,7 @@
         <div class="col-sm">
             <form action="{{ route('api.liked.toggle', $productType['id']) }}" method="post">
                 @csrf
-                <button type="submit" class="border-0 bg-transparent" @disabled(!session()->has('user_role'))>
+                <button type="submit" class="border-0 bg-transparent" @disabled(!session()->has('user'))>
                     <i class="fa fa-heart{{isset($data['liked_ids'][$productType['id']]) || !empty($productType['likeable']) ? '': '-o'}}" style="cursor: pointer;"></i>
                 </button>
             </form>
