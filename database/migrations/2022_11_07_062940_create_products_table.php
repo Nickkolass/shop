@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('title')->unique();
-            $table->text('description');
-            $table->fullText(['title', 'description']);
-            $table->foreignId('saler_id')->nullable()->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->fullText('title'); // добавление индекса к самому полю не работает
+            $table->text('description')->fullText();
+            $table->foreignId('saler_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('category_id')->required()->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });

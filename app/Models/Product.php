@@ -53,8 +53,8 @@ class Product extends Model
         return $this->beLongsToMany(OptionValue::class, 'optionValue_products', 'product_id', 'optionValue_id');
     }
 
-    // #[SearchUsingPrefix(['id', 'email'])]
-    #[SearchUsingFullText(['products_title_description_fulltext'])]
+//    #[SearchUsingPrefix()]
+    #[SearchUsingFullText(['title', 'description'])]
     public function toSearchableArray()
     {
         return [
