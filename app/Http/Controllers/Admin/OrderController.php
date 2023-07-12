@@ -41,7 +41,7 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  OrderPerformer  $order
+     * @param OrderPerformer $order
      * @return View
      */
     public function show(OrderPerformer $order): View
@@ -51,14 +51,13 @@ class OrderController extends Controller
         $order->load('saler:users.id,name');
         $pTs = collect(json_decode($order->productTypes));
         $order->productTypes = ProductType::whereIn('id', $pTs->pluck('productType_id'))->select('id', 'product_id', 'preview_image')
-            ->with(['category:categories.id,title_rus', 'optionValues.option:id,title', 'product:id,title'])->get();
-
-        $order->productTypes->map(function ($productType) use ($pTs) {
-            $pT = $pTs->where('productType_id', $productType->id)->first();
-            $productType->amount = $pT->amount;
-            $productType->price = $pT->price;
-            Method::valuesToKeys($productType, 'optionValues');
-        });
+            ->with(['category:categories.id,title_rus', 'optionValues.option:id,title', 'product:id,title'])->get()
+            ->each(function ($productType) use ($pTs) {
+                $pT = $pTs->where('productType_id', $productType->id)->first();
+                $productType->amount = $pT->amount;
+                $productType->price = $pT->price;
+                Method::valuesToKeys($productType, 'optionValues');
+            });
 
         return view('admin.order.show', compact('order'));
     }
@@ -66,7 +65,7 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  OrderPerformer  $order
+     * @param OrderPerformer $order
      * @return RedirectResponse
      */
     public function update(OrderPerformer $order): RedirectResponse
@@ -83,7 +82,7 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  OrderPerformer  $order
+     * @param OrderPerformer $order
      * @return RedirectResponse
      */
     public function destroy(OrderPerformer $order): RedirectResponse|string

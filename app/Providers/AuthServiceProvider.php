@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Order;
+use App\Models\OrderPerformer;
 use App\Models\Product;
+use App\Models\ProductType;
 use App\Models\User;
+use App\Policies\OrderPerformerPolicy;
+use App\Policies\ProductTypePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
@@ -22,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Order::class => OrderPolicy::class,
         Product::class => ProductPolicy::class,
+        ProductType::class => ProductTypePolicy::class,
         OrderPerformer::class => OrderPerformerPolicy::class,
     ];
 

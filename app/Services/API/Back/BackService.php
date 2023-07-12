@@ -60,13 +60,12 @@ class BackService
     public function cart(?array $cart): ?Collection
     {
         $productTypes = ProductType::select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
-            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find(array_keys($cart));
-
-        $productTypes->map(function ($productType) use ($cart) {
-            $productType->amount = $cart[$productType->id];
-            $productType->totalPrice = $productType->amount * $productType->price;
-            Method::valuesToKeys($productType, 'optionValues');
-        });
+            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find(array_keys($cart))
+            ->each(function ($productType) use ($cart) {
+                $productType->amount = $cart[$productType->id];
+                $productType->totalPrice = $productType->amount * $productType->price;
+                Method::valuesToKeys($productType, 'optionValues');
+            });
         return $productTypes;
     }
 
