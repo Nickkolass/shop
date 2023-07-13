@@ -14,6 +14,14 @@ use App\Http\Controllers\Controller;
  *     path="/api/",
  * ),
  *
+ * @OA\Components(
+ *     @OA\SecurityScheme(
+ *         securityScheme="bearerAuth",
+ *         type="http",
+ *         scheme="bearer",
+ *     )
+ * )
+ *
  * @OA\Post(
  *     path="/api/cart",
  *     summary="просмотр корзины",
@@ -54,6 +62,7 @@ use App\Http\Controllers\Controller;
  *     path="/api/orders",
  *     summary="просмотр заказов",
  *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
@@ -100,6 +109,7 @@ use App\Http\Controllers\Controller;
  *     path="/api/orders/store",
  *     summary="создание заказа",
  *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
@@ -124,6 +134,8 @@ use App\Http\Controllers\Controller;
  *     path="/api/orders/{order}",
  *     summary="просмотр заказа",
  *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="ID заказа",
  *         in="path",
@@ -168,6 +180,8 @@ use App\Http\Controllers\Controller;
  *     path="/api/orders/{order}",
  *     summary="отметка о получении заказа",
  *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="ID заказа",
  *         in="path",
@@ -186,6 +200,8 @@ use App\Http\Controllers\Controller;
  *     path="/api/orders/{order}",
  *     summary="Отмена заказа",
  *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="ID заказа",
  *         in="path",
@@ -468,6 +484,7 @@ use App\Http\Controllers\Controller;
  *     path="/api/products/liked",
  *     summary="просмотр понравившихся товаров",
  *     tags={"products"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\Response(
  *         response=200,
@@ -518,6 +535,8 @@ use App\Http\Controllers\Controller;
  *     path="/api/products/liked/{productType}/toggle",
  *     summary="добавление (исключение) понравившегося товара",
  *     tags={"products"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="ID типа продукта",
  *         in="path",
@@ -629,6 +648,8 @@ use App\Http\Controllers\Controller;
  *     path="/api/products/{product}/comment",
  *     summary="добавление комментария",
  *     tags={"products"},
+ *     security={{ "bearerAuth": {} }},
+ *
  *     @OA\Parameter(
  *         description="ID продукта",
  *         in="path",
