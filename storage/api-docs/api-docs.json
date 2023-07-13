@@ -112,10 +112,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "page": {
                                         "type": "integer",
                                         "example": 1
@@ -227,7 +223,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders/store": {
@@ -241,10 +242,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "total_price": {
                                         "type": "integer",
                                         "example": 1000
@@ -280,7 +277,12 @@
                     "200": {
                         "description": "ok"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/orders/{order}": {
@@ -396,7 +398,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -416,7 +423,12 @@
                     "200": {
                         "description": "ok"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -436,7 +448,12 @@
                     "200": {
                         "description": "ok"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products": {
@@ -450,10 +467,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    },
                                     "viewed": {
                                         "type": "object",
                                         "example": [
@@ -868,10 +881,6 @@
                                             }
                                         },
                                         "type": "object"
-                                    },
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -1268,21 +1277,6 @@
                     "products"
                 ],
                 "summary": "просмотр понравившихся товаров",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "ok",
@@ -1422,7 +1416,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/liked/{productType}/toggle": {
@@ -1444,7 +1443,12 @@
                     "200": {
                         "description": "ok"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/products/{category}/{productType}": {
@@ -1469,21 +1473,6 @@
                         "example": 1
                     }
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "ok",
@@ -1535,7 +1524,7 @@
                                             },
                                             "type": "object"
                                         },
-                                        "liked": {
+                                        "likeable": {
                                             "type": "boolean",
                                             "example": "true"
                                         },
@@ -1668,6 +1657,10 @@
                                                     "type": "integer",
                                                     "example": "1"
                                                 },
+                                                "commentable": {
+                                                    "type": "boolean",
+                                                    "example": "true"
+                                                },
                                                 "ratingAndComments": {
                                                     "type": "array",
                                                     "items": {
@@ -1681,8 +1674,17 @@
                                                                 "example": "5"
                                                             },
                                                             "user": {
-                                                                "type": "string",
-                                                                "example": "Petrov Petr"
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": "1"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Petrov Petr"
+                                                                    }
+                                                                },
+                                                                "type": "object"
                                                             },
                                                             "commentImages": {
                                                                 "type": "object",
@@ -1731,14 +1733,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    },
-                                    "product_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    },
                                     "rating": {
                                         "type": "integer",
                                         "example": "1"
@@ -1777,7 +1771,20 @@
                     "200": {
                         "description": "ok"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }
