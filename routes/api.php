@@ -33,12 +33,10 @@ Route::controller(BackController::class)->group(function () {
     Route::post('/products/{category:title}/{productType}', 'product');
 });
 
-Route::middleware('jwt.auth')->group(function () {
-    Route::controller(BackOrderController::class)->group(function () {
-        Route::post('/orders', 'index');
-        Route::post('/orders/store', 'store');
-        Route::post('/orders/{order}', 'show')->withTrashed();
-        Route::patch('/orders/{order}', 'update');
-        Route::delete('/orders/{order}', 'destroy');
-    });
+Route::middleware('jwt.auth')->controller(BackOrderController::class)->group(function () {
+    Route::post('/orders', 'index');
+    Route::post('/orders/store', 'store');
+    Route::post('/orders/{order}', 'show')->withTrashed();
+    Route::patch('/orders/{order}', 'update');
+    Route::delete('/orders/{order}', 'destroy');
 });
