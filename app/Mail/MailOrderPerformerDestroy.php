@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\OrderPerformer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -9,18 +10,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class MailRegistered extends Mailable implements ShouldQueue
+class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public OrderPerformer $order;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(OrderPerformer $order)
     {
-        //
+        $this->order = $order;
     }
 
     /**
@@ -31,7 +34,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     public function envelope()
     {
         return new Envelope(
-            subject: 'Mail Registered',
+            subject: 'delete orderPerformer',
         );
     }
 
@@ -43,7 +46,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     public function content()
     {
         return new Content(
-            view: 'mail.registered',
+            view: 'mail.orderPerformerDelete',
         );
     }
 

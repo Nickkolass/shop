@@ -4,7 +4,7 @@
     <div class="row mb-2">
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          Тестовое сообщение
+          Спасибо за регистрацию в Lumos
         </ol>
       </div><!-- /.col -->
     </div><!-- /.row -->

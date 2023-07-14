@@ -36,7 +36,7 @@
             </thead>
             <tbody>
                 @foreach($productTypes as $k => $productType)
-                <h4 hidden>{{$productType['amount'] < $productType['count'] ?: $block[$productType['id']]=true}}</h4>
+                <h4 hidden>{{$productType['amount'] <= $productType['count'] ?: $block[$productType['id']]=true}}</h4>
                         <tr style="text-align: center">
                             <td style="vertical-align: middle">{{ $i++ }}</td>
                             <td style="vertical-align: middle">{{ $productType['title'] }}</td>

@@ -9,18 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class MailRegistered extends Mailable implements ShouldQueue
+class MailOrderPerformerStore extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public array $order;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(array $order)
     {
-        //
+        $this->order = $order;
     }
 
     /**
@@ -31,7 +33,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     public function envelope()
     {
         return new Envelope(
-            subject: 'Mail Registered',
+            subject: 'New order',
         );
     }
 
@@ -43,7 +45,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     public function content()
     {
         return new Content(
-            view: 'mail.registered',
+            view: 'mail.orderPerformerStore',
         );
     }
 
