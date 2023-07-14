@@ -660,6 +660,7 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
+ *             @OA\Property(property="productType_id", type="integer", example="1"),
  *             @OA\Property(property="rating", type="integer", example="1"),
  *             @OA\Property(property="message", type="string", example="So sweety"),
  *             @OA\Property(property="commentImages", type="array",
@@ -674,7 +675,7 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\Response(
  *         response=200,
- *         description="ok",
+ *         description="Возвращаются данные аналогичные /api/products/{category}/{productType}",
  *     ),
  * ),
  */

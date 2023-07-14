@@ -30,6 +30,7 @@ class StoreFrontRequest extends FormRequest
             'rating' => 'required|integer',
             'message' => 'nullable|string',
             'commentImages' => 'nullable|array',
+            'productType_id' => 'required|integer',
         ];
     }
 }

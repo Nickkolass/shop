@@ -3,16 +3,14 @@
 namespace App\Services\API;
 
 
-use App\Models\ProductType;
-
 class APIFrontService
 {
     public static function scenarioGetProducts(?array &$queryParams): void
     {
-        if (!empty($queryParams['page'])) {
+        if (!empty($queryParams['page']) || session()->pull('back')) {
             $queryParams['filter'] = session('filter') ?? null;
             $queryParams['paginate'] = session('paginate');
-            $queryParams['paginate']['page'] = $queryParams['page'];
+            $queryParams['paginate']['page'] = $queryParams['page'] ?? $queryParams['paginate']['page'];
         } elseif (!empty($queryParams['filter']) || !empty($queryParams['paginate'])) {
             $queryParams['filter'] = $queryParams['filter'] ?? null;
             $queryParams['paginate'] = $queryParams['paginate'] ?? null;
@@ -29,5 +27,18 @@ class APIFrontService
         $productTypes = $data['productTypes'];
         unset($data['productTypes']);
         return $productTypes;
+    }
+
+    public static function imgEncode(array &$data): void
+    {
+        if (!empty($data['commentImages'])) {
+            foreach ($data['commentImages'] as &$img) {
+                $img = [
+                    'path' => $img->getPathname(),
+                    'originalName' => $img->getClientOriginalName(),
+                    'mimeType' => $img->getClientMimeType(),
+                ];
+            }
+        }
     }
 }

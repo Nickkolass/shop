@@ -1733,6 +1733,10 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "productType_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
                                     "rating": {
                                         "type": "integer",
                                         "example": "1"
@@ -1769,7 +1773,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "ok"
+                        "description": "Возвращаются данные аналогичные /api/products/{category}/{productType}"
                     }
                 },
                 "security": [
