@@ -39,6 +39,10 @@
                     <td>{{ $order['delivery'] }}</td>
                 </tr>
                 <tr>
+                    <td>Стоимость заказа</td>
+                    <td>{{ $order['total_price'] }}</td>
+                </tr>
+                <tr>
                     <td style="vertical-align: middle">Товары</td>
                     <td>
                         <table class="table table-striped">
@@ -69,10 +73,6 @@
                             </tbody>
                         </table>
                     </td>
-                </tr>
-                <tr>
-                    <td>Стоимость заказа</td>
-                    <td>{{ $order['total_price'] }}</td>
                 </tr>
             </tbody>
         </table>

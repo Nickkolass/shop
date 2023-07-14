@@ -19,9 +19,9 @@ return new class extends Migration
             $table->jsonb('productTypes');
             $table->string('delivery');
             $table->integer('total_price');
-            $table->boolean('payment');
+            $table->string('payment');
             $table->boolean('payment_status');
-            $table->string('status')->default('В работе');
+            $table->string('status')->nullable()->default('В работе');
             $table->softDeletes();
             $table->timestamps();
         });
