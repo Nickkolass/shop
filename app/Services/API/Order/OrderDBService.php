@@ -2,10 +2,13 @@
 
 namespace App\Services\API\Order;
 
+use App\Mail\MailOrderPerformerStore;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderDBService
 {
@@ -13,7 +16,7 @@ class OrderDBService
     {
         DB::beginTransaction();
         try {
-            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
+            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data)->emailToSalers($data);
             DB::commit();
             return null;
         } catch (\Exception $exception) {
@@ -82,25 +85,25 @@ class OrderDBService
 
     private function orderStore(array &$data): OrderDBService
     {
-        $data['order'] = Order::create([
+        $data['order_id'] = Order::create([
             'user_id' => $data['user_id'],
             'productTypes' => json_encode($data['cart']),
             'delivery' => $data['delivery'],
             'total_price' => $data['total_price'],
             'payment' => $data['payment'],
             'payment_status' => $data['payment_status'],
-        ]);
+        ])->id;
         return $this;
     }
 
 
-    private function orderPerformerStore(array $data): OrderDBService
+    private function orderPerformerStore(array &$data): OrderDBService
     {
         $data['cart'] = collect($data['cart'])->groupBy('saler_id');
 
         foreach ($data['cart'] as $saler_id => $order) {
-            $orderPerformers[] = [
-                'order_id' => $data['order']->id,
+            $data['orderPerformers'][$saler_id] = [
+                'order_id' => $data['order_id'],
                 'saler_id' => $saler_id,
                 'user_id' => $data['user_id'],
                 'productTypes' => json_encode($order),
@@ -111,7 +114,16 @@ class OrderDBService
                 'updated_at' => now(),
             ];
         }
-        OrderPerformer::insert($orderPerformers);
+        OrderPerformer::insert($data['orderPerformers']);
+
+        return $this;
+    }
+
+    private function emailToSalers(array $data): OrderDBService
+    {
+        User::whereIn('id', $data['cart']->keys())->pluck('email', 'id')->each(function($email, $saler_id) use($data) {
+            Mail::to($email)->send(new MailOrderPerformerStore($data['orderPerformers'][$saler_id]));
+        });
         return $this;
     }
 }

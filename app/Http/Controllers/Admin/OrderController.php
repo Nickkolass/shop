@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Components\Method;
 use App\Http\Controllers\Controller;
+use App\Mail\MailOrderPerformerDestroy;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -23,7 +25,7 @@ class OrderController extends Controller
         $this->authorize('viewAny', OrderPerformer::class);
 
         $user = session('user');
-        $orders = $user['role'] == 'admin' ? OrderPerformer::with('user:id,name') : OrderPerformer::whereHas('saler', function($q) use($user) {
+        $orders = $user['role'] == 'admin' ? OrderPerformer::with('user:id,name') : OrderPerformer::whereHas('saler', function ($q) use ($user) {
             $q->where('id', $user['id']);
         });;
         $orders = $orders->latest('created_at')->withTrashed()->with('saler:id,name')->simplePaginate(5);
@@ -69,24 +71,32 @@ class OrderController extends Controller
      * Update the specified resource in storage.
      *
      * @param OrderPerformer $order
-     * @return RedirectResponse
+     * @return RedirectResponse|string
      */
-    public function update(OrderPerformer $order): RedirectResponse
+    public function update(OrderPerformer $order): RedirectResponse|string
     {
         $this->authorize('update', $order);
-        $order->update(['status' => 'Отправлен ' . now()]);
+        DB::beginTransaction();
+        try {
 
-        $order->order()->whereHas('orderPerformers', function ($q) use ($order) {
-            $q->where('order_id', $order->order_id)->where('status', '!=', 'В работе');
-        })->update(['status' => 'Отправлен']);
-        return back();
+            $order->update(['status' => 'Отправлен ' . now()]);
+            $order->order()->whereHas('orderPerformers', function ($q) use ($order) {
+                $q->where('order_id', $order->order_id)->where('status', '!=', 'В работе');
+            })->update(['status' => 'Отправлен']);
+
+            DB::commit();
+            return back();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return $exception->getMessage();
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param OrderPerformer $order
-     * @return RedirectResponse
+     * @return RedirectResponse|string
      */
     public function destroy(OrderPerformer $order): RedirectResponse|string
     {
@@ -96,14 +106,17 @@ class OrderController extends Controller
             $order->update(['status' => 'Отменен ' . now()]);
             $order->delete();
             //возврат денег
-            Order::where('id', $order->order_id)->doesntHave('orderPerformers')->update(['status' => 'Отменен ' . now()]);
-            Order::where('id', $order->order_id)->doesntHave('orderPerformers')->delete();
+            $query = $order->order()->doesntHave('orderPerformers');
+            $query->update(['status' => 'Отменен ' . now()]);
+            $query->delete();
+
+            Mail::to($order->user()->pluck('email'))->send(new MailOrderPerformerDestroy($order));
 
             DB::commit();
+            return back();
         } catch (\Exception $exception) {
             DB::rollBack();
             return $exception->getMessage();
         }
-        return back();
     }
 }
