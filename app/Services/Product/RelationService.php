@@ -15,11 +15,11 @@ class RelationService
     {
         foreach ($product as $relation => $keys) {
             if (is_array($keys)) {
-                $relations[$relation] = $product[$relation];
+                $res[$relation] = $keys;
                 unset($product[$relation]);
             }
         }
-        return $relations ?? [];
+        return $res ?? [];
     }
 
 
@@ -52,7 +52,6 @@ class RelationService
         if ($isNewProduct) foreach ($relations as $relation => $keys) $product->$relation()->attach($keys);
         else foreach ($relations as $relation => $keys) $detached[$relation] = $product->$relation()->sync($keys)['detached'];
 
-        if (!empty($detached['propertyValues'])) PropertyValue::whereIn('id', $detached['propertyValues'])->doesntHave('products')->delete();
         if (!empty($detached['optionValues'])) $product->productTypes()->whereHas('optionValues', function ($q) use ($detached) {
             $q->whereIn('optionValues.id', $detached['optionValues']);
         })->update(['is_published' => 0]);
