@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
 
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
 
     protected $table = 'orders';
     protected $guarded = false;

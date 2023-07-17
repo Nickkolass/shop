@@ -27,7 +27,7 @@ class CommentImageFactory extends Factory
         return [
             'file_path' => $file_path,
             'size' => $image->size,
-            'comment_id' => RatingAndComment::latest('id')->pluck('id')['0'],
+            'comment_id' => RatingAndComment::take(1)->latest('id')->pluck('id')['0'],
         ];
     }
 }
