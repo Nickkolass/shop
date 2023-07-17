@@ -16,7 +16,7 @@ class BackService
     {
         $productTypes = ProductType::select('id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
-                $q->select('id', 'title', 'category_id')->with(['productTypes:id,product_id,is_published,preview_image', 'category:id,title', 'ratingAndComments']);
+                $q->select('id', 'title')->with(['productTypes:id,product_id,is_published,preview_image', 'ratingAndComments']);
             }])->find($productType_ids);
 
         Method::mapAfterGettingProducts($productTypes);
@@ -28,7 +28,7 @@ class BackService
     {
         $productTypes = auth('api')->user()->liked()->select('productTypes.id', 'product_id', 'is_published', 'preview_image', 'price', 'count')
             ->with(['productImages:productType_id,file_path', 'optionValues.option:id,title', 'product' => function ($q) {
-                $q->select('id', 'title', 'category_id')->with(['productTypes:id,product_id,is_published,preview_image', 'category:id,title', 'ratingAndComments']);
+                $q->select('id', 'title')->with(['productTypes:id,product_id,is_published,preview_image', 'ratingAndComments']);
             }])->get();
 
         Method::mapAfterGettingProducts($productTypes);
@@ -60,7 +60,7 @@ class BackService
     public function cart(?array $cart): ?Collection
     {
         $productTypes = ProductType::select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
-            ->with(['optionValues.option:id,title', 'category', 'product:id,title'])->find(array_keys($cart))
+            ->with(['optionValues.option:id,title', 'product:id,title'])->find(array_keys($cart))
             ->each(function ($productType) use ($cart) {
                 $productType->amount = $cart[$productType->id];
                 $productType->totalPrice = $productType->amount * $productType->price;

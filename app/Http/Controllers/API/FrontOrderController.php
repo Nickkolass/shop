@@ -39,8 +39,7 @@ class FrontOrderController extends Controller
      * @return View
      */
     public function create(): View
-    { //нужен route:post но тогда без ресурсного контроллера, поэтому переход только из корзины
-        if (url()->previous() != 'http://127.0.0.1:8876/cart' || !session()->has('cart')) abort(404);
+    {
         $totalPrice = request('totalPrice');
         return view('api.order.create', compact('totalPrice'));
     }

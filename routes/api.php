@@ -26,11 +26,11 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 Route::controller(BackController::class)->group(function () {
     Route::post('/cart', 'cart');
     Route::post('/products', 'index');
+    Route::post('/products/{category:title}', 'products');
+    Route::post('/products/show/{productType}', 'product');
     Route::post('/products/liked', 'liked')->middleware('jwt.auth');
     Route::post('/products/liked/{productType}/toggle', 'likedToggle')->middleware('jwt.auth');
     Route::post('/products/{product}/comment', 'commentStore')->middleware('jwt.auth');
-    Route::post('/products/{category:title}', 'products');
-    Route::post('/products/{category:title}/{productType}', 'product');
 });
 
 Route::middleware('jwt.auth')->controller(BackOrderController::class)->group(function () {

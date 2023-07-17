@@ -49,7 +49,7 @@
                             <tbody>
                                 @foreach($order['productTypes'] as $productType)
                                 <tr>
-                                    <td><a href="{{ route('api.product', [$productType['category'], $productType['id']]) }}">
+                                    <td><a href="{{ route('api.product', $productType['id']) }}">
                                             <img src="{{asset('/storage/'.$productType['preview_image'])}}" style="height: 90px"></a></td>
                                     <td>Название: {{ $productType['title'] }}<br>
                                         Количество: {{ $productType['amount'] }}<br>

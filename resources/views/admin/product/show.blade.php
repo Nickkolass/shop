@@ -22,11 +22,10 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                @if(str_ends_with(url()->previous(), '/edit/properties') & $product->productTypes->count() != 0)
+                @if(url()->previous() == route('admin.products.editProperties', $product->id) & $product->productTypes->count() != 0)
                     <div class="card" style="background:red">
-                        <h4>После редактирования продукта, проверьте соответствие его разновидностей новым
-                            классификаторам. <br>
-                            Несоответствующие сняты с публикации.</h4>
+                        <h4>После редактирования продукта, проверьте соответствие его разновидностей новым классификаторам. <br>
+                            Несоответствующие сняты с публикации и недоступны для опубликования до внесения изменений.</h4>
                     </div>
                 @endif
 
@@ -116,6 +115,7 @@
                                             <br>
                                         @endforeach
                                     </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         Рейтинг
@@ -126,7 +126,6 @@
                                         @endfor
                                     ({{ $product['countRating'] }})
                                     </td>
-                                </tr>
                                 </tr>
                                 </tbody>
                             </table>

@@ -42,10 +42,8 @@ class ProductCreateController extends Controller
 
 
     public function types(): View
-    {
-        //в случае ошибки валидации редирект на пост роут невозможен, поэтому гет с проверкой внутри метода
-        if(!app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName() == 'admin.products.store') abort(404);
-
+    { //в случае ошибки валидации редирект на пост роут невозможен, поэтому гет с проверкой внутри метода
+        if (url()->previous() != route('admin.products.createProperties') & !session()->pull('validator_failed')) abort(404);
         session(['create.propertyValues' => array_filter(request('propertyValues'))]);
 
         $optionValues = array_merge(...array_values(request('optionValues')));

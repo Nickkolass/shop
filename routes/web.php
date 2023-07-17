@@ -38,7 +38,8 @@ Route::resource('/users', UserController::class);
 
 Route::name('api.')->group(function () {
     Route::view('/about', 'api.about')->name('about');
-    Route::resource('/orders', FrontOrderController::class)->middleware('client')->except('edit');
+    Route::post('/orders/create', [FrontOrderController::class, 'create'])->middleware('client')->name('orders.create');
+    Route::apiResource('/orders', FrontOrderController::class)->middleware('client');
     Route::controller(FrontController::class)->group(function () {
         Route::get('/support', 'support')->name('support')->middleware('client');
         Route::get('/cart', 'cart')->name('cart');
@@ -48,7 +49,7 @@ Route::name('api.')->group(function () {
         Route::post('/products/liked/{productType}/toggle', 'likedToggle')->name('liked.toggle')->middleware('client');
         Route::get('/products/{category}', 'products')->name('products');
         Route::post('/products/{category}', 'products')->name('filter');
-        Route::get('/products/{category}/{productType}', 'product')->name('product');
+        Route::get('/products/show/{productType}', 'product')->name('product');
         Route::post('/products/{product}/comment', 'commentStore')->name('comment.store')->middleware('client');
     });
 });

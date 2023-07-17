@@ -21,6 +21,7 @@ class StoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        session(['validator_failed' => true]);
         $types = $this->types;
         foreach ($types as &$type) {
             if (!empty($oV = array_filter($type['optionValues']))) $type['optionValues'] = $oV;
@@ -28,6 +29,15 @@ class StoreRequest extends FormRequest
         }
         $this->merge(['types' => $types]);
     }
+
+    /**
+     * Handle a passed validation attempt.
+     */
+    protected function passedValidation(): void
+    {
+        session()->forget('validator_failed');
+    }
+
 
     /**
      * Get the validation rules that apply to the request.
@@ -52,6 +62,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'types.*.optionValues.required' => 'Выбор хотя бы одного классификатора обязателен',
+            'types.*.preview_image' => 'Выбор заставки обязателен',
+            'types.*.productImages' => 'Выбор изображений обязателен',
         ];
     }
 }

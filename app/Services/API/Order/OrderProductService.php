@@ -14,7 +14,7 @@ class OrderProductService
     {
         $productTypes = json_decode($order->productTypes, true);
 
-        $pTs = ProductType::with(['category:categories.id,categories.title', 'optionValues.option:id,title', 'product' => function ($b) {
+        $pTs = ProductType::with(['optionValues.option:id,title', 'product' => function ($b) {
             $b->select('id', 'saler_id', 'title')->with(['saler:id,name']);
         }])->select('id', 'product_id', 'preview_image')->find(array_column($productTypes, 'productType_id'));
 
@@ -38,18 +38,13 @@ class OrderProductService
 
     public function getProductsForIndex($orders): ?Paginator
     {
-        foreach ($orders as $order) {
-            $ordersProductTypes[] = json_decode($order->productTypes, true);
-        }
+        foreach ($orders as $order) $ordersProductTypes[] = json_decode($order->productTypes, true);
 
-        $pTs = ProductType::with('category:categories.id,categories.title')->select('id', 'product_id', 'preview_image')
-            ->find(array_column(array_merge(...$ordersProductTypes), 'productType_id'));
+        $pTs = ProductType::select('id', 'product_id', 'preview_image')->find(array_column(array_merge(...$ordersProductTypes), 'productType_id'));
 
         foreach ($ordersProductTypes as $key => &$productTypes) {
             foreach ($productTypes as &$productType) {
-                $pT = $pTs->where('id', $productType['productType_id'])->first();
-                $productType['preview_image'] = $pT->preview_image;
-                $productType['category'] = $pT->category->title;
+                $productType['preview_image'] = $pTs->where('id', $productType['productType_id'])->first()->preview_image;
             }
             $orders[$key]->productTypes = $productTypes;
         }

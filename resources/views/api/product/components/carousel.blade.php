@@ -7,13 +7,13 @@
   </ol>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <a href="{{ route('api.product', [$productType['product']['category']['title'] ?? $data['category']['title'], $productType['id']]) }}">
+      <a href="{{ route('api.product', $productType['id']) }}">
         <img src="{{asset('/storage/'.$productType['preview_image'])}}" style="opacity:{{$productType['is_published'] == 0 || $productType['count'] == 0 ? '0.3' : '1'}}" class="d-block w-100">
       </a>
     </div>
     @foreach ($productType['product_images'] as $img)
     <div class="carousel-item">
-      <a href="{{ route('api.product', [$productType['product']['category']['title'] ?? $data['category']['title'], $productType['id']]) }}">
+      <a href="{{ route('api.product', $productType['id']) }}">
         <img src="{{asset('/storage/'.$img)}}" style="opacity:{{$productType['is_published'] == 0 || $productType['count'] == 0 ? '0.3' : '1'}}" class="d-block w-100">
       </a>
     </div>

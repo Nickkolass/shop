@@ -49,7 +49,6 @@ use App\Http\Controllers\Controller;
  *                 @OA\Property(property="Цвет", type="string", example="красный"),
  *                 @OA\Property(property="Размер", type="string", example="300 грамм")
  *             ),
- *             @OA\Property(property="category", type="string", example="chokolate"),
  *             @OA\Property(property="title", type="string", example="Cool chokolate"),
  *             @OA\Property(property="amount", type="integer", example="2"),
  *             @OA\Property(property="totalPrice", type="integer", example="600"),
@@ -258,10 +257,6 @@ use App\Http\Controllers\Controller;
  *                     @OA\Property(property="product", type="object",
  *                         @OA\Property(property="id", type="integer", example="1"),
  *                         @OA\Property(property="title", type="string", example="cool chokolate"),
- *                         @OA\Property(property="category", type="object",
- *                             @OA\Property(property="id", type="integer", example="1"),
- *                             @OA\Property(property="title", type="string", example="chokolate"),
- *                         ),
  *                         @OA\Property(property="rating", type="integer", example="5"),
  *                         @OA\Property(property="countRating", type="integer", example="1"),
  *                         @OA\Property(property="countComments", type="integer", example="1"),
@@ -299,10 +294,6 @@ use App\Http\Controllers\Controller;
  *                     @OA\Property(property="product", type="object",
  *                         @OA\Property(property="id", type="integer", example="1"),
  *                         @OA\Property(property="title", type="string", example="cool chokolate"),
- *                         @OA\Property(property="category", type="object",
- *                             @OA\Property(property="id", type="integer", example="1"),
- *                             @OA\Property(property="title", type="string", example="chokolate"),
- *                         ),
  *                         @OA\Property(property="rating", type="integer", example="5"),
  *                         @OA\Property(property="countRating", type="integer", example="1"),
  *                         @OA\Property(property="countComments", type="integer", example="1"),
@@ -390,7 +381,6 @@ use App\Http\Controllers\Controller;
  *                         @OA\Property(property="product", type="object",
  *                             @OA\Property(property="id", type="integer", example="1"),
  *                             @OA\Property(property="title", type="string", example="cool chokolate"),
- *                             @OA\Property(property="category", type="string", example=""),
  *                             @OA\Property(property="rating", type="integer", example="5"),
  *                             @OA\Property(property="countRating", type="integer", example="1"),
  *                             @OA\Property(property="countComments", type="integer", example="1"),
@@ -511,10 +501,6 @@ use App\Http\Controllers\Controller;
  *             @OA\Property(property="product", type="object",
  *                 @OA\Property(property="id", type="integer", example="1"),
  *                 @OA\Property(property="title", type="string", example="cool chokolate"),
- *                 @OA\Property(property="category", type="object",
- *                     @OA\Property(property="id", type="integer", example="1"),
- *                     @OA\Property(property="title", type="string", example="chokolate"),
- *                 ),
  *                 @OA\Property(property="rating", type="integer", example="5"),
  *                 @OA\Property(property="countRating", type="integer", example="1"),
  *                 @OA\Property(property="countComments", type="integer", example="1"),
@@ -552,17 +538,10 @@ use App\Http\Controllers\Controller;
  * ),
  *
  * @OA\Post(
- *     path="/api/products/{category}/{productType}",
+ *     path="/api/products/show/{productType}",
  *     summary="просмотр товара",
  *     tags={"products"},
  *
- *     @OA\Parameter(
- *         description="title категории",
- *         in="path",
- *         name="category",
- *         required=true,
- *         example="chokolate",
- *     ),
  *     @OA\Parameter(
  *         description="ID типа продукта",
  *         in="path",
@@ -675,7 +654,7 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\Response(
  *         response=200,
- *         description="Возвращаются данные аналогичные /api/products/{category}/{productType}",
+ *         description="Возвращаются данные аналогичные /api/products/show/{productType}",
  *     ),
  * ),
  */

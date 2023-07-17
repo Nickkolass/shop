@@ -14,7 +14,6 @@
 </div>
 
 <main class="cd-main-content">
-  <br><a class="nav-link" style="text-align: center" href="{{ route('api.products', [$productType['product']['category']['title'], 'page' => $data['page']]) }}">Назад</a>
   <div class="container">
     <h4 style="text-align: center; font-weight: bold; padding: 20px;">{{$productType['product']['title']}}</h4><br>
     <div class="row align-items-start">

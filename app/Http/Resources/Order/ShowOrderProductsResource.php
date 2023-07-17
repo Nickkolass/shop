@@ -2,9 +2,6 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Models\Order;
-use App\Models\OrderPerformer;
-use App\Models\Product;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ShowOrderProductsResource extends JsonResource
@@ -26,7 +23,6 @@ class ShowOrderProductsResource extends JsonResource
             'saler_id' => $this->product->saler_id,
             'saler' => $this->product->saler->name,
             'preview_image' => $this->preview_image,
-            'category' => $this->category->title,
             'status' =>  $this->status,
             'orderPerformer_id' => $this->orderPerformer_id,
         ];

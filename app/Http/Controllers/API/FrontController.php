@@ -44,9 +44,9 @@ class FrontController extends Controller
     }
 
 
-    public function product(string $category_title, int $productType_id, ?string $productType = ''): View
+    public function product(int $productType_id, ?string $productType = ''): View
     {
-        if(!session()->pull('commentStore')) $productType = $this->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        if(!session()->pull('commentStore')) $productType = $this->client->request('POST', 'api/products/show/' . $productType_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
 
         $productType = json_decode($productType, true);
 
@@ -60,7 +60,7 @@ class FrontController extends Controller
 
     public function addToCart(): RedirectResponse
     {
-        if(app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName() == 'api.products') session(['back' => true]);
+        if(url()->previous() == route('api.products', 'chokolate')) session(['back' => true]);
         foreach(request('addToCart') as $productType_id => $amount){
             empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
         }
@@ -89,7 +89,7 @@ class FrontController extends Controller
 
     public function likedToggle(int $productType_id): RedirectResponse
     {
-        if(app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName() == 'api.products') session(['back' => true]);
+        if(request()->route()->getName() == 'api.products') session(['back' => true]);
         $this->client->request('POST', 'api/products/liked/' . $productType_id . '/toggle', ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }

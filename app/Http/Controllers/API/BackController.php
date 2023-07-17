@@ -44,7 +44,7 @@ class BackController extends Controller
     }
 
 
-    public function product(string $category_title, ProductType $productType): array
+    public function product(ProductType $productType): array
     {
         $this->service->product($productType);
         return ShowProductTypeResource::make($productType)->resolve();
@@ -75,6 +75,6 @@ class BackController extends Controller
         $this->authorize('like', User::class);
         $data = $request->validated();
         $this->service->commentStore($data);
-        return $this->product('', ProductType::find($request->input('productType_id')));
+        return $this->product(ProductType::find($request->input('productType_id')));
     }
 }
