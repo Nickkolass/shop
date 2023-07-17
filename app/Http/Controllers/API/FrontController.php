@@ -44,9 +44,10 @@ class FrontController extends Controller
     }
 
 
-    public function product(string $category_title, int $productType_id): View
+    public function product(string $category_title, int $productType_id, ?string $productType = ''): View
     {
-        $productType = $this->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        if(!session()->pull('commentStore')) $productType = $this->client->request('POST', 'api/products/' . $category_title . '/' . $productType_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+
         $productType = json_decode($productType, true);
 
         $data['page'] = session('paginate.page');
@@ -59,6 +60,7 @@ class FrontController extends Controller
 
     public function addToCart(): RedirectResponse
     {
+        if(app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName() == 'api.products') session(['back' => true]);
         foreach(request('addToCart') as $productType_id => $amount){
             empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
         }
@@ -87,6 +89,7 @@ class FrontController extends Controller
 
     public function likedToggle(int $productType_id): RedirectResponse
     {
+        if(app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName() == 'api.products') session(['back' => true]);
         $this->client->request('POST', 'api/products/liked/' . $productType_id . '/toggle', ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
@@ -97,21 +100,14 @@ class FrontController extends Controller
         return view('api.support');
     }
 
-    public function commentStore(int $product_id, StoreFrontRequest $request): RedirectResponse
+    public function commentStore(int $product_id, StoreFrontRequest $request): View
     {
         $data = $request->validated();
+        APIFrontService::imgEncode($data);
 
-        if (!empty($data['commentImages'])){
-            foreach($data['commentImages'] as &$img) {
-                $img = [
-                    'path' => $img->getPathname(),
-                    'originalName' => $img->getClientOriginalName(),
-                    'mimeType' => $img->getClientMimeType(),
-                ];
-            }
-        }
-        $this->client->request('POST', 'api/products/' . $product_id . '/comment', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
-        return back();
+        $productType = $this->client->request('POST', 'api/products/' . $product_id . '/comment', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        session(['commentStore' => true]);
+        return $this->product('', $data['productType_id'], $productType);
     }
 
 }

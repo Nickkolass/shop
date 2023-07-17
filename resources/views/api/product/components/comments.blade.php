@@ -31,6 +31,7 @@
             </div>
 
             <textarea name="message" id="summernote"> {{old('message')}} </textarea>
+            <input type="hidden" name="productType_id" value="{{$productType['id']}}">
             <input type="submit" class="btn btn-primary btn-lg" @disabled(!$productType['product']['commentable'])>
 
         </form>

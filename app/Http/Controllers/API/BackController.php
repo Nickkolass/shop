@@ -70,10 +70,11 @@ class BackController extends Controller
         $productType->liked()->toggle(auth('api')->id());
     }
 
-    public function commentStore(StoreRequest $request): void
+    public function commentStore(StoreRequest $request): array
     {
         $this->authorize('like', User::class);
         $data = $request->validated();
         $this->service->commentStore($data);
+        return $this->product('', ProductType::find($request->input('productType_id')));
     }
 }
