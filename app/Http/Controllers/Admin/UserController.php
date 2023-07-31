@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\UserPasswordRequest;
 use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
-use App\Mail\MailRegistered;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Services\Admin\UserService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 
 class UserController extends Controller
 {
 
-    public function __construct()
+    public UserService $service;
+    public function __construct(UserService $service)
     {
+        $this->authorizeResource(User::class, 'user');
+        $this->service = $service;
         $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'support']);
         $this->middleware('admin')->only('index', 'create', 'store');
     }
@@ -28,7 +30,6 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $this->authorize('viewAny', User::class);
         $users = User::simplePaginate(5);
         return view('user.index', compact('users'));
     }
@@ -46,81 +47,77 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param UserStoreRequest $request
      * @return View
      */
     public function store(UserStoreRequest $request): View
     {
         $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $user = User::firstOrCreate([
-            'email' => $data['email']
-        ], $data);
-        event(new Registered($user));
-        Mail::to($user->email)->send(new MailRegistered());
+        $this->service->store($data);
         return $this->index();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  User  $user
+     * @param User $user
      * @return View
      */
     public function show(User $user): View
     {
-        $this->authorize('view', $user);
         return view('user.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  User  $user
+     * @param User $user
      * @return View
      */
     public function edit(User $user): View
     {
-        $this->authorize('update', $user);
         return view('user.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  User  $user
+     * @param UserUpdateRequest $request
+     * @param User $user
      * @return View
      */
     public function update(UserUpdateRequest $request, User $user): View
     {
-        $this->authorize('update', $user);
         $data = $request->validated();
-        $data = array_diff($data, $user->toArray());
         $user->update($data);
-        return view('user.show', compact('user'));
+        return $this->show($user);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  User  $user
-     * @return View
+     * @param User $user
+     * @return RedirectResponse
      */
-    public function destroy(User $user): View
+    public function destroy(User $user): RedirectResponse
     {
-        $this->authorize('delete', $user);
         $user->delete();
-        return $this->index();
+        return redirect()->route('users.index');
     }
 
     /**
-     * Display a listing of the resource.
+     * Update the specified resource in storage.
      *
-     * @return View
+     * @param UserPasswordRequest $request
+     * @param User $user
+     * @return RedirectResponse
      */
-    public function support(): View
+    public function password(UserPasswordRequest $request, User $user): RedirectResponse
     {
-        return view('admin.support');
+        $this->authorize('password', $user);
+        $data = $request->validated();
+        $this->service->password($user, $data['new_password']);
+        return redirect()->route('users.show', $user->id);
     }
+
 }

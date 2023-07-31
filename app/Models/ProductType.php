@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Components\Method;
 use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

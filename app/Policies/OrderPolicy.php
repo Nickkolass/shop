@@ -4,20 +4,12 @@ namespace App\Policies;
 
 use App\Models\Order;
 use App\Models\User;
+use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OrderPolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        if ($user->isAdmin()) return true;
-        return null;
-    }
+    use HandlesAuthorization, PreAuthChecks;
 
     /**
      * Determine whether the user can view any models.
@@ -27,7 +19,7 @@ class OrderPolicy
      */
     public function viewAny(User $user)
     {
-        return $user;
+        return true;
     }
 
     /**
@@ -50,7 +42,7 @@ class OrderPolicy
      */
     public function create(User $user)
     {
-        return $user;
+        return true;
     }
 
     /**
@@ -86,6 +78,7 @@ class OrderPolicy
      */
     public function restore(User $user, Order $order)
     {
+        return false;
     }
 
     /**
@@ -97,5 +90,6 @@ class OrderPolicy
      */
     public function forceDelete(User $user, Order $order)
     {
+        return false;
     }
 }

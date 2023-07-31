@@ -60,15 +60,15 @@ class Method
     {
         $productTypes->map(function (ProductType $productType) {
             Method::valuesToGroups($productType, 'optionValues');
-            Method::countingRatingAndComments($productType);
+            Method::countingRatingAndComments($productType->product);
         });
     }
 
-    public static function countingRatingAndComments(ProductType &$productType): void
+    public static function countingRatingAndComments(Product &$product): void
     {
-        $productType->product->rating = round(($productType->product->ratingAndComments->avg('rating') ?? 0)*2)/2;
-        $productType->product->countRating = $productType->product->ratingAndComments->count();
-        $productType->product->countComments = $productType->product->ratingAndComments->pluck('message')->filter()->count();
+        $product->rating = round(($product->ratingAndComments->avg('rating') ?? 0)*2)/2;
+        $product->countRating = $product->ratingAndComments->count();
+        $product->countComments = $product->ratingAndComments->pluck('message')->filter()->count();
     }
 
 

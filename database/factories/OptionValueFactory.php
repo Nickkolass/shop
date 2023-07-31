@@ -19,7 +19,7 @@ class OptionValueFactory extends Factory
     {
         return [
             'value' => $this->faker->unique()->word(),
-            'option_id' => Option::latest('id')->first()->id,
+            'option_id' => Option::take(1)->latest('id')->pluck('id')[0],
         ];
     }
 }

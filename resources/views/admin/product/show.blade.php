@@ -22,11 +22,12 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                @if(str_ends_with(url()->previous(), '/edit/properties') & $product->productTypes->count() != 0)
+                @if(url()->previous() == route('admin.products.editProperties', $product->id) & $product->productTypes->count() != 0)
                     <div class="card" style="background:red">
                         <h4>После редактирования продукта, проверьте соответствие его разновидностей новым
                             классификаторам. <br>
-                            Несоответствующие сняты с публикации.</h4>
+                            Несоответствующие сняты с публикации и недоступны для опубликования до внесения изменений.
+                        </h4>
                     </div>
                 @endif
 
@@ -35,9 +36,14 @@
                         <div class="card-header d-flex p-3">
                             <div class="mr-3">
                                 <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary">Редактировать</a>
-                                @if($product->productTypes->count() != (collect([1])->crossjoin(...$product->optionValues)->count()))
+                                @if($product->productTypes->count() == collect([1])->crossjoin(...$product->optionValues)->count() || $product->optionValues->count() == 0)
+                                    <button style="margin-left:12px" class="btn btn-primary"
+                                            title="Добавлено максимальное количество типов по выбранным классификаторам"
+                                            disabled>Добавить тип
+                                    </button>
+                                @else
                                     <a href="{{ route('admin.productTypes.create', $product->id) }}"
-                                       style="margin-left:12px" class="btn btn-primary">Добавить вид</a>
+                                       style="margin-left:12px" class="btn btn-primary">Добавить тип</a>
                                 @endif
                             </div>
 
@@ -116,6 +122,7 @@
                                             <br>
                                         @endforeach
                                     </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         Рейтинг
@@ -126,7 +133,6 @@
                                         @endfor
                                     ({{ $product['countRating'] }})
                                     </td>
-                                </tr>
                                 </tr>
                                 </tbody>
                             </table>
@@ -146,7 +152,7 @@
                                     <th>Остаток</th>
                                     <th>Добавлен <br> в избранное</th>
                                     <th>Публикация</th>
-                                    <th>Редакция</th>
+                                    <th>Редактирование</th>
                                     <th>Удаление</th>
                                 </tr>
                                 </thead>
@@ -175,10 +181,12 @@
                                                   method="post">
                                                 @csrf
                                                 @method('patch')
+                                                <h4 hidden> {{$blockOV = $productType->optionValues->diff($product->optionValues->pluck('*.value')->flatten())->count() != 0}} </h4>
+                                                <h4 hidden> {{$blockCount = $productType->count <= 0}} </h4>
                                                 <input type="submit" class="btn btn-primary"
                                                        value="{{ $productType->is_published == 0 ? 'Опубликовать' : 'Снять с публикации' }}"
-                                                    @disabled($productType->count <= 0 || $productType->
-                                                    optionValues->diffKeys($product->optionValues)->count() != 0)>
+                                                       title="{{$blockOV ? 'Не соответсствует классификаторам товара' : ($blockCount ? 'Недостаточный остаток типа товара' : '')}}"
+                                                    @disabled($blockOV || $blockCount)>
                                             </form>
                                         </td>
                                         <td><a href="{{ route('admin.productTypes.edit', $productType) }}"

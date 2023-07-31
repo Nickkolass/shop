@@ -30,9 +30,9 @@ class BackController extends Controller
 
     public function index(): array
     {
-        !auth('api')->check() ?: $data['liked'] = $this->service->getLiked();
-        !request()->has('viewed') ?: $data['viewed'] = $this->service->getViewed(request('viewed'));
-        return isset($data) ? array_filter(IndexResource::make($data)->resolve()) : [];
+        if(auth('api')->check()) $data['liked'] = $this->service->getLiked();
+        if($viewed = request('viewed')) $data['viewed'] = $this->service->getViewed($viewed);
+        return IndexResource::make($data ?? [])->resolve();
     }
 
 
@@ -44,35 +44,35 @@ class BackController extends Controller
     }
 
 
-    public function product(string $category_title, ProductType $productType): array
+    public function product(ProductType $productType): array
     {
         $this->service->product($productType);
         return ShowProductTypeResource::make($productType)->resolve();
     }
 
 
-    public function cart(): array
+    public function cart(): ?array
     {
         $productTypes = $this->service->cart(request('cart'));
-        return CartResource::collection($productTypes)->resolve();
+        return isset($productTypes) ? CartResource::collection($productTypes)->resolve() : null;
     }
 
-    public function liked(): array
+    public function liked(): ?array
     {
-        $this->authorize('like', User::class);
+        $this->authorize('product', User::class);
         $productTypes = $this->service->getLiked();
-        return ProductTypeResource::collection($productTypes)->resolve();
+        return isset($productTypes) ? ProductTypeResource::collection($productTypes)->resolve() : null;
     }
 
     public function likedToggle(ProductType $productType): void
     {
-        $this->authorize('like', User::class);
+        $this->authorize('product', User::class);
         $productType->liked()->toggle(auth('api')->id());
     }
 
     public function commentStore(StoreRequest $request): void
     {
-        $this->authorize('like', User::class);
+        $this->authorize('product', User::class);
         $data = $request->validated();
         $this->service->commentStore($data);
     }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->foreignId('user_id')->constrained('users');
             $table->text('message')->nullable();
-            $table->unsignedSmallInteger('rating');
+            $table->unsignedTinyInteger('rating');
             $table->unique(['product_id', 'user_id']);
             $table->timestamps();
         });

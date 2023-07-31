@@ -15,15 +15,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedSmallInteger('role')->default(3);
+            $table->unsignedTinyInteger('role');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at');
             $table->string('password');
             $table->string('name');
             $table->string('surname');
             $table->string('patronymic');
-            $table->integer('gender');
-            $table->integer('age');
+            $table->unsignedTinyInteger('gender');
+            $table->unsignedTinyInteger('age');
             $table->rememberToken();
             $table->timestamps();
         });

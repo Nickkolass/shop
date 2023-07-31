@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderPerformer extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'order_performers';
     protected $guarded = false;
+    protected $casts = ['productTypes' => 'array'];
 
 
     public function saler()

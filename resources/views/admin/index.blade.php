@@ -17,62 +17,112 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
-            <div class="row">
-                <div class="col-lg-3 col-6">
+            <div class="row row-flex">
+                <div class="col d-flex">
                     <!-- small box -->
-                    <div class="small-box bg-info">
+                    <div class="small-box w-100 bg-info">
                         <div class="inner">
-                            <h3>150</h3>
-                            <p>Новые заказы</p>
+                            <h3>Новые заказы ( {{ $data['orders']->count() }} )</h3>
+                            <h5>@foreach($data['orders'] as $order)
+                                    * <a style="color: inherit" href="{{ route('admin.orders.show', $order->id) }}"
+                                         class="small-box-footer">{{'На ' . $order->total_price . ' р.'}}</a><br>
+                                @endforeach</h5>
                         </div>
                         <div class="icon">
                             <i class="nav-icon fas fa-shopping-bag"></i>
                         </div>
-                        <a href="#" class="small-box-footer">Подробнее<i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
-                <div class="col-lg-3 col-6">
+                <div class="col d-flex">
                     <!-- small box -->
-                    <div class="small-box bg-success">
+                    <div class="small-box w-100 bg-success">
                         <div class="inner">
-                            <h3>53<sup style="font-size: 20px">%</sup></h3>
-                            <p>Продукты</p>
+                            <h3>Выручка за {{$data['revenue']['month'] . ' ' . $data['revenue']['revenue'] . ' р. ( ' . $data['revenue']['count_orders'] . ' заказов )' }}</h3>
+                            <h5>@foreach($data['revenue']['orders'] as $order)
+                                    * <a style="color: inherit" href="{{ route('admin.orders.show', $order->id) }}"
+                                         class="small-box-footer">{{'На ' . $order->total_price}}</a><br>
+                                @endforeach</h5>
+
+                        </div>
+                        <div class="icon">
+                            <i class="nav-icon fa fa-rub"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <div class="row row-flex">
+                <div class="col d-flex">
+                    <!-- small box -->
+                    <div class="small-box w-100 bg-pink">
+                        <div class="inner">
+                            <h3>Популярные товары</h3>
+                            <h5>@foreach($data['productTypes_liked'] as $product)
+                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                         class="small-box-footer">{{$product->title}}</a>
+                                    <i class="fa fa-heart"></i> ( {{$product->liked_count}} ) <br>
+                                @endforeach</h5>
+                        </div>
+                        <div class="icon">
+                            <i class="nav-icon fa fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col d-flex">
+                    <!-- small box -->
+                    <div class="small-box w-100 bg-blue">
+                        <div class="inner">
+                            <h3>Рейтинговые товары</h3>
+                            <h5>@foreach($data['products_rating'] as $product)
+                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                         class="small-box-footer">{{$product->title}}</a>
+                                    @for($i=1; $i<=5; $i++)
+                                        <i class="fa fa-star{{$i-1<$product->rating & $product->rating<$i ? '-half' : ''}}{{$product->rating<$i ? '-o' : ''}}"></i>
+                                    @endfor
+                                    ( {{$product->rating_count}} )<br>
+                                @endforeach</h5>
+                        </div>
+                        <div class="icon">
+                            <i class="nav-icon fa fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <div class="row row-flex">
+                <div class="col d-flex">
+                    <!-- small box -->
+                    <div class="small-box w-100 bg-teal">
+                        <div class="inner">
+                            <h3>Самые продаваемые товары</h3>
+                            <h5>@foreach($data['productTypes_ordered'] as $product)
+                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product['productType_id']) }}"
+                                         class="small-box-footer">{{$product['title']}}</a> ( {{$product['amount'] . ' шт. ' . ' на ' . $product['price'] . ' р.'}} ) <br>
+                                @endforeach</h5>
+
+                        </div>
+                        <div class="icon">
+                            <i class="nav-icon fas fa-money"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col d-flex">
+                    <!-- small box -->
+                    <div class="small-box w-100 bg-secondary">
+                        <div class="inner">
+                            <h3>Неопубликованные товары ( {{$data['product_published_count']}} )</h3>
+                            <h5>@foreach($data['product_published'] as $product)
+                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                         class="small-box-footer">{{$product->title}}</a><br>
+                                @endforeach</h5>
+
                         </div>
                         <div class="icon">
                             <i class="nav-icon fas fa-tshirt"></i>
                         </div>
-                        <a href="#" class="small-box-footer">Подробнее<i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>44</h3>
-
-                            <p>Отзывы</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-person-add"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">Подробнее<i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3>65</h3>
-
-                            <p>Пользователи</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">Подробнее<i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->

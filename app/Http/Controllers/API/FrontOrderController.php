@@ -27,7 +27,8 @@ class FrontOrderController extends Controller
     {
         $data['page'] = request('page') ?? 1;
 
-        $orders = $this->client->request('POST', 'api/orders', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $orders = $this->client->request('POST', 'api/orders',
+            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
         return view('api.order.index', compact('orders'));
@@ -39,8 +40,7 @@ class FrontOrderController extends Controller
      * @return View
      */
     public function create(): View
-    { //нужен route:post но тогда без ресурсного контроллера, поэтому переход только из корзины
-        if (url()->previous() != 'http://127.0.0.1:8876/cart' || !session()->has('cart')) abort(404);
+    {
         $totalPrice = request('totalPrice');
         return view('api.order.create', compact('totalPrice'));
     }
@@ -48,17 +48,15 @@ class FrontOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  StoreFrontRequest  $request
      * @return RedirectResponse
      */
     public function store(StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        //платежная система
-
-        $this->client->request('POST', 'api/orders/store', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $this->client->request('POST', 'api/orders/store',
+            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         session()->forget(['cart', 'filter', 'paginate']);
-
         return redirect()->route('api.orders.index');
     }
 
@@ -70,7 +68,8 @@ class FrontOrderController extends Controller
      */
     public function show(int $order_id): View
     {
-        $order = $this->client->request('POST', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $order = $this->client->request('POST', 'api/orders/' . $order_id,
+            ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $order = json_decode($order, true);
         return view('api.order.show', compact('order'));
     }
@@ -83,7 +82,8 @@ class FrontOrderController extends Controller
      */
     public function update(int $order_id): RedirectResponse
     {
-        $this->client->request('PATCH', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]]);
+        $this->client->request('PATCH', 'api/orders/' . $order_id,
+            ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
 
@@ -95,7 +95,8 @@ class FrontOrderController extends Controller
      */
     public function destroy(int $order_id): RedirectResponse
     {
-        $this->client->request('DELETE', 'api/orders/' . $order_id, ['headers' => ['Authorization' => session('jwt')]]);
+        $this->client->request('DELETE', 'api/orders/' . $order_id,
+            ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
 }

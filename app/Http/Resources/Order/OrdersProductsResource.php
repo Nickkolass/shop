@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Models\Product;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrdersProductsResource extends JsonResource
@@ -19,7 +18,6 @@ class OrdersProductsResource extends JsonResource
             'id' => $this['productType_id'],
             'amount' => $this['amount'],
             'preview_image' => $this['preview_image'],
-            'category' => $this['category'],
         ];
     }
 }

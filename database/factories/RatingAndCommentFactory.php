@@ -21,8 +21,8 @@ class RatingAndCommentFactory extends Factory
         return [
             'rating' => $this->faker->numberBetween(1, 5),
             'message' => $this->faker->realText(),
-            'user_id' => User::latest('id')->pluck('id')['0'],
-            'product_id' => Product::latest('id')->pluck('id')['0'],
+            'user_id' => User::take(1)->latest('id')->pluck('id')['0'],
+            'product_id' => Product::take(1)->latest('id')->pluck('id')['0'],
         ];
     }
 }

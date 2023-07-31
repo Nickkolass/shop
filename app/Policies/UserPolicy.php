@@ -3,20 +3,12 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        if ($user->isAdmin()) return true;
-        return null;
-    }
+    use HandlesAuthorization, PreAuthChecks;
 
     /**
      * Determine whether the user can view any models.
@@ -85,6 +77,7 @@ class UserPolicy
      */
     public function restore(User $user, User $model)
     {
+        return false;
     }
 
     /**
@@ -96,6 +89,7 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model)
     {
+        return false;
     }
 
     /**
@@ -104,8 +98,19 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function like(User $user)
+    public function product(User $user)
     {
-        return $user;
+        return true;
+    }
+
+    /**
+     * Determine whether the user can like productTypes.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function password(User $user, User $model)
+    {
+        return $user->id == $model->id;
     }
 }

@@ -22,7 +22,6 @@ class CartResource extends JsonResource
             'is_published' => (bool)$this->is_published,
             'preview_image' => $this->preview_image,
             'option_values' => $this->optionValues,
-            'category' => $this->category->title,
             'title' => $this->product->title,
             'amount' => (int)$this->amount,
             'totalPrice' => $this->totalPrice,

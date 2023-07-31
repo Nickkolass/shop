@@ -2,13 +2,21 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
+use App\Models\Option;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\Product;
 use App\Models\ProductType;
+use App\Models\Property;
+use App\Models\Tag;
 use App\Models\User;
+use App\Policies\CategoryPolicy;
+use App\Policies\OptionPolicy;
 use App\Policies\OrderPerformerPolicy;
 use App\Policies\ProductTypePolicy;
+use App\Policies\PropertyPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
@@ -28,6 +36,10 @@ class AuthServiceProvider extends ServiceProvider
         Product::class => ProductPolicy::class,
         ProductType::class => ProductTypePolicy::class,
         OrderPerformer::class => OrderPerformerPolicy::class,
+        Tag::class => TagPolicy::class,
+        Category::class => CategoryPolicy::class,
+        Option::class => OptionPolicy::class,
+        Property::class => PropertyPolicy::class,
     ];
 
     /**

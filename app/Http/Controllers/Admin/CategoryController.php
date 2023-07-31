@@ -7,9 +7,16 @@ use App\Http\Requests\Admin\Category\CategoryStoreRequest;
 use App\Http\Requests\Admin\Category\CategoryUpdateRequest;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class CategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Category::class, 'category');
+    }
+
     /**
      * Display a listing of the resource.
      * @return View
@@ -32,7 +39,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CategoryStoreRequest  $request
      * @return View
      */
     public function store(CategoryStoreRequest $request): View
@@ -67,7 +74,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CategoryUpdateRequest  $request
      * @param  Category $category
      * @return View
      */
@@ -75,18 +82,18 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
         $category->update($data);
-        return view('admin.category.show', compact('category'));
+        return $this->show($category);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Category $category
-     * @return View
+     * @return RedirectResponse
      */
-    public function destroy(Category $category): View
+    public function destroy(Category $category): RedirectResponse
     {
         $category->delete();
-        return $this->index();
+        return redirect()->route('admin.categories.index');
     }
 }

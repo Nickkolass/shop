@@ -2,10 +2,10 @@
 
 namespace App\Console;
 
+use App\Jobs\Scheduler\DBCleanJob;
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('telescope:prune')->weeklyOn(1, '12:00');
+        $schedule->job(new DBCleanJob())->weeklyOn(1, '12:00');
     }
 
     /**
@@ -37,6 +38,6 @@ class Kernel extends ConsoleKernel
      */
     protected function scheduleTimezone(): DateTimeZone|string|null
     {
-        return 'Russia/Moscow';
+        return 'Europe/Moscow';
     }
 }

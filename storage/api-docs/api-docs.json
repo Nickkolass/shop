@@ -76,10 +76,6 @@
                                             },
                                             "type": "object"
                                         },
-                                        "category": {
-                                            "type": "string",
-                                            "example": "chokolate"
-                                        },
                                         "title": {
                                             "type": "string",
                                             "example": "Cool chokolate"
@@ -578,19 +574,6 @@
                                                                 "type": "string",
                                                                 "example": "cool chokolate"
                                                             },
-                                                            "category": {
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "integer",
-                                                                        "example": "1"
-                                                                    },
-                                                                    "title": {
-                                                                        "type": "string",
-                                                                        "example": "chokolate"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
                                                             "rating": {
                                                                 "type": "integer",
                                                                 "example": "5"
@@ -711,19 +694,6 @@
                                                             "title": {
                                                                 "type": "string",
                                                                 "example": "cool chokolate"
-                                                            },
-                                                            "category": {
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "integer",
-                                                                        "example": "1"
-                                                                    },
-                                                                    "title": {
-                                                                        "type": "string",
-                                                                        "example": "chokolate"
-                                                                    }
-                                                                },
-                                                                "type": "object"
                                                             },
                                                             "rating": {
                                                                 "type": "integer",
@@ -978,10 +948,6 @@
                                                                     "title": {
                                                                         "type": "string",
                                                                         "example": "cool chokolate"
-                                                                    },
-                                                                    "category": {
-                                                                        "type": "string",
-                                                                        "example": ""
                                                                     },
                                                                     "rating": {
                                                                         "type": "integer",
@@ -1284,131 +1250,126 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        },
-                                        "product_id": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        },
-                                        "price": {
-                                            "type": "integer",
-                                            "example": "100"
-                                        },
-                                        "count": {
-                                            "type": "integer",
-                                            "example": "5"
-                                        },
-                                        "is_published": {
-                                            "type": "boolean",
-                                            "example": "true"
-                                        },
-                                        "preview_image": {
-                                            "type": "string",
-                                            "example": "preview_images/1.jpg"
-                                        },
-                                        "product_images": {
-                                            "type": "object",
-                                            "example": [
-                                                "product_images/1.jpg",
-                                                "product_images/2.jpg"
-                                            ]
-                                        },
-                                        "option_values": {
-                                            "properties": {
-                                                "Цвет": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer",
-                                                                "example": "1"
-                                                            },
-                                                            "option_id": {
-                                                                "type": "integer",
-                                                                "example": "1"
-                                                            },
-                                                            "value": {
-                                                                "type": "string",
-                                                                "example": "красный"
-                                                            },
-                                                            "created_at": {
-                                                                "format": "date",
-                                                                "example": "2023-06-28T12:03:41.000000Z"
-                                                            },
-                                                            "updated_at": {
-                                                                "format": "date",
-                                                                "example": "2023-06-28T12:03:41.000000Z"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "product": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                },
-                                                "title": {
-                                                    "type": "string",
-                                                    "example": "cool chokolate"
-                                                },
-                                                "category": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "integer",
-                                                            "example": "1"
-                                                        },
-                                                        "title": {
-                                                            "type": "string",
-                                                            "example": "chokolate"
-                                                        }
+                                        "": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
                                                     },
-                                                    "type": "object"
-                                                },
-                                                "rating": {
-                                                    "type": "integer",
-                                                    "example": "5"
-                                                },
-                                                "countRating": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                },
-                                                "countComments": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                },
-                                                "product_types": {
-                                                    "type": "array",
-                                                    "items": {
+                                                    "product_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": "100"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": "5"
+                                                    },
+                                                    "is_published": {
+                                                        "type": "boolean",
+                                                        "example": "true"
+                                                    },
+                                                    "preview_image": {
+                                                        "type": "string",
+                                                        "example": "preview_images/1.jpg"
+                                                    },
+                                                    "product_images": {
+                                                        "type": "object",
+                                                        "example": [
+                                                            "product_images/1.jpg",
+                                                            "product_images/2.jpg"
+                                                        ]
+                                                    },
+                                                    "option_values": {
+                                                        "properties": {
+                                                            "Цвет": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "option_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "value": {
+                                                                            "type": "string",
+                                                                            "example": "красный"
+                                                                        },
+                                                                        "created_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        },
+                                                                        "updated_at": {
+                                                                            "format": "date",
+                                                                            "example": "2023-06-28T12:03:41.000000Z"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "product": {
                                                         "properties": {
                                                             "id": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
-                                                            "product_id": {
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "cool chokolate"
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": "5"
+                                                            },
+                                                            "countRating": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
-                                                            "preview_image": {
-                                                                "type": "string",
-                                                                "example": "preview_images/1.jpg"
+                                                            "countComments": {
+                                                                "type": "integer",
+                                                                "example": "1"
                                                             },
-                                                            "is_published": {
-                                                                "type": "boolean",
-                                                                "example": "true"
+                                                            "product_types": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "product_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "preview_image": {
+                                                                            "type": "string",
+                                                                            "example": "preview_images/1.jpg"
+                                                                        },
+                                                                        "is_published": {
+                                                                            "type": "boolean",
+                                                                            "example": "true"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
                                                             }
                                                         },
                                                         "type": "object"
                                                     }
-                                                }
-                                            },
-                                            "type": "object"
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -1424,7 +1385,7 @@
                 ]
             }
         },
-        "/api/products/liked/{productType}/toggle": {
+        "/api/products/liked/{productType}": {
             "post": {
                 "tags": [
                     "products"
@@ -1451,20 +1412,13 @@
                 ]
             }
         },
-        "/api/products/{category}/{productType}": {
+        "/api/products/show/{productType}": {
             "post": {
                 "tags": [
                     "products"
                 ],
                 "summary": "просмотр товара",
                 "parameters": [
-                    {
-                        "name": "category",
-                        "in": "path",
-                        "description": "title категории",
-                        "required": true,
-                        "example": "chokolate"
-                    },
                     {
                         "name": "productType",
                         "in": "path",
@@ -1733,6 +1687,10 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "productType_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
                                     "rating": {
                                         "type": "integer",
                                         "example": "1"

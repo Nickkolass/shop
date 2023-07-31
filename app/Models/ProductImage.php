@@ -12,8 +12,8 @@ class ProductImage extends Model
     protected $table = 'product_images';
     protected $guarded = false;
 
-    public function product(){
+    public function productType(){
         return $this->beLongsTo(ProductType::class, 'productType_id', 'id');
     }
-       
+
 }

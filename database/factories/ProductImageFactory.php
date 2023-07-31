@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\=ProductImage>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductImage>
  */
 class ProductImageFactory extends Factory
 {
@@ -30,7 +30,7 @@ class ProductImageFactory extends Factory
         return [
             'file_path' => $productImagePath,
             'size' => random_int(1, 10000),
-            'productType_id' => ProductType::latest('id')->pluck('id')['0'],
+            'productType_id' => ProductType::take(1)->latest('id')->pluck('id')['0'],
         ];
 
 

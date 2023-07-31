@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotificationQueue;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,6 +49,11 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return self::getRoles()[$this->role] == 'saler';
     }
 
+    public function isClient()
+    {
+        return self::getRoles()[$this->role] == 'client';
+    }
+
     static function getGenders()
     {
         return [
@@ -56,39 +62,10 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         ];
     }
 
+
     public function getGenderTitleAttribute()
     {
         return self::getGenders()[$this->gender];
-    }
-
-    public function products()
-    {
-        return $this->hasMany(Product::class, 'saler_id', 'id');
-    }
-
-    public function productTypes()
-    {
-        return $this->hasManyThrough(ProductType::class, Product::class, 'saler_id', 'product_id', 'id', 'id');
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class, 'user_id', 'id');
-    }
-
-    public function orderPerformers()
-    {
-        return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
-    }
-
-    public function liked()
-    {
-        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id','productType_id');
-    }
-
-    public function ratingAndComments()
-    {
-        return $this->hasMany(RatingAndComment::class, 'user_id', 'id');
     }
 
     /**
@@ -97,6 +74,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
+        'role',
         'name',
         'email',
         'password',
@@ -131,6 +109,36 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'saler_id', 'id');
+    }
+
+    public function productTypes()
+    {
+        return $this->hasManyThrough(ProductType::class, Product::class, 'saler_id', 'product_id', 'id', 'id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id');
+    }
+
+    public function orderPerformers()
+    {
+        return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
+    }
+
+    public function liked()
+    {
+        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id','productType_id');
+    }
+
+    public function ratingAndComments()
+    {
+        return $this->hasMany(RatingAndComment::class, 'user_id', 'id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -139,5 +147,10 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotificationQueue($token));
     }
 }

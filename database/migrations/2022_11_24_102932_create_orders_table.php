@@ -18,10 +18,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->jsonb('productTypes');
             $table->string('delivery');
-            $table->integer('total_price');
-            $table->boolean('payment');
+            $table->unsignedMediumInteger('total_price');
+            $table->string('payment');
             $table->boolean('payment_status');
-            $table->string('status')->default('В работе');
+            $table->string('status')->nullable()->default('В работе');
             $table->softDeletes();
             $table->timestamps();
         });
