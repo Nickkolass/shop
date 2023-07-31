@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->jsonb('productTypes');
             $table->string('delivery');
-            $table->integer('total_price');
+            $table->unsignedMediumInteger('total_price');
             $table->string('payment');
             $table->boolean('payment_status');
             $table->string('status')->nullable()->default('В работе');

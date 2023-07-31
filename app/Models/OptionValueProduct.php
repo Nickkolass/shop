@@ -11,6 +11,10 @@ class OptionValueProduct extends Model
     protected $table = 'optionValue_products';
     protected $guarded = false;
 
+    public function optionValues()
+    {
+        return $this->beLongsTo(OptionValue::class, 'optionValue_id', 'id');
+    }
 
-    
+
 }

@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('INN');
-            $table->string('registredOffice');
+            $table->unsignedInteger('INN')->unique()->nullable();
+            $table->string('registredOffice')->nullable();
         });
     }
 

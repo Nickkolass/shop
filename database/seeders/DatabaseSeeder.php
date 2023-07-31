@@ -28,13 +28,14 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->storageService->storagePreparation();
         $this->factoryService->factory();
         $this->productService->completionsOfProducts();
 
-        User::where('id', 1)->update(['role' => 1, 'email' => '1@mail.ru', 'password' => '$2y$10$zEo/vVO3vfXIzHrTdDS1zesl3di.9XddQqXLSuJi1UJf9nVszUvzq']);
-        Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->toArray());
+        User::where('id', 1)->update(['role' => 1, 'email' => '1@mail.ru',
+            'password' => '$2y$10$zEo/vVO3vfXIzHrTdDS1zesl3di.9XddQqXLSuJi1UJf9nVszUvzq']);
+        Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->all());
     }
 }

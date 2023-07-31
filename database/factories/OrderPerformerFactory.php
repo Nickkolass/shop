@@ -19,7 +19,7 @@ class OrderPerformerFactory extends Factory
     {
         $current = cache()->get('factoryCurrentOrderSaler');
         $currentSaler_id = cache()->get('factoryOrders')[$current];
-        $order = Order::latest('id')->first();
+        $order = Order::take(1)->latest('id')->first();
 
         $productTypes = collect(json_decode($order->productTypes))->groupBy('saler_id')[$currentSaler_id];
 

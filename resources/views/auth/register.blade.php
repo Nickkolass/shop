@@ -82,6 +82,20 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="postcode" class="col-md-4 col-form-label text-md-end">{{ __('Почтовый индекс') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="postcode" type="text" class="form-control @error('postcode') is-invalid @enderror" name="postcode" value="{{ old('postcode') }}" required autocomplete="postcode" autofocus>
+
+                                @error('postcode')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="gender" class="col-md-4 col-form-label text-md-end">{{ __('Пол') }}</label>
 
                             <div class="col-md-6">
@@ -135,6 +149,8 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
+
+                        <input type="hidden" name="role" value="3">
 
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">

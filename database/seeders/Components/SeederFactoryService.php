@@ -26,28 +26,38 @@ class SeederFactoryService
         $options = SeederInitialData::getOptions();
 
         $tags = Tag::factory(10)->create();
-        for ($k = 1; $k <= 10; $k++) Property::factory(1)->has(PropertyValue::factory(random_int(2, 4)))->create();
+        for ($k = 1; $k <= 10; $k++) {
+            Property::factory(1)
+                ->has(PropertyValue::factory(random_int(2, 4)))
+                ->create();
+        }
         foreach ($options as $option) {
             Option::create($option);
             OptionValue::factory(random_int(3, 4))->create();
         }
 
         foreach ($categories as $category) {
-            $properties = Property::with(['propertyValues' => function ($q) {
-                $q->select('id', 'property_id')->inRandomOrder();
-            }])->inRandomOrder()->take(5)->get('id');
+            $properties = Property::query()
+                ->with(['propertyValues' => fn($q) => $q->select('id', 'property_id')->inRandomOrder()])
+                ->inRandomOrder()
+                ->take(5)
+                ->get('id');
 
-            $options = Option::with(['optionValues' => function ($q) {
-                $q->select('id', 'option_id')->inRandomOrder();
-            }])->inRandomOrder()->take(4)->get('id');
+            $options = Option::query()
+                ->with(['optionValues' => fn($q) => $q->select('id', 'option_id')->inRandomOrder()])
+                ->inRandomOrder()
+                ->take(4)
+                ->get('id');
 
             Category::create($category)->properties()->attach($properties);
             User::factory(1)->create();
             for ($j = 1; $j <= 5; $j++) {
                 $ov = $options->random(2)->pluck('optionValues');
                 $ov = $ov->pluck(0)->merge($ov->pluck(1));
+
                 $pv = $properties->pluck('propertyValues');
-                foreach ($pv as $k => $i) $pv[$k] = $i->shuffle();
+                foreach ($pv as &$i) $i = $i->shuffle();
+
                 Product::factory(1)
                     ->has(ProductType::factory(4)
                         ->has(ProductImage::factory(3)))

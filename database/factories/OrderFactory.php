@@ -18,19 +18,25 @@ class OrderFactory extends Factory
      */
     public function definition()
     {
-        $productTypes = ProductType::inRandomOrder()->take(4)->with('product:id,saler_id')->select('id', 'product_id', 'price')->get()->map(function(ProductType $pT) {
-            return [
-                'productType_id' => $pT->id,
-                'amount' => $amount = random_int(1,3),
-                'price' => $pT->price * $amount,
-                'saler_id' => $pT->product->saler_id,
-            ];
-        });
+        $productTypes = ProductType::query()
+            ->inRandomOrder()
+            ->take(4)
+            ->with('product:id,saler_id')
+            ->select('id', 'product_id', 'price')
+            ->get()
+            ->map(function (ProductType $pT) {
+                return [
+                    'productType_id' => $pT->id,
+                    'amount' => $amount = random_int(1, 3),
+                    'price' => $pT->price * $amount,
+                    'saler_id' => $pT->product->saler_id,
+                ];
+            });
 
         cache()->put('factoryOrders', $productTypes->pluck('saler_id')->unique()->values(), 60);
 
         return [
-            'user_id' => User::inRandomOrder()->first('id')->id,
+            'user_id' => User::take(1)->inRandomOrder()->pluck('id')[0],
             'productTypes' => json_encode($productTypes),
             'delivery' => $this->faker->address(),
             'total_price' => $productTypes->pluck('price')->sum(),

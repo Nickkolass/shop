@@ -14,6 +14,6 @@ class OrdersResource extends JsonResource
      */
     public function toArray($request)
     {
-        return $this->setCollection(collect(ShowOrderResource::collection($this->getCollection())->resolve()));
+        return $this->setCollection(collect(ShowOrderResource::collection($this)->resolve()));
     }
 }

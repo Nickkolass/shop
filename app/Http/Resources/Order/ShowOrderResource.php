@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Order;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Route;
 
 class ShowOrderResource extends JsonResource
 {
@@ -16,9 +17,10 @@ class ShowOrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'productTypes' => is_object(current($this->productTypes))
-                ? ShowOrderProductsResource::collection($this->productTypes)->resolve()
-                : OrdersProductsResource::collection($this->productTypes)->resolve(),
+            'productTypes' =>
+                request()->route()->getName() == 'back.api.orders.index'
+                ? OrdersProductsResource::collection($this->productTypes)->resolve()
+                : ShowOrderProductsResource::collection($this->productTypes)->resolve(),
             'delivery' => $this->delivery,
             'total_price' => $this->total_price,
             'status' => $this->status,

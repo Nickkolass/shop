@@ -9,6 +9,7 @@ use App\Services\API\APIFrontService;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
 
 class FrontController extends Controller
 {
@@ -23,7 +24,8 @@ class FrontController extends Controller
     {
         $data['viewed'] = array_slice(array_keys(session('viewed') ?? []), 0, 12);
 
-        $data = $this->client->request('POST', 'api/products', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $data = $this->client->request('POST', 'api/products',
+            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
 
         $data = json_decode($data, true);
         $data['cart'] = session('cart') ?? [];
@@ -31,12 +33,13 @@ class FrontController extends Controller
         return view('api.index', compact('data'));
     }
 
-    public function products(string $category_title, ProductsRequest $request): View
+    public function products(string $category_title, ProductsRequest $request)
     {
         $queryParams = $request->validated();
         APIFrontService::scenarioGetProducts($queryParams);
 
-        $data = $this->client->request('POST', '/api/products/' . $category_title, ['query' => $queryParams, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $data = $this->client->request('POST', '/api/products/' . $category_title,
+            ['query' => $queryParams, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $data = json_decode($data, true);
         $productTypes = APIFrontService::afterGetProducts($data);
 
@@ -44,10 +47,10 @@ class FrontController extends Controller
     }
 
 
-    public function product(int $productType_id, ?string $productType = ''): View
+    public function product(int $productType_id): View
     {
-        if(!session()->pull('commentStore')) $productType = $this->client->request('POST', 'api/products/show/' . $productType_id, ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
-
+        $productType = $this->client->request('POST', 'api/products/show/' . $productType_id,
+            ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $productType = json_decode($productType, true);
 
         $data['page'] = session('paginate.page');
@@ -60,8 +63,9 @@ class FrontController extends Controller
 
     public function addToCart(): RedirectResponse
     {
-        if(url()->previous() == route('api.products', 'chokolate')) session(['back' => true]);
-        foreach(request('addToCart') as $productType_id => $amount){
+        $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
+        if ($prev_name == 'api.products') session(['backFilter' => true]);
+        foreach (request('addToCart') as $productType_id => $amount) {
             empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
         }
         return back();
@@ -81,7 +85,8 @@ class FrontController extends Controller
 
     public function liked(): View
     {
-        $productTypes = $this->client->request('POST', 'api/products/liked', ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        $productTypes = $this->client->request('POST', 'api/products/liked',
+            ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $productTypes = json_decode($productTypes, true);
         $data['liked_ids'] = array_flip(array_column($productTypes, 'id'));
         return view('api.liked', compact('productTypes', 'data'));
@@ -89,25 +94,20 @@ class FrontController extends Controller
 
     public function likedToggle(int $productType_id): RedirectResponse
     {
-        if(request()->route()->getName() == 'api.products') session(['back' => true]);
-        $this->client->request('POST', 'api/products/liked/' . $productType_id . '/toggle', ['headers' => ['Authorization' => session('jwt')]]);
+        $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
+        if ($prev_name == 'api.products') session(['backFilter' => true]);
+        $this->client->request('POST', 'api/products/liked/' . $productType_id,
+            ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
 
-
-    public function support(): View
-    {
-        return view('api.support');
-    }
-
-    public function commentStore(int $product_id, StoreFrontRequest $request): View
+    public function commentStore(int $product_id, StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
         APIFrontService::imgEncode($data);
 
-        $productType = $this->client->request('POST', 'api/products/' . $product_id . '/comment', ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
-        session(['commentStore' => true]);
-        return $this->product('', $data['productType_id'], $productType);
+        $this->client->request('POST', 'api/products/' . $product_id . '/comment',
+            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
+        return back();
     }
-
 }

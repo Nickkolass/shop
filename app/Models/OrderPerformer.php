@@ -12,6 +12,7 @@ class OrderPerformer extends Model
 
     protected $table = 'order_performers';
     protected $guarded = false;
+    protected $casts = ['productTypes' => 'array'];
 
 
     public function saler()

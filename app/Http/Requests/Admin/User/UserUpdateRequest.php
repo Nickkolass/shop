@@ -36,4 +36,12 @@ class UserUpdateRequest extends FormRequest
             'registredOffice' => 'nullable|string',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'email.unique' => 'Пользователь с таким email уже зарегистрирован',
+            'INN.unique' => 'Пользователь с таким ИНН уже зарегистрирован',
+        ];
+    }
 }

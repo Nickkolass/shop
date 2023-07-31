@@ -17,6 +17,7 @@ class BackOrderController extends Controller
 
     public function __construct(OrderService $service, OrderDBService $DBservice)
     {
+        $this->authorizeResource(Order::class, 'order');
         $this->service = $service;
         $this->DBservice = $DBservice;
     }
@@ -28,21 +29,18 @@ class BackOrderController extends Controller
      */
     public function index(): ?array
     {
-        $this->authorize('viewAny', Order::class);
         $orders = $this->service->index(request('page'));
-        if(isset($orders)) return OrdersResource::make($orders)->resolve();
-        return null;
+        return isset($orders) ? OrdersResource::make($orders)->resolve() : null;
     }
 
-     /**
+    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param StoreRequest $request
      * @return void
      */
     public function store(StoreRequest $request): void
     {
-        $this->authorize('create', Order::class);
         $data = $request->validated();
         $this->DBservice->store($data);
     }
@@ -50,12 +48,11 @@ class BackOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Order  $order
+     * @param Order $order
      * @return array
      */
     public function show(Order $order): array
     {
-        $this->authorize('view', $order);
         $order = $this->service->show($order);
         return ShowOrderResource::make($order)->resolve();
     }
@@ -64,24 +61,22 @@ class BackOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Order  $order
+     * @param Order $order
      * @return void
      */
     public function update(Order $order): void
     {
-        $this->authorize('update', $order);
         $this->DBservice->update($order);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Order  $order
+     * @param Order $order
      * @return void
      */
     public function destroy(Order $order): void
     {
-        $this->authorize('delete', $order);
         $this->DBservice->delete($order);
     }
 }
