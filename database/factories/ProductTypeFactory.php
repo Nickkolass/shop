@@ -17,7 +17,7 @@ class ProductTypeFactory extends Factory
      */
     public function definition()
     {
-        $product_id = Product::latest('id')->pluck('id')['0'];
+        $product_id = Product::take(1)->latest('id')->pluck('id')['0'];
         return [
             'price' => $this->faker->numberBetween(1, 10000),
             'count' => $this->faker->numberBetween(1, 10),

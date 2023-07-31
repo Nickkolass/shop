@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Option;
+namespace App\Http\Requests\Admin\Property;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OptionStoreRequest extends FormRequest
+class PropertyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,13 +21,13 @@ class OptionStoreRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $oVs = [];
-        foreach ($this->optionValues as $oV) {
-            if (isset($oV['value']) & (array_search($oV, $oVs) === false)) {
-                $oVs[] = $oV;
+        $pVs = [];
+        foreach ($this->propertyValues as $pV) {
+            if (isset($pV['value']) & (array_search($pV, $pVs) === false)) {
+                $pVs[] = $pV;
             }
         }
-        $this->merge(['optionValues' => $oVs]);
+        $this->merge(['propertyValues' => $pVs]);
     }
 
     /**
@@ -39,8 +39,9 @@ class OptionStoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'optionValues' => 'required|array',
-            'optionValues.*.value' => 'required|string',
+            'categories' => 'required|array',
+            'propertyValues' => 'required|array',
+            'propertyValues.*.value' => 'required|string',
         ];
     }
 }

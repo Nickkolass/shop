@@ -9,45 +9,43 @@ use Illuminate\Contracts\Pagination\Paginator;
 
 class OrderProductService
 {
-
-    public function getProductsForShow(Order $order): Order
+    public function getProductsForIndex(Paginator &$orders): void
     {
-        $productTypes = json_decode($order->productTypes, true);
+        $productType_ids = $orders->pluck('productTypes.*.productType_id')->flatten();
+        $preview_images = ProductType::query()
+            ->whereIn('id', $productType_ids)
+            ->pluck('preview_image', 'id');
 
-        $pTs = ProductType::with(['optionValues.option:id,title', 'product' => function ($b) {
-            $b->select('id', 'saler_id', 'title')->with(['saler:id,name']);
-        }])->select('id', 'product_id', 'preview_image')->find(array_column($productTypes, 'productType_id'));
-
-        foreach ($productTypes as &$productType) {
-            $prod = $productType;
-            $orderPerformer = $order->orderPerformers->where('saler_id', $prod['saler_id'])->first();
-            $productType = $pTs->where('id', $prod['productType_id'])->first();
-
-            Method::valuesToKeys($productType, 'optionValues');
-
-            $productType->amount = $prod['amount'];
-            $productType->price = $prod['price'];
-            $productType->status = $orderPerformer->status;
-            $productType->orderPerformer_id = $orderPerformer->id;
+        foreach ($orders as &$order) {
+            foreach ($order->productTypes as $productType) {
+                $productType['preview_image'] = $preview_images[$productType['productType_id']];
+                $productTypes[] = $productType;
+            }
+            $order->productTypes = $productTypes;
+            unset($productTypes);
         }
-        $order->productTypes = $productTypes;
-
-        return $order;
     }
 
-
-    public function getProductsForIndex($orders): ?Paginator
+    public function getProductsForShow(Order &$order): void
     {
-        foreach ($orders as $order) $ordersProductTypes[] = json_decode($order->productTypes, true);
-
-        $pTs = ProductType::select('id', 'product_id', 'preview_image')->find(array_column(array_merge(...$ordersProductTypes), 'productType_id'));
-
-        foreach ($ordersProductTypes as $key => &$productTypes) {
-            foreach ($productTypes as &$productType) {
-                $productType['preview_image'] = $pTs->where('id', $productType['productType_id'])->first()->preview_image;
-            }
-            $orders[$key]->productTypes = $productTypes;
-        }
-        return $orders;
+        $pTs = collect($order->productTypes);
+        $order->productTypes = ProductType::query()
+            ->whereIn('id', $pTs->pluck('productType_id'))
+            ->select('id', 'product_id', 'preview_image')
+            ->with([
+                'product:products.id,title',
+                'saler:users.id,name',
+                'optionValues.option:id,title',
+            ])
+            ->get()
+            ->each(function ($productType) use ($pTs, $order) {
+                $pT = $pTs->firstWhere('productType_id', $productType->id);
+                $orderPerformer = $order->orderPerformers->firstWhere('saler_id', $pT['saler_id']);
+                $productType->amount = $pT['amount'];
+                $productType->price = $pT['price'];
+                $productType->orderPerformer_id = $orderPerformer->id;
+                $productType->status = $orderPerformer->status;
+                Method::valuesToKeys($productType, 'optionValues');
+            });
     }
 }

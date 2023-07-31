@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin\Option;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OptionUpdateRequest extends FormRequest
+class OptionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

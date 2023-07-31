@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ProductImage;
 use App\Models\ProductType;
 use App\Models\RatingAndComment;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,9 +20,14 @@ class CommentImageFactory extends Factory
      */
     public function definition()
     {
-        $image = ProductType::latest('id')->first()->productImages()->inRandomOrder()->first();
-        $file_path = str_replace('product_images/', 'comments/', $image->file_path);
+        $image = ProductImage::query()
+            ->whereHas('productType', function ($q) {
+                $q->take(1)->latest('id');
+            })
+            ->inRandomOrder()
+            ->first();
 
+        $file_path = str_replace('product_images/', 'comments/', $image->file_path);
         Storage::copy('public/' . $image->file_path, 'public/' . $file_path);
 
         return [

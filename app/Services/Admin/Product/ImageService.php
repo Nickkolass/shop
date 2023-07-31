@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Product;
+namespace App\Services\Admin\Product;
 
 use App\Models\ProductImage;
 use App\Models\ProductType;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
-    public function productImages(ProductType $productType, &$productImages, ?bool $isNewProduct = true): void
+    public function productImages(ProductType $productType, array &$productImages, ?bool $isNewProduct = true): void
     {
         foreach ($productImages as &$productImage) {
             $filePath = $productImage->storePublicly('product_images/' . $productType->product_id, 'public');
@@ -30,10 +30,10 @@ class ImageService
     }
 
 
-    public function previewImage(UploadedFile $preview_image, ?string $old_preview_image = null): string
+    public function previewImage(UploadedFile $preview_image, int $product_id, ?string $old_preview_image = null): string
     {
         if (!empty($old_preview_image)) $this->deleteImages($old_preview_image);
-        return $preview_image->storePublicly('preview_images', 'public');
+        return $preview_image->storePublicly('preview_images/' . $product_id, 'public');
     }
 
 

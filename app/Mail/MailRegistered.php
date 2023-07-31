@@ -13,14 +13,15 @@ class MailRegistered extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    public ?string $password;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(?string $password = null)
     {
-        //
+        $this->password = $password;
     }
 
     /**

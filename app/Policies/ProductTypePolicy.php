@@ -2,34 +2,14 @@
 
 namespace App\Policies;
 
-use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\User;
+use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProductTypePolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Perform pre-authorization checks.
-     */
-    public function before(User $user, string $ability): bool|null
-    {
-        if ($user->isAdmin()) return true;
-        return null;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function create(User $user, Product $product)
-    {
-    }
+    use HandlesAuthorization, PreAuthChecks;
 
     /**
      * Determine whether the user can update the model.
@@ -64,7 +44,7 @@ class ProductTypePolicy
      */
     public function restore(User $user, ProductType $productType)
     {
-        //
+        return false;
     }
 
     /**
@@ -76,6 +56,6 @@ class ProductTypePolicy
      */
     public function forceDelete(User $user, ProductType $productType)
     {
-        //
+        return false;
     }
 }

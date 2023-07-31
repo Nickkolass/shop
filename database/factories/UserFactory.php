@@ -21,20 +21,22 @@ class UserFactory extends Factory
             'role' => 2,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make(1), 
+            'password' => Hash::make(1),
             'name' => $this->faker->name(),
             'surname'=> $this->faker->lastName(),
             'patronymic'=> $this->faker->name(),
             'gender'=> $this->faker->numberBetween(1, 2),
             'age'=> $this->faker->numberBetween(20, 70),
+
             'card'=> $this->faker->numerify('################'),
             'postcode'=> $this->faker->postcode(),
             'address'=> $this->faker->address(),
-            'INN'=> $this->faker->unique()->numerify('##########'),
+
+            'INN'=> $this->faker->unique()->numerify('#########'),
             'registredOffice'=> $this->faker->address(),
         ];
     }
-    
+
     /**
      * Indicate that the model's email address should be unverified.
      *

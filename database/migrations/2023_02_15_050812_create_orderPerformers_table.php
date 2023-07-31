@@ -22,12 +22,12 @@ return new class extends Migration
             $table->string('status')->default('В работе');
             $table->jsonb('productTypes');
             $table->string('delivery');
-            $table->integer('total_price');
+            $table->unsignedMediumInteger('total_price');
             $table->softDeletes();
             $table->timestamps();
         });
     }
-    
+
     /**
      * Reverse the migrations.
      *

@@ -44,10 +44,8 @@ class ProductFilter extends AbstractFilter
 
     public function tags(Builder $builder, $value)
     {
-        $builder->whereHas('product', function ($q) use ($value) {
-            $q->whereHas('tags', function ($b) use ($value) {
-                $b->whereIn('tag_id', $value);
-            });
+        $builder->whereHas('product.tags', function ($b) use ($value) {
+            $b->whereIn('tag_id', $value);
         });
     }
 
@@ -60,9 +58,7 @@ class ProductFilter extends AbstractFilter
 
     public function prices(Builder $builder, $value)
     {
-        if(count($value) == 2) $builder->whereBetween('price', $value);
-        elseif(isset($value['min'])) $builder->where('price', '>', $value['min']);
-        elseif(isset($value['max'])) $builder->where('price', '<', $value['max']);
+        $builder->whereBetween('price', [$value['min'] ?? 0, $value['max'] ?? 1000000]);
     }
 
     public function optionValues(Builder $builder, $value)
@@ -77,10 +73,8 @@ class ProductFilter extends AbstractFilter
     public function propertyValues(Builder $builder, $value)
     {
         foreach ($value as $property_id => $propertyValue_ids) {
-            $builder->whereHas('product', function ($q) use ($propertyValue_ids) {
-                $q->whereHas('propertyValues', function ($b) use ($propertyValue_ids) {
-                    $b->whereIn('property_value_id', $propertyValue_ids);
-                });
+            $builder->whereHas('product.propertyValues', function ($q) use ($propertyValue_ids) {
+                $q->whereIn('property_value_id', $propertyValue_ids);
             });
         }
     }

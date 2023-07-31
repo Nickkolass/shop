@@ -7,9 +7,16 @@ use App\Http\Requests\Admin\Tag\TagStoreRequest;
 use App\Http\Requests\Admin\Tag\TagUpdateRequest;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class TagController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Tag::class, 'tag');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +41,7 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  TagStoreRequest  $request
      * @return View
      */
     public function store(TagStoreRequest $request): View
@@ -69,27 +76,27 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  TagUpdateRequest  $request
      * @param  Tag $tag
-     * @return View
+     * @return RedirectResponse
      */
-    public function update(TagUpdateRequest $request, Tag $tag): View
+    public function update(TagUpdateRequest $request, Tag $tag): RedirectResponse
     {
         $data = $request->validated();
         $tag->update($data);
-        return view('admin.tag.show', compact('tag'));
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Tag $tag
-     * @return View
+     * @return RedirectResponse
      */
-    public function destroy(Tag $tag): View
+    public function destroy(Tag $tag): RedirectResponse
     {
         $tag->products()->detach();
         $tag->delete();
-        return $this->index();
+        return redirect()->route('admin.tags.index');
     }
 }

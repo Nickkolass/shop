@@ -16,7 +16,11 @@ class OrderDBService
     {
         DB::beginTransaction();
         try {
-            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data)->emailToSalers($data);
+            $this
+                ->productCountUpdate($data['cart'])
+                ->orderStore($data)
+                ->orderPerformerStore($data)
+                ->emailToSalers($data);
             DB::commit();
             return null;
         } catch (\Exception $exception) {
@@ -49,7 +53,6 @@ class OrderDBService
             $order->orderPerformers()->delete();
             $order->update(['status' => 'Отменен ' . now()]);
             $order->delete();
-            //возврат денег
             DB::commit();
             return null;
         } catch (\Exception $exception) {
@@ -61,13 +64,15 @@ class OrderDBService
 
     private function productCountUpdate(array &$cart): OrderDBService
     {
-        $productType_ids = array_keys($cart);
-        $productTypes = ProductType::select('id', 'count', 'price', 'product_id', 'is_published')->with('product:id,saler_id')->find($productType_ids);
+        $productTypes = ProductType::query()
+            ->select('id', 'count', 'price', 'product_id', 'is_published')
+            ->with('product:id,saler_id')
+            ->find(array_keys($cart));
 
         foreach ($cart as $productType_id => $amount) {
             $pT = $productTypes->where('id', $productType_id)->first();
 
-            $update[$productType_id]['id'] =  $pT->id;
+            $update[$productType_id]['id'] = $pT->id;
             $update[$productType_id]['count'] = $pT->count - $amount;
             $update[$productType_id]['is_published'] = $update[$productType_id]['count'] > 0 ? $pT->is_published : 0;
 
@@ -85,45 +90,48 @@ class OrderDBService
 
     private function orderStore(array &$data): OrderDBService
     {
-        $data['order_id'] = Order::create([
+        $data['order'] = Order::create([
             'user_id' => $data['user_id'],
             'productTypes' => json_encode($data['cart']),
             'delivery' => $data['delivery'],
             'total_price' => $data['total_price'],
             'payment' => $data['payment'],
             'payment_status' => $data['payment_status'],
-        ])->id;
+        ]);
         return $this;
     }
 
 
     private function orderPerformerStore(array &$data): OrderDBService
     {
-        $data['cart'] = collect($data['cart'])->groupBy('saler_id');
-
-        foreach ($data['cart'] as $saler_id => $order) {
-            $data['orderPerformers'][$saler_id] = [
-                'order_id' => $data['order_id'],
-                'saler_id' => $saler_id,
-                'user_id' => $data['user_id'],
-                'productTypes' => json_encode($order),
-                'dispatch_time' => now()->addDays(25),
-                'delivery' => $data['delivery'],
-                'total_price' => $order->sum('price'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        OrderPerformer::insert($data['orderPerformers']);
+        $data['cart'] = collect($data['cart'])
+            ->groupBy('saler_id')
+            ->map(function (iterable $order, int $saler_id) use ($data) {
+                return [
+                    'order_id' => $data['order']->id,
+                    'saler_id' => $saler_id,
+                    'user_id' => $data['user_id'],
+                    'productTypes' => json_encode($order),
+                    'dispatch_time' => now()->addDays(25),
+                    'delivery' => $data['delivery'],
+                    'total_price' => $order->sum('price'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            });
+        OrderPerformer::insert($data['cart']->all());
 
         return $this;
     }
 
     private function emailToSalers(array $data): OrderDBService
     {
-        User::whereIn('id', $data['cart']->keys())->pluck('email', 'id')->each(function($email, $saler_id) use($data) {
-            Mail::to($email)->send(new MailOrderPerformerStore($data['orderPerformers'][$saler_id]));
-        });
+        User::query()
+            ->whereIn('id', $data['cart']->keys())
+            ->pluck('email', 'id')
+            ->each(function ($email, $saler_id) use ($data) {
+                Mail::to($email)->send(new MailOrderPerformerStore($data['cart'][$saler_id]));
+            });
         return $this;
     }
 }

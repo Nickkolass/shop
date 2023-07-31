@@ -14,6 +14,7 @@ class Order extends Model
     protected $table = 'orders';
     protected $guarded = false;
 
+    protected $casts = ['productTypes' => 'array'];
 
     public function user()
     {

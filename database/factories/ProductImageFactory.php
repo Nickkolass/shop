@@ -30,7 +30,7 @@ class ProductImageFactory extends Factory
         return [
             'file_path' => $productImagePath,
             'size' => random_int(1, 10000),
-            'productType_id' => ProductType::latest('id')->pluck('id')['0'],
+            'productType_id' => ProductType::take(1)->latest('id')->pluck('id')['0'],
         ];
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserStoreRequest extends FormRequest
 {
@@ -23,20 +24,31 @@ class UserStoreRequest extends FormRequest
      */
     public function rules()
     {
+        $password = url()->previousPath() == '/users/create' ? 'nullable' : 'required';
         return [
+            'role' => 'required|integer',
             'email'=> 'required|string|email|unique:users',
-            'password'=> 'required|string|confirmed',
+            'password'=> [$password, 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
             'name' => 'required|string',
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
             'gender' => 'required|integer',
             'age' => 'required|integer',
+
             'postcode' => 'nullable|integer',
             'address' => 'nullable|string',
+
             'INN' => 'nullable|integer|unique:users',
             'registredOffice' => 'nullable|string',
-
         ];
 
+    }
+
+    public function messages()
+    {
+        return [
+            'email.unique' => 'Пользователь с таким email уже зарегистрирован',
+            'INN.unique' => 'Пользователь с таким ИНН уже зарегистрирован',
+        ];
     }
 }
