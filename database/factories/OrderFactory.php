@@ -37,7 +37,7 @@ class OrderFactory extends Factory
 
         return [
             'user_id' => User::take(1)->inRandomOrder()->pluck('id')[0],
-            'productTypes' => json_encode($productTypes),
+            'productTypes' => $productTypes,
             'delivery' => $this->faker->address(),
             'total_price' => $productTypes->pluck('price')->sum(),
             'payment' => 'card',

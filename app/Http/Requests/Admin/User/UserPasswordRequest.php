@@ -36,6 +36,7 @@ class UserPasswordRequest extends FormRequest
             'password.current_password' => 'Веден неверный пароль',
             'new_password.confirmed' => 'Новый пароль не совпадает с повторно введенным',
             'new_password.different' => 'Старый и новый пароли одинаковы',
+            'new_password' => 'Новый пароль должен быть не менее 8 символов, содержать 1 цифру, 1 заглавную и 1 строчную буквы, а также должен пройти проверку на компрометацию',
         ];
     }
 }
