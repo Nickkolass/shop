@@ -21,13 +21,13 @@ class OrderPerformerFactory extends Factory
         $currentSaler_id = cache()->get('factoryOrders')[$current];
         $order = Order::take(1)->latest('id')->first();
 
-        $productTypes = collect(json_decode($order->productTypes))->groupBy('saler_id')[$currentSaler_id];
+        $productTypes = collect($order->productTypes)->groupBy('saler_id')[$currentSaler_id];
 
         return [
             'order_id' => $order->id,
             'saler_id' => $currentSaler_id,
             'user_id' => $order->user_id,
-            'productTypes' => json_encode($productTypes),
+            'productTypes' => $productTypes,
             'dispatch_time' => $order->created_at->addDays(25),
             'delivery' => $order->delivery,
             'total_price' => $productTypes->sum('price'),

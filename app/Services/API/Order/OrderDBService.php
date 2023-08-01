@@ -92,7 +92,7 @@ class OrderDBService
     {
         $data['order'] = Order::create([
             'user_id' => $data['user_id'],
-            'productTypes' => json_encode($data['cart']),
+            'productTypes' => $data['cart'],
             'delivery' => $data['delivery'],
             'total_price' => $data['total_price'],
             'payment' => $data['payment'],
@@ -111,7 +111,7 @@ class OrderDBService
                     'order_id' => $data['order']->id,
                     'saler_id' => $saler_id,
                     'user_id' => $data['user_id'],
-                    'productTypes' => json_encode($order),
+                    'productTypes' => $order,
                     'dispatch_time' => now()->addDays(25),
                     'delivery' => $data['delivery'],
                     'total_price' => $order->sum('price'),

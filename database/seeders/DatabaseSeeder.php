@@ -9,6 +9,7 @@ use Database\Seeders\Components\SeederProductService;
 use Database\Seeders\Components\SeederStorageService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,8 +35,12 @@ class DatabaseSeeder extends Seeder
         $this->factoryService->factory();
         $this->productService->completionsOfProducts();
 
-        User::where('id', 1)->update(['role' => 1, 'email' => '1@mail.ru',
-            'password' => '$2y$10$zEo/vVO3vfXIzHrTdDS1zesl3di.9XddQqXLSuJi1UJf9nVszUvzq']);
+        $user_upd = [
+            ['id' => 1, 'email' => '1@mail.ru', 'password' => Hash::make(1), 'role' => 1],
+            ['id' => 2, 'email' => '2@mail.ru', 'password' => Hash::make(2), 'role' => 2],
+            ['id' => 3, 'email' => '3@mail.ru', 'password' => Hash::make(3), 'role' => 3],
+        ];
+        User::upsert($user_upd, ['id']);
         Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->all());
     }
 }
