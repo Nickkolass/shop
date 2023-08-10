@@ -13,7 +13,7 @@ class MailRegistered extends Mailable implements ShouldQueue
 {
     use SerializesModels, Queueable;
 
-    public string $password;
+    public ?string $password;
 
     /**
      * Create a new message instance.
