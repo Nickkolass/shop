@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Option\OptionRequest;
+use App\Http\Requests\Admin\OptionRequest;
 use App\Models\Option;
 use App\Services\Admin\OptionService;
 use Illuminate\Contracts\View\View;

@@ -22,6 +22,7 @@ class ClientMiddleware
     {
         $role = session('user.role');
         $this->verify($role);
-        return $next($request);
+        if($role) return $next($request);
+        abort(404);
     }
 }

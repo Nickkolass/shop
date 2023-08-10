@@ -17,7 +17,6 @@ class Product extends Model
     protected $guarded = false;
     protected $hidden = array('pivot');
 
-
     public function productTypes()
     {
         return $this->hasMany(ProductType::class, 'product_id', 'id');
@@ -62,5 +61,4 @@ class Product extends Model
             'description' => $this->description,
         ];
     }
-
 }

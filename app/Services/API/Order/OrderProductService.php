@@ -28,9 +28,9 @@ class OrderProductService
 
     public function getProductsForShow(Order &$order): void
     {
-        $pTs = collect($order->productTypes);
+        $productTypesFromOrder = collect($order->productTypes);
         $order->productTypes = ProductType::query()
-            ->whereIn('id', $pTs->pluck('productType_id'))
+            ->whereIn('id', $productTypesFromOrder->pluck('productType_id'))
             ->select('id', 'product_id', 'preview_image')
             ->with([
                 'product:products.id,title',
@@ -38,11 +38,11 @@ class OrderProductService
                 'optionValues.option:id,title',
             ])
             ->get()
-            ->each(function ($productType) use ($pTs, $order) {
-                $pT = $pTs->firstWhere('productType_id', $productType->id);
-                $orderPerformer = $order->orderPerformers->firstWhere('saler_id', $pT['saler_id']);
-                $productType->amount = $pT['amount'];
-                $productType->price = $pT['price'];
+            ->each(function (ProductType $productType) use ($productTypesFromOrder, $order) {
+                $productTypeFromOrder = $productTypesFromOrder->firstWhere('productType_id', $productType->id);
+                $orderPerformer = $order->orderPerformers->firstWhere('saler_id', $productTypeFromOrder['saler_id']);
+                $productType->amount = $productTypeFromOrder['amount'];
+                $productType->price = $productTypeFromOrder['price'];
                 $productType->orderPerformer_id = $orderPerformer->id;
                 $productType->status = $orderPerformer->status;
                 Method::valuesToKeys($productType, 'optionValues');

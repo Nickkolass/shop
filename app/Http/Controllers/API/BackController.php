@@ -21,7 +21,6 @@ class BackController extends Controller
     private BackService $service;
     private BackProductsService $productsService;
 
-
     public function __construct(BackService $service, BackProductsService $productsService)
     {
         $this->service = $service;
@@ -35,21 +34,18 @@ class BackController extends Controller
         return IndexResource::make($data ?? [])->resolve();
     }
 
-
-    public function products(Category $category, FilterRequest $request): array
+    public function productIndex(Category $category, FilterRequest $request): array
     {
         $data = $request->validated();
         $this->productsService->getData($data, $category);
         return DataResource::make($data)->resolve();
     }
 
-
-    public function product(ProductType $productType): array
+    public function productShow(ProductType $productType): array
     {
         $this->service->product($productType);
         return ShowProductTypeResource::make($productType)->resolve();
     }
-
 
     public function cart(): ?array
     {
@@ -57,7 +53,7 @@ class BackController extends Controller
         return isset($productTypes) ? CartResource::collection($productTypes)->resolve() : null;
     }
 
-    public function liked(): ?array
+    public function likedProducts(): ?array
     {
         $this->authorize('product', User::class);
         $productTypes = $this->service->getLiked();

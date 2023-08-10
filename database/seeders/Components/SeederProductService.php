@@ -20,7 +20,8 @@ class SeederProductService
                     ->select('optionValues.id', 'option_id')
                     ->get()
                     ->groupBy('option_id')
-                    ->map(fn (Collection $oV) => $oV->pluck('id'));
+                    ->map(fn (Collection $optionValues) => $optionValues->pluck('id'));
+
                 $optionValues = $optionValues->pop()->crossJoin(...$optionValues);
 
                 foreach ($product->productTypes as $key => $productType) {

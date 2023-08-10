@@ -91,7 +91,7 @@ class ProductController extends Controller
      */
     public function publish(Product $product): RedirectResponse
     {
-        $this->authorize('update', $product);
+        if($product->saler_id != auth()->id() & session('user.role') != 'admin') abort (403);
         $this->service->publish($product);
         return back();
     }

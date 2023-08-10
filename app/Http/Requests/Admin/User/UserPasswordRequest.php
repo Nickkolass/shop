@@ -18,6 +18,14 @@ class UserPasswordRequest extends FormRequest
     }
 
     /**
+     * Handle a passed validation attempt.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (request('user')->id != auth()->id()) abort(401);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -25,8 +33,8 @@ class UserPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'password'=> 'required|string|current_password',
-            'new_password'=> ['required', 'string', 'confirmed', 'different:password', Password::min(8)->mixedCase()->numbers()->uncompromised()],
+            'password' => 'required|string|current_password',
+            'new_password' => ['required', 'string', 'confirmed', 'different:password', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ];
     }
 

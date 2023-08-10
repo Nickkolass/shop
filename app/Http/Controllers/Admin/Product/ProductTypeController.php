@@ -21,54 +21,56 @@ class ProductTypeController extends Controller
         $this->productTypeService = $productTypeService;
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
-     * @param  Product $product
+     * @param Product $product
      * @return View
      */
-    public function create(Product $product): View
+    public function create(Product $product): View|RedirectResponse
     {
         $this->authorize('update', $product);
-        $optionValues = $this->productTypeService->relationService->OVService->getOptionValues($product);
+        $optionValues = $this->productTypeService->relationService->optionValueService->getOptionValues($product);
+        if ($optionValues->count() == 0 || $product->productTypes()->count() >= collect([1])->crossjoin(...$optionValues)->count()) {
+            abort(400, 'У выбранного товара имеется максимальное количество типов в соответствии с выбранными классификаторами');
+        }
         return view('admin.product.productType.create', compact('optionValues', 'product'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  ProductTypeStoreRequest $request
-     * @param  Product $product
+     * @param ProductTypeStoreRequest $request
+     * @param Product $product
      * @return RedirectResponse
      */
     public function store(ProductTypeStoreRequest $request, Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
         $data = $request->validated();
-        $this->productTypeService->store($product, $data, false);
+        $this->productTypeService->store($product, $data);
         return redirect()->route('admin.products.show', $product->id);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  ProductType $productType
+     * @param ProductType $productType
      * @return View
      */
     public function edit(ProductType $productType): View
     {
         $this->authorize('update', $productType);
         $productType->load(['productImages:productType_id,file_path', 'optionValues:id', 'product:id']);
-        $optionValues = $this->productTypeService->relationService->OVService->getOptionValues($productType->product);
+        $optionValues = $this->productTypeService->relationService->optionValueService->getOptionValues($productType->product);
         return view('admin.product.productType.edit', compact('productType', 'optionValues'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  ProductTypeUpdateRequest $request
-     * @param  ProductType $productType
+     * @param ProductTypeUpdateRequest $request
+     * @param ProductType $productType
      * @return RedirectResponse
      */
     public function update(ProductTypeUpdateRequest $request, ProductType $productType): RedirectResponse
@@ -82,21 +84,20 @@ class ProductTypeController extends Controller
     /**
      * Publish the specified resource in storage.
      *
-     * @param  ProductType $productType
+     * @param ProductType $productType
      * @return RedirectResponse
      */
     public function publish(ProductType $productType): RedirectResponse
     {
-        $this->authorize('update', $productType);
+        if ($productType->product()->pluck('saler_id')->first() != auth()->id() & session('user.role') != 'admin') abort(403);
         $productType->update(['is_published' => $productType->is_published == 0 ? 1 : 0]);
         return back();
     }
 
-
     /**
      * Remove the specified resource from storage.
      *
-     * @param  ProductType $productType
+     * @param ProductType $productType
      * @return RedirectResponse
      */
     public function destroy(ProductType $productType): RedirectResponse

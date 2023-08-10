@@ -35,12 +35,18 @@ class DatabaseSeeder extends Seeder
         $this->factoryService->factory();
         $this->productService->completionsOfProducts();
 
-        $user_upd = [
-            ['id' => 1, 'email' => '1@mail.ru', 'password' => Hash::make(1), 'role' => 1],
-            ['id' => 2, 'email' => '2@mail.ru', 'password' => Hash::make(2), 'role' => 2],
-            ['id' => 3, 'email' => '3@mail.ru', 'password' => Hash::make(3), 'role' => 3],
-        ];
-        User::upsert($user_upd, ['id']);
+        User::query()
+            ->take(3)
+            ->get()
+            ->map(function (User $user, $i) {
+                // $i чтобы не было ошибок при многократном наполнении БД в тестах
+                $i++;
+                $user->email = $i . '@mail.ru';
+                $user->password = Hash::make($i);
+                $user->role = $i;
+                $user->save();
+            });
+
         Cache::forever('categories', Category::select('id', 'title', 'title_rus')->get()->all());
     }
 }

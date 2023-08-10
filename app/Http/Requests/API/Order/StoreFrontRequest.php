@@ -41,7 +41,6 @@ class StoreFrontRequest extends FormRequest
             'total_price' => 'required|string',
             'cart' => 'required|array',
             'payment_status' => 'required|bool',
-
         ];
     }
 }

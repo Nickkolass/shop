@@ -14,7 +14,6 @@ class OrderPerformer extends Model
     protected $guarded = false;
     protected $casts = ['productTypes' => 'array'];
 
-
     public function saler()
     {
         return $this->beLongsTo(User::class, 'saler_id', 'id');

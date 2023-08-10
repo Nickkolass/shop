@@ -38,7 +38,6 @@ class OrderService
         return null;
     }
 
-
     public function show(Order $order): Order
     {
         $order->load(['orderPerformers' => function ($q) {

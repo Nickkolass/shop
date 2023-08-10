@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -40,12 +42,11 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
-     * @return \App\Models\User
+     * @param array $data
+     * @return User
      */
 
     protected function create(array $data)
@@ -53,4 +54,16 @@ class RegisterController extends Controller
         $data['password'] = Hash::make($data['password']);
         return User::firstOrCreate(['email' => $data['email']], $data);
     }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, (new UserStoreRequest)->rules());
+    }
+
 }

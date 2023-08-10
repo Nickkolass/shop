@@ -2,13 +2,11 @@
 
 namespace App\Services\API\Order;
 
-use App\Mail\MailOrderPerformerStore;
+use App\Events\OrderStored;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class OrderDBService
 {
@@ -16,11 +14,9 @@ class OrderDBService
     {
         DB::beginTransaction();
         try {
-            $this
-                ->productCountUpdate($data['cart'])
-                ->orderStore($data)
-                ->orderPerformerStore($data)
-                ->emailToSalers($data);
+
+            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
+
             DB::commit();
             return null;
         } catch (\Exception $exception) {
@@ -28,7 +24,6 @@ class OrderDBService
             return $exception->getMessage();
         }
     }
-
 
     public function update(Order $order): ?string
     {
@@ -43,7 +38,6 @@ class OrderDBService
             return $exception->getMessage();
         }
     }
-
 
     public function delete(Order $order): ?string
     {
@@ -61,7 +55,6 @@ class OrderDBService
         }
     }
 
-
     private function productCountUpdate(array &$cart): OrderDBService
     {
         $productTypes = ProductType::query()
@@ -70,23 +63,22 @@ class OrderDBService
             ->find(array_keys($cart));
 
         foreach ($cart as $productType_id => $amount) {
-            $pT = $productTypes->where('id', $productType_id)->first();
+            $productType = $productTypes->where('id', $productType_id)->first();
 
-            $update[$productType_id]['id'] = $pT->id;
-            $update[$productType_id]['count'] = $pT->count - $amount;
-            $update[$productType_id]['is_published'] = $update[$productType_id]['count'] > 0 ? $pT->is_published : 0;
+            $update[$productType_id]['id'] = $productType->id;
+            $update[$productType_id]['count'] = $productType->count - $amount;
+            $update[$productType_id]['is_published'] = $update[$productType_id]['count'] > 0 ? $productType->is_published : 0;
 
             $cart[$productType_id] = [
                 'productType_id' => $productType_id,
                 'amount' => $amount,
-                'price' => $pT->price * $amount,
-                'saler_id' => $pT->product->saler_id,
+                'price' => $productType->price * $amount,
+                'saler_id' => $productType->product->saler_id,
             ];
         }
         ProductType::upsert($update, ['id'], ['count', 'is_published']);
         return $this;
     }
-
 
     private function orderStore(array &$data): OrderDBService
     {
@@ -100,7 +92,6 @@ class OrderDBService
         ]);
         return $this;
     }
-
 
     private function orderPerformerStore(array &$data): OrderDBService
     {
@@ -121,17 +112,8 @@ class OrderDBService
             });
         OrderPerformer::insert($data['cart']->all());
 
-        return $this;
-    }
+        event(new OrderStored($data['cart']));
 
-    private function emailToSalers(array $data): OrderDBService
-    {
-        User::query()
-            ->whereIn('id', $data['cart']->keys())
-            ->pluck('email', 'id')
-            ->each(function ($email, $saler_id) use ($data) {
-                Mail::to($email)->send(new MailOrderPerformerStore($data['cart'][$saler_id]));
-            });
         return $this;
     }
 }

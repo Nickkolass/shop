@@ -76,7 +76,7 @@
                         <div class="inner">
                             <h3>Рейтинговые товары</h3>
                             <h5>@foreach($data['products_rating'] as $product)
-                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->id) }}"
                                          class="small-box-footer">{{$product->title}}</a>
                                     @for($i=1; $i<=5; $i++)
                                         <i class="fa fa-star{{$i-1<$product->rating & $product->rating<$i ? '-half' : ''}}{{$product->rating<$i ? '-o' : ''}}"></i>

@@ -7,7 +7,6 @@ use App\Models\OrderPerformer;
 use App\Models\ProductType;
 use Illuminate\Contracts\Pagination\Paginator;
 
-
 class OrderPerformerProductService
 {
     public function getProductsForIndex(Paginator &$orders): void
@@ -29,9 +28,9 @@ class OrderPerformerProductService
 
     public function getProductsForShow(OrderPerformer &$order): void
     {
-        $pTs = collect($order->productTypes);
+        $productTypesFromOrder = collect($order->productTypes);
         $order->productTypes = ProductType::query()
-            ->whereIn('id', $pTs->pluck('productType_id'))
+            ->whereIn('id', $productTypesFromOrder->pluck('productType_id'))
             ->select('id', 'product_id', 'preview_image')
             ->with([
                 'category:categories.id,title_rus',
@@ -39,12 +38,11 @@ class OrderPerformerProductService
                 'product:id,title'
             ])
             ->get()
-            ->each(function ($productType) use ($pTs) {
-                $pT = $pTs->where('productType_id', $productType->id)->first();
-                $productType->amount = $pT['amount'];
-                $productType->price = $pT['price'];
+            ->each(function (ProductType $productType) use ($productTypesFromOrder) {
+                $productTypeFromOrder = $productTypesFromOrder->where('productType_id', $productType->id)->first();
+                $productType->amount = $productTypeFromOrder['amount'];
+                $productType->price = $productTypeFromOrder['price'];
                 Method::valuesToKeys($productType, 'optionValues');
             });
     }
-
 }

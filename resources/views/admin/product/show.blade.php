@@ -36,15 +36,11 @@
                         <div class="card-header d-flex p-3">
                             <div class="mr-3">
                                 <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary">Редактировать</a>
-                                @if($product->productTypes->count() == collect([1])->crossjoin(...$product->optionValues)->count() || $product->optionValues->count() == 0)
-                                    <button style="margin-left:12px" class="btn btn-primary"
-                                            title="Добавлено максимальное количество типов по выбранным классификаторам"
-                                            disabled>Добавить тип
-                                    </button>
-                                @else
-                                    <a href="{{ route('admin.productTypes.create', $product->id) }}"
-                                       style="margin-left:12px" class="btn btn-primary">Добавить тип</a>
-                                @endif
+                            </div>
+
+                            <div class="mr-3">
+                                <h4 hidden> {{ $block = ($product->productTypes->count() == collect([1])->crossjoin(...$product->optionValues)->count() || $product->optionValues->count() == 0) ? 1 : 0}} </h4>
+                                <a href="{{ route('admin.productTypes.create', $product->id) }}" class="btn btn-primary {{$block ? 'disabled' : ''}}" title="{{$block ? 'Добавлено максимальное количество типов по выбранным классификаторам' : ''}}">Добавить тип</a>
                             </div>
 
                             <div class="mr-3">
@@ -177,8 +173,9 @@
                                         <td>{{ $productType->count }}</td>
                                         <td>{{ $productType->liked_count }}</td>
                                         <td>
-                                            <form action="{{route('admin.productTypes.publish', $productType->id) }}"
-                                                  method="post">
+                                            <form
+                                                action="{{route('admin.productTypes.publish', $productType->id) }}"
+                                                method="post">
                                                 @csrf
                                                 @method('patch')
                                                 <h4 hidden> {{$blockOV = $productType->optionValues->diff($product->optionValues->pluck('*.value')->flatten())->count() != 0}} </h4>
@@ -189,11 +186,13 @@
                                                     @disabled($blockOV || $blockCount)>
                                             </form>
                                         </td>
-                                        <td><a href="{{ route('admin.productTypes.edit', $productType) }}"
-                                               class="btn btn-primary">Редактировать</a></td>
                                         <td>
-                                            <form action="{{route('admin.productTypes.destroy', $productType->id) }}"
-                                                  method="post">
+                                            <a href="{{ route('admin.productTypes.edit', $productType->id) }}"
+                                               class="btn btn-primary">Редактировать</a>
+                                        </td>
+                                        <td>
+                                            <form action="{{ route('admin.productTypes.destroy', $productType->id) }}"
+                                                method="post">
                                                 @csrf
                                                 @method('delete')
                                                 <input type="submit" class="btn btn-danger" value="Удалить">

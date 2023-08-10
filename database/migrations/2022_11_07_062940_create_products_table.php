@@ -19,7 +19,7 @@ return new class extends Migration
             $table->fullText('title'); // добавление индекса к самому полю не работает
             $table->text('description')->fullText();
             $table->foreignId('saler_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('category_id')->required()->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

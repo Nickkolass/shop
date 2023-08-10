@@ -5,8 +5,8 @@ namespace App\Services\Admin\Product;
 use App\Models\ProductImage;
 use App\Models\ProductType;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-
 
 class ImageService
 {
@@ -21,24 +21,18 @@ class ImageService
             ];
         }
         if (!$isNewProduct) {
-            if (!empty($productType->productImages)) {
-                $this->deleteImages($productType->productImages->pluck('file_path')->all());
-                ProductImage::whereIn('id', $productType->productImages->pluck('id'))->delete();
-            }
+            if (!empty($productType->productImages)) ProductImage::whereIn('id', $productType->productImages->pluck('id'))->delete();
             ProductImage::insert($productImages);
         }
     }
 
-
-    public function previewImage(UploadedFile $preview_image, int $product_id, ?string $old_preview_image = null): string
+    public function previewImage(UploadedFile $preview_image, int $product_id): string
     {
-        if (!empty($old_preview_image)) $this->deleteImages($old_preview_image);
         return $preview_image->storePublicly('preview_images/' . $product_id, 'public');
     }
 
-
-    public function deleteImages(array|string $images): void
+    public static function deleteImages(array|string $image_paths): void
     {
-        Storage::disk('public')->delete($images);
+        Storage::disk('public')->delete($image_paths);
     }
 }

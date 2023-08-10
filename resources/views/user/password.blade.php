@@ -5,7 +5,9 @@ session('user.role') == 'admin' || session('user.role') == 'saler'
 )
 @section('content')
     <!-- Content Header (Page header) -->
-
+    @if(session('user.role') != 'admin' || session('user.role') != 'saler')
+        <br><br><br><br><br><br>
+    @endif
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -38,15 +40,15 @@ session('user.role') == 'admin' || session('user.role') == 'saler'
                     @method('patch')
                     <div>
                         <div class="form-group">
-                            <input id="password-confirm" type="password" name="password" class="form-control"
+                            <input type="password" name="password" class="form-control"
                                    placeholder="Введите старый пароль" required>
                         </div>
                         <div class="form-group">
-                            <input id="password-confirm" type="password" name="new_password" class="form-control"
+                            <input type="password" name="new_password" class="form-control"
                                    placeholder="Введите новый пароль" required>
                         </div>
                         <div class="form-group">
-                            <input id="password-confirm" type="password" name="new_password_confirmation"
+                            <input type="password" name="new_password_confirmation"
                                    class="form-control" placeholder="Повторите новый пароль" required>
                         </div>
                         <div class="col-md-6">

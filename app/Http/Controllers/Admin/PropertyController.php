@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Property\PropertyRequest;
+use App\Http\Requests\Admin\PropertyRequest;
 use App\Models\Category;
 use App\Models\Property;
 use App\Services\Admin\PropertyService;

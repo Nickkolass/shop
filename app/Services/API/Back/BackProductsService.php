@@ -13,7 +13,6 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
-
 class BackProductsService
 {
 
@@ -104,7 +103,6 @@ class BackProductsService
         Method::mapAfterGettingProducts($data['productTypes']);
         return $this;
     }
-
 
     private function productFilter(array $data): ProductFilter
     {
