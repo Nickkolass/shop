@@ -10,7 +10,6 @@ use Illuminate\Contracts\View\View;
 class IndexController extends Controller
 {
 
-
     public function __invoke(): View
     {
         $user = auth()->user();
@@ -40,7 +39,7 @@ class IndexController extends Controller
 
         $data['products_rating'] = $user->products()
             ->limit(3)
-            ->select('products.id', 'product_id', 'title')
+            ->select('products.id', 'title')
             ->leftJoin('rating_and_comments', 'products.id', '=', 'rating_and_comments.product_id')
             ->selectRaw('COUNT(rating) AS rating_count, AVG(rating) AS rating')
             ->groupBy('id')
@@ -60,16 +59,16 @@ class IndexController extends Controller
             ->pluck('productTypes')
             ->flatten(1)
             ->groupBy('productType_id')
-            ->map(fn($pT) => ['amount' => $pT->sum('amount'), 'price' =>  $pT->sum('price')])
+            ->map(fn($productType) => ['amount' => $productType->sum('amount'), 'price' =>  $productType->sum('price')])
             ->sortDesc()
             ->take(3)
-            ->map(function ($data, $pT_id) {
-                $p = Product::whereHas('productTypes', fn($q) => $q->limit(1)->where('productTypes.id', $pT_id))->select('id', 'title')->first();
+            ->map(function ($data, $productType_id) {
+                $product = Product::whereHas('productTypes', fn($q) => $q->limit(1)->where('productTypes.id', $productType_id))->select('id', 'title')->first();
                 return [
-                    'productType_id' => $p->id,
+                    'productType_id' => $product->id,
                     'amount' => $data['amount'],
                     'price' => $data['price'],
-                    'title' => $p->title,
+                    'title' => $product->title,
                 ];
             });
 

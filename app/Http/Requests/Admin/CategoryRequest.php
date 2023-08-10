@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Tag;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagStoreRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,6 +25,7 @@ class TagStoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
+            'title_rus' => 'required|string',
         ];
     }
 }

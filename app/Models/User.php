@@ -24,7 +24,6 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     const ROLE_SALER = 2;
     const ROLE_CLIENT = 3;
 
-
     public static function getRoles()
     {
         return [
@@ -61,7 +60,6 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
             self::GENDER_FEMALE => 'Женский',
         ];
     }
-
 
     public function getGenderTitleAttribute()
     {
@@ -108,6 +106,11 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function hasVerifiedEmail()
+    {
+        return ! is_null($this->email_verified_at);
+    }
 
     public function products()
     {

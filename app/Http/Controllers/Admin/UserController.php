@@ -17,10 +17,10 @@ class UserController extends Controller
     public UserService $service;
     public function __construct(UserService $service)
     {
+        $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'passwordEdit', 'passwordUpdate']);
+        $this->middleware('admin')->only(['index', 'create', 'store']);
         $this->authorizeResource(User::class, 'user');
         $this->service = $service;
-        $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'support']);
-        $this->middleware('admin')->only('index', 'create', 'store');
     }
 
     /**
@@ -106,18 +106,28 @@ class UserController extends Controller
     }
 
     /**
+     * Edit the specified resource in storage.
+     *
+     * @param int $user_id
+     * @return View
+     */
+    public function passwordEdit(int $user_id): View
+    {
+        if($user_id != auth()->id()) abort(401);
+        return view('user.password');
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param UserPasswordRequest $request
      * @param User $user
      * @return RedirectResponse
      */
-    public function password(UserPasswordRequest $request, User $user): RedirectResponse
+    public function passwordUpdate(UserPasswordRequest $request, User $user): RedirectResponse
     {
-        $this->authorize('password', $user);
         $data = $request->validated();
-        $this->service->password($user, $data['new_password']);
+        $this->service->passwordUpdate($user, $data['new_password']);
         return redirect()->route('users.show', $user->id);
     }
-
 }

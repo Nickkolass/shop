@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
         session(['validator_failed' => true]);
         $types = $this->types;
         foreach ($types as &$type) {
-            if (!empty($oV = array_filter($type['optionValues']))) $type['optionValues'] = $oV;
+            if (!empty($optionValues = array_filter($type['optionValues']))) $type['optionValues'] = $optionValues;
             else unset($type['optionValues']);
         }
         $this->merge(['types' => $types]);
@@ -37,7 +37,6 @@ class StoreRequest extends FormRequest
     {
         session()->forget('validator_failed');
     }
-
 
     /**
      * Get the validation rules that apply to the request.
@@ -56,7 +55,6 @@ class StoreRequest extends FormRequest
             'types.*.optionValues' => 'required|array',
         ];
     }
-
 
     public function messages()
     {

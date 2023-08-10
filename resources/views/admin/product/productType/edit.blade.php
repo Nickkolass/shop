@@ -51,12 +51,12 @@
                                 <tr>
                                     <td>Цена</td>
                                     <td><input type="number" name="price" class="form-control"
-                                               value="{{ $productType->price }}"></td>
+                                               value="{{ $productType->price }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Остаток</td>
                                     <td><input type="number" name="count" class="form-control"
-                                               value="{{ $productType->count }}"></td>
+                                               value="{{ $productType->count }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Опубликовать</td>
@@ -76,7 +76,7 @@
                                                                        class="form-control">
                                                                 <img
                                                                     src="{{ asset('/storage/'.$productType->preview_image) }}"
-                                                                    width='70' height='70' class="img img-responsive">
+                                                                    width='70' height='70' class="img img-responsive" style="margin-left: 10px">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -99,7 +99,7 @@
                                                                 @foreach($productType->productImages as $img)
                                                                     <img src="{{ asset('/storage/'.$img->file_path) }}"
                                                                          width='70' height='70'
-                                                                         class="img img-responsive">
+                                                                         class="img img-responsive" style="margin-left: 10px">
                                                                 @endforeach
                                                             </div>
                                                         </div>

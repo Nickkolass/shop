@@ -33,7 +33,7 @@ class FrontController extends Controller
         return view('api.index', compact('data'));
     }
 
-    public function products(string $category_title, ProductsRequest $request)
+    public function productIndex(string $category_title, ProductsRequest $request)
     {
         $queryParams = $request->validated();
         APIFrontService::scenarioGetProducts($queryParams);
@@ -46,8 +46,7 @@ class FrontController extends Controller
         return view('api.product.index', compact('data', 'productTypes'));
     }
 
-
-    public function product(int $productType_id): View
+    public function productShow(int $productType_id): View
     {
         $productType = $this->client->request('POST', 'api/products/show/' . $productType_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -60,7 +59,6 @@ class FrontController extends Controller
         return view('api.product.show', compact('data', 'productType'));
     }
 
-
     public function addToCart(): RedirectResponse
     {
         $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
@@ -70,7 +68,6 @@ class FrontController extends Controller
         }
         return back();
     }
-
 
     public function cart(): View
     {
@@ -83,7 +80,7 @@ class FrontController extends Controller
         return view('api.cart', compact('productTypes', 'totalPrice'));
     }
 
-    public function liked(): View
+    public function likedProducts(): View
     {
         $productTypes = $this->client->request('POST', 'api/products/liked',
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -104,8 +101,7 @@ class FrontController extends Controller
     public function commentStore(int $product_id, StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        APIFrontService::imgEncode($data);
-
+        if (!empty($data['commentImages'])) APIFrontService::imgEncode($data);
         $this->client->request('POST', 'api/products/' . $product_id . '/comment',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         return back();

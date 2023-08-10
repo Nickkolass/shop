@@ -23,6 +23,6 @@ class AdminMiddleware
         $role = session('user.role');
         $this->verify($role);
         if ($role == 'admin') return $next($request);
-        abort(403);
+        abort(404);
     }
 }

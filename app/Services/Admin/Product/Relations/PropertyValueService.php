@@ -4,7 +4,6 @@ namespace App\Services\Admin\Product\Relations;
 
 use App\Models\PropertyValue;
 
-
 class PropertyValueService
 {
 

@@ -73,7 +73,7 @@
                                                     <a href="{{ route('api.orders.show', $order->order_id) }}">Перейти к
                                                         заказу</a>
                                                 @else
-                                                    {{ $productType['saler']['name'] }}
+                                                    {{ $order->saler->name }}
                                                 @endif
                                             </td>
                                             <td>@foreach($productType['option_values'] as $option => $value)

@@ -25,7 +25,6 @@ class ProductEditController extends Controller
         return view('admin.product.edit.index_edit', compact('product', 'data'));
     }
 
-
     public function properties(Product $product, ProductRequest $request): View
     {
         $data = $request->validated();

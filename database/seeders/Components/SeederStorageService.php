@@ -10,6 +10,7 @@ class SeederStorageService
     {
         Storage::deleteDirectory('/public/preview_images/');
         Storage::deleteDirectory('/public/product_images/');
+        Storage::deleteDirectory('/public/comments/');
 
         $filesPath = Storage::files('/public/factories/');
         foreach ($filesPath as $filePath) Storage::copy($filePath, str_replace('ories', '', $filePath));

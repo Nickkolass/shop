@@ -2,7 +2,6 @@
 
 namespace App\Services\API;
 
-
 class APIFrontService
 {
     public static function scenarioGetProducts(?array &$queryParams): void
@@ -21,7 +20,6 @@ class APIFrontService
         $queryParams['cart'] = session('cart');
     }
 
-
     public static function afterGetProducts(array &$data): ?array
     {
         $data['cart'] = session('cart');
@@ -33,14 +31,12 @@ class APIFrontService
 
     public static function imgEncode(array &$data): void
     {
-        if (!empty($data['commentImages'])) {
-            foreach ($data['commentImages'] as &$img) {
-                $img = [
-                    'path' => $img->getPathname(),
-                    'originalName' => $img->getClientOriginalName(),
-                    'mimeType' => $img->getClientMimeType(),
-                ];
-            }
+        foreach ($data['commentImages'] as &$img) {
+            $img = [
+                'path' => $img->getPathname(),
+                'originalName' => $img->getClientOriginalName(),
+                'mimeType' => $img->getClientMimeType(),
+            ];
         }
     }
 }

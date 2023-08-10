@@ -6,17 +6,15 @@ use App\Models\Property;
 use App\Models\PropertyValue;
 use Illuminate\Support\Facades\DB;
 
-
 class PropertyService
 {
     public function store(array $data): ?string
     {
-//        dd($data);
         DB::beginTransaction();
         try {
 
             $property = Property::firstOrCreate(['title' => $data['title']]);
-            foreach ($data['propertyValues'] as &$pV) $pV['property_id'] = $property->id;
+            foreach ($data['propertyValues'] as &$propertyValue) $propertyValue['property_id'] = $property->id;
             PropertyValue::insert($data['propertyValues']);
             $property->categories()->attach($data['categories']);
 
@@ -34,7 +32,7 @@ class PropertyService
         $newValues = array_column($data['propertyValues'], 'value');
         $delete = array_diff($oldValues, $newValues);
         $create = array_diff($newValues, $oldValues);
-        foreach ($create as &$pV) $pV = ['property_id' => $property->id, 'value' => $pV];
+        foreach ($create as &$propertyValue) $propertyValue = ['property_id' => $property->id, 'value' => $propertyValue];
 
         DB::beginTransaction();
         try {

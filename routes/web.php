@@ -31,10 +31,12 @@ use App\Http\Controllers\Admin\Product\ProductEditController;
 */
 
 Auth::routes(['verify' => true]);
+
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/users/{user}/password', [UserController::class, 'passwordEdit'])->name('users.password.edit');
+Route::patch('/users/{user}/password', [UserController::class, 'passwordUpdate'])->name('users.password.update');
 Route::resource('/users', UserController::class);
-Route::view('/users/{user}/password', 'user.password')->middleware('client')->name('users.password.edit');
-Route::patch('/users/{user}/password', [UserController::class, 'password'])->middleware('client')->name('users.password.update');
 
 Route::name('api.')->group(function () {
     Route::view('/about', 'api.about')->name('about');
@@ -45,11 +47,10 @@ Route::name('api.')->group(function () {
         Route::post('/cart', 'addToCart')->name('addToCart');
         Route::prefix('/products')->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::get('/liked', 'liked')->name('liked')->middleware('client');
+            Route::get('/liked', 'likedProducts')->name('liked')->middleware('client');
             Route::post('/liked/{productType}', 'likedToggle')->name('liked.toggle')->middleware('client');
-            Route::get('/{category}', 'products')->name('products');
-            Route::post('/{category}', 'products')->name('filter');
-            Route::get('/show/{productType}', 'product')->name('product');
+            Route::match(['get', 'post'], '/{category}', 'productIndex')->name('products');
+            Route::get('/show/{productType}', 'productShow')->name('product');
             Route::post('/{product}/comment', 'commentStore')->name('comment.store')->middleware('client');
         });
     });
@@ -75,9 +76,9 @@ Route::prefix('/admin')->name('admin.')->group(function () {
             Route::post('/{product}/edit/properties', [ProductEditController::class, 'properties'])->name('editProperties');
             Route::patch('/{product}/publish', [ProductController::class, 'publish'])->name('publish');
         });
-        Route::patch('/products/publish/{productType}', [ProductTypeController::class, 'publish'])->name('productTypes.publish');
-        Route::apiResource('products', ProductController::class);
+        Route::patch('/productTypes/{productType}/publish', [ProductTypeController::class, 'publish'])->name('productTypes.publish');
         Route::resource('products.productTypes', ProductTypeController::class)->names('productTypes')
             ->except(['index', 'show'])->shallow();
+        Route::apiResource('products', ProductController::class);
     });
 });

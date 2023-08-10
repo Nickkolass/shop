@@ -24,15 +24,15 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|int:exists:users,id',
-            'email'=> 'required|string|email|unique:users,email,' . $this->user_id,
+            'id' => 'required|int:exists:users,id',
+            'email'=> 'required|string|email|unique:users,email,' . $this->id,
             'name' => 'required|string',
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
             'age' => 'required|integer',
             'postcode' => 'nullable|integer',
             'address' => 'nullable|string',
-            'INN' => 'nullable|integer|unique:users,INN,' . $this->user_id,
+            'INN' => 'nullable|integer|unique:users,INN,' . $this->id,
             'registredOffice' => 'nullable|string',
         ];
     }

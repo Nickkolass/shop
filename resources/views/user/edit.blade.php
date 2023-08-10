@@ -46,7 +46,7 @@ $user->isSaler() || session('user.role') == 'admin'
                     @csrf
                     @method('patch')
                     <div>
-                        <input type="hidden" value="{{ $user->id }}" name="user_id">
+                        <input type="hidden" value="{{ $user->id }}" name="id">
                         <div class="row mb-3">
                             <label for="surname" class="col-md-6 col-form-label text-md-end">{{ __('Фамилия') }}</label>
                             <div class="col-md-6">
@@ -63,7 +63,7 @@ $user->isSaler() || session('user.role') == 'admin'
                         </div>
                         <div class="row mb-3">
                             <label for="patronymic"
-                                   class="col-md-6 col-form-label text-md-end">{{ __('отчество') }}</label>
+                                   class="col-md-6 col-form-label text-md-end">{{ __('Отчество') }}</label>
                             <div class="col-md-6">
                                 <input type="text" value="{{ $user->patronymic }}" name="patronymic"
                                        class="form-control" placeholder="Отчество" required>

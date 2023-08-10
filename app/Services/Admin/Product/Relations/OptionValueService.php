@@ -9,7 +9,6 @@ use App\Models\ProductType;
 use App\Models\PropertyValue;
 use Illuminate\Support\Collection;
 
-
 class OptionValueService
 {
 
@@ -26,16 +25,14 @@ class OptionValueService
         return $relations;
     }
 
-
-    public function forRelationsProduct(Product $product, array $detachedOV): void
+    public function forRelationsProduct(Product $product, array $detachedOptionValues): void
     {
-        $product->productTypes()->whereHas('optionValues', function ($b) use ($detachedOV) {
-            $b->whereIn('optionValues.id', $detachedOV);
+        $product->productTypes()->whereHas('optionValues', function ($b) use ($detachedOptionValues) {
+            $b->whereIn('optionValues.id', $detachedOptionValues);
         })->update(['is_published' => 0]);
     }
 
-
-    public function detachProductOVs(ProductType $productType): void
+    public function detachProductOptionValues(ProductType $productType): void
     {
         OptionValueProduct::query()
             ->where('product_id', $productType->product_id)
@@ -53,5 +50,4 @@ class OptionValueService
             ->get();
         return Method::toGroups($optionValues);
     }
-
 }

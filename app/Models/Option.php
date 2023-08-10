@@ -15,5 +15,4 @@ class Option extends Model
     {
         return $this->hasMany(OptionValue::class, 'option_id', 'id');
     }
-
 }

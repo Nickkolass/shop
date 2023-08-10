@@ -20,7 +20,6 @@ class ProductImageFactory extends Factory
     public function definition()
     {
 
-
         $filesPath = Storage::files('/public/fact/');
         $filePath = $filesPath[random_int(0, count($filesPath)-1)];
         $productImagePath = str_replace('public/fact/', 'product_images/' . Product::latest('id')->pluck('id')['0']. '/', $filePath);
@@ -32,7 +31,6 @@ class ProductImageFactory extends Factory
             'size' => random_int(1, 10000),
             'productType_id' => ProductType::take(1)->latest('id')->pluck('id')['0'],
         ];
-
 
     }
 }

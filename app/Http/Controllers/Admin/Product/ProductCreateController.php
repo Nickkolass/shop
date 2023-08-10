@@ -23,7 +23,6 @@ class ProductCreateController extends Controller
         return view('admin.product.create.index_create', compact('data'));
     }
 
-
     public function properties(ProductRequest $request): View
     {
         $data = $request->validated();
@@ -31,7 +30,6 @@ class ProductCreateController extends Controller
         $data = $this->service->properties($data['category_id']);
         return view('admin.product.create.properties_create', compact('data'));
     }
-
 
     public function types(): View
     { //в случае ошибки валидации редирект на пост роут невозможен, поэтому гет с проверкой внутри метода: выполняется если выполнится хотя бы 1

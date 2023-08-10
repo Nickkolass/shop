@@ -68,7 +68,7 @@ $user->isSaler() || session('user.role') == 'admin'
                                 </tr>
                                 <tr>
                                     <td>Пол</td>
-                                    <td>{{ $user->gender }}</td>
+                                    <td>{{ $user->getGenderTitleAttribute() }}</td>
                                 </tr>
                                 <tr>
                                     <td>Почтовый индекс</td>
@@ -96,14 +96,19 @@ $user->isSaler() || session('user.role') == 'admin'
                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
                         </div>
                         <div class="mr-3">
-                            <a href="{{ route('users.password.edit', $user->id) }}" class="btn btn-primary">Сменить
-                                пароль</a>
+                            <form action="{{route('users.password.edit', $user->id) }}" method="post">
+                                @csrf
+                                @method('post')
+                                <input type="submit" class="btn btn-primary" value="Сменить пароль">
+                            </form>
                         </div>
-                        <form action="{{route('users.destroy', $user->id) }}" method="post">
-                            @csrf
-                            @method('delete')
-                            <input type="submit" class="btn btn-danger" value="Удалить">
-                        </form>
+                        <div class="mr-3">
+                            <form action="{{route('users.destroy', $user->id) }}" method="post">
+                                @csrf
+                                @method('delete')
+                                <input type="submit" class="btn btn-danger" value="Удалить">
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div><!-- /.container-fluid -->

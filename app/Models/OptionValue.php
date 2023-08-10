@@ -12,8 +12,6 @@ class OptionValue extends Model
     protected $guarded = false;
     protected $hidden = array('pivot');
 
-
-
     public function option()
     {
         return $this->beLongsTo(Option::class, 'option_id', 'id');
@@ -28,5 +26,4 @@ class OptionValue extends Model
     {
         return $this->beLongsToMany(ProductType::class, 'productType_optionValues', 'optionValue_id', 'productType_id');
     }
-
 }

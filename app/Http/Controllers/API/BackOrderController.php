@@ -57,7 +57,6 @@ class BackOrderController extends Controller
         return ShowOrderResource::make($order)->resolve();
     }
 
-
     /**
      * Update the specified resource in storage.
      *

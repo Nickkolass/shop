@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\Components;
 
-
 use App\Models\Category;
 use App\Models\CommentImage;
 use App\Models\Option;
@@ -52,11 +51,9 @@ class SeederFactoryService
             Category::create($category)->properties()->attach($properties);
             User::factory(1)->create();
             for ($j = 1; $j <= 5; $j++) {
-                $ov = $options->random(2)->pluck('optionValues');
-                $ov = $ov->pluck(0)->merge($ov->pluck(1));
-
-                $pv = $properties->pluck('propertyValues');
-                foreach ($pv as &$i) $i = $i->shuffle();
+                $propertyValues = $properties->pluck('propertyValues')->shuffle()->pluck(0);
+                $optionValues = $options->random(2)->pluck('optionValues')->random(2)
+                    ->map(fn ($optionValue) => $optionValue->random(2))->flatten();
 
                 Product::factory(1)
                     ->has(ProductType::factory(4)
@@ -64,8 +61,8 @@ class SeederFactoryService
                     ->has(RatingAndComment::factory(1)
                         ->has(CommentImage::factory(3)))
                     ->hasAttached($tags->random(random_int(3, 5)))
-                    ->hasAttached($ov)
-                    ->hasAttached($pv->pluck(0))
+                    ->hasAttached($optionValues)
+                    ->hasAttached($propertyValues)
                     ->create();
             }
         }
@@ -78,5 +75,4 @@ class SeederFactoryService
             }
         }
     }
-
 }

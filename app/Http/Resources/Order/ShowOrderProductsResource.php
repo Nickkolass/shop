@@ -27,6 +27,5 @@ class ShowOrderProductsResource extends JsonResource
             'orderPerformer_id' => $this['orderPerformer_id'],
         ];
 
-
     }
 }

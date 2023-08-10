@@ -21,7 +21,7 @@ class UserFactory extends Factory
             'role' => 2,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make(1),
+            'password' => Hash::make($this->faker->password(5)),
             'name' => $this->faker->name(),
             'surname'=> $this->faker->lastName(),
             'patronymic'=> $this->faker->name(),
@@ -29,10 +29,10 @@ class UserFactory extends Factory
             'age'=> $this->faker->numberBetween(20, 70),
 
             'card'=> $this->faker->numerify('################'),
-            'postcode'=> $this->faker->postcode(),
+            'postcode'=> (int) $this->faker->postcode(),
             'address'=> $this->faker->address(),
 
-            'INN'=> $this->faker->unique()->numerify('#########'),
+            'INN'=> (int) $this->faker->unique()->numerify('#########'),
             'registredOffice'=> $this->faker->address(),
         ];
     }

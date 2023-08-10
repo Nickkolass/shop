@@ -102,15 +102,4 @@ class UserPolicy
     {
         return true;
     }
-
-    /**
-     * Determine whether the user can like productTypes.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function password(User $user, User $model)
-    {
-        return $user->id == $model->id;
-    }
 }

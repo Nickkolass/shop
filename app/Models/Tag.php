@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
 {
-    
+
     use HasFactory;
 
     protected $table = 'tags';
     protected $guarded = false;
     protected $hidden = array('pivot');
 
-
     public function products(){
         return $this->beLongsToMany(Product::class, 'product_tags', 'tag_id','product_id');
     }
-
 }

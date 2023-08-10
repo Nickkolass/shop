@@ -15,6 +15,4 @@ class OptionValueProduct extends Model
     {
         return $this->beLongsTo(OptionValue::class, 'optionValue_id', 'id');
     }
-
-
 }

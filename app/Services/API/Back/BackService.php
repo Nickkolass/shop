@@ -6,10 +6,11 @@ use App\Components\Method;
 use App\Models\CommentImage;
 use App\Models\ProductType;
 use App\Models\RatingAndComment;
-use App\Models\User;
+use App\Services\Admin\Product\ImageService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BackService
 {
@@ -54,7 +55,6 @@ class BackService
         return $productTypes->count() ? $productTypes : null;
     }
 
-
     public function product(ProductType &$productType): void
     {
         $user_id = auth('api')->id() ?? null;
@@ -87,7 +87,6 @@ class BackService
         Method::valuesToKeys($productType, 'optionValues');
         Method::countingRatingAndComments($productType->product);
     }
-
 
     public function cart(?array $cart): ?Collection
     {
@@ -125,11 +124,12 @@ class BackService
                 }
                 CommentImage::insert($commentImages);
             }
+            DB::commit();
             return null;
         } catch (\Exception $exception) {
             DB::rollBack();
+            if(isset($commentImages)) ImageService::deleteImages(array_column($commentImages, 'file_path'));
             return $exception->getMessage();
         }
-
     }
 }

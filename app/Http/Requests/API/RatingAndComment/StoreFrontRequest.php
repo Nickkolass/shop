@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\API\RatingAndComment;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreFrontRequest extends FormRequest
 {
@@ -18,7 +16,6 @@ class StoreFrontRequest extends FormRequest
         return true;
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,7 +27,7 @@ class StoreFrontRequest extends FormRequest
             'rating' => 'required|integer',
             'message' => 'nullable|string',
             'commentImages' => 'nullable|array',
-            'productType_id' => 'required|integer',
+            'product_id' => 'required|integer',
         ];
     }
 }

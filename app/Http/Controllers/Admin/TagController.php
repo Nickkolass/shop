@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Tag\TagStoreRequest;
-use App\Http\Requests\Admin\Tag\TagUpdateRequest;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -41,13 +39,11 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  TagStoreRequest  $request
      * @return View
      */
-    public function store(TagStoreRequest $request): View
+    public function store(): View
     {
-        $data = $request->validated();
-        Tag::firstOrCreate($data);
+        Tag::firstOrCreate(['title' => request('title')]);
         return $this->index();
     }
 
@@ -76,15 +72,13 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  TagUpdateRequest  $request
      * @param  Tag $tag
-     * @return RedirectResponse
+     * @return View
      */
-    public function update(TagUpdateRequest $request, Tag $tag): RedirectResponse
+    public function update(Tag $tag): View
     {
-        $data = $request->validated();
-        $tag->update($data);
-        return back();
+        $tag->update(['title' => request('title')]);
+        return $this->show($tag);
     }
 
     /**

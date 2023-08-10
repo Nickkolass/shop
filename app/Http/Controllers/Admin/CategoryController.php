@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Category\CategoryStoreRequest;
-use App\Http\Requests\Admin\Category\CategoryUpdateRequest;
+use App\Http\Requests\Admin\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -39,10 +38,10 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  CategoryStoreRequest  $request
+     * @param  CategoryRequest  $request
      * @return View
      */
-    public function store(CategoryStoreRequest $request): View
+    public function store(CategoryRequest $request): View
     {
         $data = $request->validated();
         Category::firstOrCreate($data);
@@ -74,11 +73,11 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  CategoryUpdateRequest  $request
+     * @param  CategoryRequest  $request
      * @param  Category $category
      * @return View
      */
-    public function update(CategoryUpdateRequest $request, Category $category): View
+    public function update(CategoryRequest $request, Category $category): View
     {
         $data = $request->validated();
         $category->update($data);

@@ -23,6 +23,6 @@ class SalerMiddleware
         $role = session('user.role');
         $this->verify($role);
         if ($role == 'saler' || $role == 'admin') return $next($request);
-        abort(403);
+        abort(404);
     }
 }

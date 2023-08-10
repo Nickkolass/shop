@@ -6,7 +6,6 @@ use App\Models\Option;
 use App\Models\OptionValue;
 use Illuminate\Support\Facades\DB;
 
-
 class OptionService
 {
     public function store(array $data): ?string
@@ -15,7 +14,7 @@ class OptionService
         try {
 
             $option_id = Option::firstOrCreate(['title' => $data['title']])->id;
-            foreach ($data['optionValues'] as &$oV) $oV['option_id'] = $option_id;
+            foreach ($data['optionValues'] as &$optionValue) $optionValue['option_id'] = $option_id;
             OptionValue::insert($data['optionValues']);
 
             DB::commit();
@@ -32,7 +31,7 @@ class OptionService
         $newValues = array_column($data['optionValues'], 'value');
         $delete = array_diff($oldValues, $newValues);
         $create = array_diff($newValues, $oldValues);
-        foreach ($create as &$oV) $oV = ['option_id' => $option->id, 'value' => $oV];
+        foreach ($create as &$optionValue) $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
 
         DB::beginTransaction();
         try {

@@ -20,7 +20,6 @@ class Method
         Method::valuesToGroups($product, 'optionValues');
     }
 
-
     public static function valuesToKeys(Product|ProductType &$product, string $relation, ?bool $group_to_value_id = false): void
     {
         $product->setRelation($relation, Method::toKeys($product->$relation, $group_to_value_id));
@@ -40,7 +39,6 @@ class Method
         $product->setRelation($relation, Method::toGroups($product->$relation));
     }
 
-
     public static function toGroups(Collection $relation): Collection
     {
         return $relation->mapToGroups(function (OptionValue|PropertyValue $value) {
@@ -48,11 +46,11 @@ class Method
         });
     }
 
-    public static function OVPs(Collection $OVPs): Collection
+    public static function OptionOrPropertyValues(Collection $optionOrPropertyValues): Collection
     {
-        return $OVPs->mapWithKeys(function (Option|Property $OVP) {
-            $value = $OVP->optionValues ?? $OVP->propertyValues;
-            return [$OVP->title => $value->pluck('value', 'id')];
+        return $optionOrPropertyValues->mapWithKeys(function (Option|Property $optionOrPropertyValue) {
+            $value = $optionOrPropertyValue->optionValues ?? $optionOrPropertyValue->propertyValues;
+            return [$optionOrPropertyValue->title => $value->pluck('value', 'id')];
         });
     }
 
@@ -70,7 +68,4 @@ class Method
         $product->countRating = $product->ratingAndComments->count();
         $product->countComments = $product->ratingAndComments->pluck('message')->filter()->count();
     }
-
-
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Policies\Trait;
 
 use App\Models\User;

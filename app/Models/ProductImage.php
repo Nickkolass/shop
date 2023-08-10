@@ -15,5 +15,4 @@ class ProductImage extends Model
     public function productType(){
         return $this->beLongsTo(ProductType::class, 'productType_id', 'id');
     }
-
 }

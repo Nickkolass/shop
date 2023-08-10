@@ -2,7 +2,6 @@
 
 namespace App\Services\Admin\Product;
 
-
 use App\Components\Method;
 use App\Models\Category;
 use App\Models\Option;
@@ -24,7 +23,7 @@ class ProductCreateEditService
     public function properties(int $category_id): array
     {
         $data['optionValues'] = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get();
-        $data['optionValues'] = Method::OVPs($data['optionValues']);
+        $data['optionValues'] = Method::OptionOrPropertyValues($data['optionValues']);
         $data['properties'] = Property::query()
             ->whereHas('categories', function ($q) use ($category_id) {
                 $q->where('category_id', $category_id);

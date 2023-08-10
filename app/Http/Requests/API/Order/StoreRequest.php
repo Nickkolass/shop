@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\API\Order;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -43,7 +42,6 @@ class StoreRequest extends FormRequest
             'payment_status' => 'required|boolean',
             'cart' => 'required|array',
             'payment' => 'required|string',
-
         ];
     }
 }
