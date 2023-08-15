@@ -2,11 +2,10 @@
 
 namespace App\Services\Admin\Product\Relations;
 
-use App\Components\Method;
 use App\Models\OptionValueProduct;
 use App\Models\Product;
 use App\Models\ProductType;
-use App\Models\PropertyValue;
+use App\Services\Methods\Maper;
 use Illuminate\Support\Collection;
 
 class OptionValueService
@@ -48,6 +47,6 @@ class OptionValueService
             ->select('optionValues.id', 'option_id', 'value')
             ->with('option:id,title')
             ->get();
-        return Method::toGroups($optionValues);
+        return Maper::toGroups($optionValues);
     }
 }

@@ -75,7 +75,7 @@
                                                         <div class="entry input-group upload-input-group">
                                                             <input name="types[0][preview_image]" type="file"
                                                                    class="form-control"
-                                                                   data-name="preview_image">
+                                                                   data-name="preview_image" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -93,7 +93,7 @@
                                                         <div class="entry input-group upload-input-group">
                                                             <input class="form-control" data-name="productImages"
                                                                    name="types[0][productImages][]"
-                                                                   type="file" multiple>
+                                                                   type="file" multiple required>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -18,8 +18,7 @@ class ShowProductTypesResource extends JsonResource
             'id' => $this->id,
             'product_id' => $this->product_id,
             'preview_image' => $this->preview_image,
-            'is_published' => $this->is_published,
-            'option_values' => $this->optionValues,
+            'is_published' => (bool) $this->is_published,
         ];
     }
 }

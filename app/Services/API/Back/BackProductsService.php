@@ -3,24 +3,33 @@
 namespace App\Services\API\Back;
 
 use App\Http\Filters\ProductFilter;
-use App\Components\Method;
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\OptionValue;
+use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\Methods\Maper;
 use Illuminate\Database\Eloquent\Builder;
 
 class BackProductsService
 {
 
-    public function getData(array &$data, Category $category): void
+    public function getProductFilterAggregateDataCache(array $data, Category $category): array
+    {
+        if (!empty($data)) $result = $this->getProductFilterAggregateData($data, $category);
+        else $result = cache()->rememberForever('first_page_product_aggregate_data_without_filter_by_category_id:' . $category->id,
+            fn() => $this->getProductFilterAggregateData($data, $category));
+        return $result;
+    }
+
+    private function getProductFilterAggregateData(array $data, Category $category): array
     {
         $data['filter'] = $data['filter'] ?? [];
         $data['category'] = $category;
-        $this->getPaginate($data)->getProductTypes($data)->getFilterable($data)->getliked($data);
+        $this->getPaginate($data)->getProductTypes($data)->getliked($data)->getFilterable($data);
+        return $data;
     }
 
     private function getliked(array &$data): BackProductsService
@@ -46,38 +55,42 @@ class BackProductsService
         return $this;
     }
 
-    private function getFilterable(array &$data): BackProductsService
+    public function getFilterable(array &$data): BackProductsService
     {
-        $whereHasProducts = fn(Builder $b) => $b->where('category_id', $data['category']->id);
+        $data['filterable'] = cache()->rememberForever('filterable_by_category_id:' . $data['category']->id, function () use ($data) {
 
-        $data['filterable']['salers'] = User::query()
-            ->whereHas('products', $whereHasProducts)
-            ->select('id', 'name')
-            ->get();
+            $whereHasProducts = fn(Builder $b) => $b->where('category_id', $data['category']->id);
 
-        $data['filterable']['tags'] = Tag::query()
-            ->whereHas('products', $whereHasProducts)
-            ->select('id', 'title')
-            ->get();
+            $filterable['salers'] = User::query()
+                ->whereHas('products', $whereHasProducts)
+                ->select('id', 'name')
+                ->get();
 
-        $data['filterable']['optionValues'] = OptionValue::query()
-            ->with('option:id,title')
-            ->whereHas('products', $whereHasProducts)
-            ->select('id', 'option_id', 'value')
-            ->get();
+            $filterable['tags'] = Tag::query()
+                ->whereHas('products', $whereHasProducts)
+                ->select('id', 'title')
+                ->get();
 
-        $data['filterable']['propertyValues'] = PropertyValue::query()
-            ->with('property:id,title')
-            ->whereHas('products', $whereHasProducts)
-            ->select('id', 'property_id', 'value')
-            ->get();
+            $filterable['optionValues'] = OptionValue::query()
+                ->with('option:id,title')
+                ->whereHas('products', $whereHasProducts)
+                ->select('id', 'option_id', 'value')
+                ->get();
 
-        $data['filterable']['optionValues'] = Method::toGroups($data['filterable']['optionValues']);
-        $data['filterable']['propertyValues'] = Method::toGroups($data['filterable']['propertyValues']);
+            $filterable['propertyValues'] = PropertyValue::query()
+                ->with('property:id,title')
+                ->whereHas('products', $whereHasProducts)
+                ->select('id', 'property_id', 'value')
+                ->get();
 
-        $prices = $data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->first();
-        $data['filterable']['prices'] = ['min' => $prices->min, 'max' => $prices->max];
+            $filterable['optionValues'] = Maper::toGroups($filterable['optionValues']);
+            $filterable['propertyValues'] = Maper::toGroups($filterable['propertyValues']);
 
+            $prices = $data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->first();
+            $filterable['prices'] = ['min' => $prices->min, 'max' => $prices->max];
+
+            return $filterable;
+        });
         return $this;
     }
 
@@ -100,7 +113,7 @@ class BackProductsService
             ->simplePaginate($data['paginate']['perPage'], ['*'], 'page', $data['paginate']['page'])
             ->withPath('');
 
-        Method::mapAfterGettingProducts($data['productTypes']);
+        Maper::mapAfterGettingProducts($data['productTypes']);
         return $this;
     }
 

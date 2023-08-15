@@ -7,9 +7,8 @@ use App\Http\Requests\API\Product\FilterRequest;
 use App\Http\Requests\API\RatingAndComment\StoreRequest;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\IndexResource;
-use App\Http\Resources\Product\DataResource;
+use App\Http\Resources\Product\ProductFilterAggregateResource;
 use App\Http\Resources\Product\ProductTypeResource;
-use App\Http\Resources\Product\ShowProductTypeResource;
 use App\Models\Category;
 use App\Models\ProductType;
 use App\Models\User;
@@ -37,14 +36,14 @@ class BackController extends Controller
     public function productIndex(Category $category, FilterRequest $request): array
     {
         $data = $request->validated();
-        $this->productsService->getData($data, $category);
-        return DataResource::make($data)->resolve();
+        $data = $this->productsService->getProductFilterAggregateDataCache($data, $category);
+        return ProductFilterAggregateResource::make($data)->resolve();
     }
 
     public function productShow(ProductType $productType): array
     {
         $this->service->product($productType);
-        return ShowProductTypeResource::make($productType)->resolve();
+        return ProductTypeResource::make($productType)->resolve();
     }
 
     public function cart(): ?array

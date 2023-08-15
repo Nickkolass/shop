@@ -49,11 +49,11 @@
                                 @endif
                             </td>
                             <td style="vertical-align: middle">
-                                @foreach($order['productTypes'] as $productType)
-                                    <a href="{{ route('api.product', $productType['id']) }}">
-                                        <img src="{{asset('/storage/'.$productType['preview_image'])}}"
+                                @foreach($order['product_types'] as $product_type)
+                                    <a href="{{ route('api.product', $product_type['id']) }}">
+                                        <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                              style="height: 50px"></a>
-                                    {{$productType['amount'].' шт.'}}
+                                    {{$product_type['amount'].' шт.'}}
                                 @endforeach
                             </td>
                             <td style="vertical-align: middle">{{ $order['created_at'] }}</td>

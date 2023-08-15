@@ -38,7 +38,7 @@ class StoreRequest extends FormRequest
             'product_id' => 'required|integer',
             'rating' => 'required|integer',
             'message' => 'nullable|string',
-            'commentImages' => 'nullable|array',
+            'comment_images' => 'nullable|array',
         ];
     }
 }

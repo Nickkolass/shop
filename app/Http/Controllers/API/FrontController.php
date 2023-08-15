@@ -35,65 +35,65 @@ class FrontController extends Controller
 
     public function productIndex(string $category_title, ProductsRequest $request)
     {
-        $queryParams = $request->validated();
-        APIFrontService::scenarioGetProducts($queryParams);
+        $query_params = $request->validated();
+        APIFrontService::scenarioGetProducts($query_params);
 
         $data = $this->client->request('POST', '/api/products/' . $category_title,
-            ['query' => $queryParams, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+            ['query' => $query_params, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $data = json_decode($data, true);
-        $productTypes = APIFrontService::afterGetProducts($data);
+        $product_types = APIFrontService::afterGetProducts($data);
 
-        return view('api.product.index', compact('data', 'productTypes'));
+        return view('api.product.index', compact('data', 'product_types'));
     }
 
-    public function productShow(int $productType_id): View
+    public function productShow(int $product_type_id): View
     {
-        $productType = $this->client->request('POST', 'api/products/show/' . $productType_id,
+        $product_type = $this->client->request('POST', 'api/products/show/' . $product_type_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
-        $productType = json_decode($productType, true);
+        $product_type = json_decode($product_type, true);
 
         $data['page'] = session('paginate.page');
-        $data['cart'][$productType['id']] = session('cart.' . $productType['id']);
-        session(['viewed.' . $productType_id => '']);
+        $data['cart'][$product_type['id']] = session('cart.' . $product_type['id']);
+        session(['viewed.' . $product_type_id => '']);
 
-        return view('api.product.show', compact('data', 'productType'));
+        return view('api.product.show', compact('data', 'product_type'));
     }
 
     public function addToCart(): RedirectResponse
     {
         $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
         if ($prev_name == 'api.products') session(['backFilter' => true]);
-        foreach (request('addToCart') as $productType_id => $amount) {
-            empty($amount) ? session()->forget('cart.' . $productType_id) : session(['cart.' . $productType_id => $amount]);
+        foreach (request('addToCart') as $product_type_id => $amount) {
+            empty($amount) ? session()->forget('cart.' . $product_type_id) : session(['cart.' . $product_type_id => $amount]);
         }
         return back();
     }
 
     public function cart(): View
     {
-        $productTypes = $totalPrice = null;
+        $product_types = $total_price = null;
         if ($cart = session('cart')) {
-            $productTypes = $this->client->request('POST', 'api/cart', ['query' => ['cart' => $cart]])->getBody()->getContents();
-            $productTypes = json_decode($productTypes, true);
-            $totalPrice = array_sum(array_column($productTypes, 'totalPrice'));
+            $product_types = $this->client->request('POST', 'api/cart', ['query' => ['cart' => $cart]])->getBody()->getContents();
+            $product_types = json_decode($product_types, true);
+            $total_price = array_sum(array_column($product_types, 'total_price'));
         }
-        return view('api.cart', compact('productTypes', 'totalPrice'));
+        return view('api.cart', compact('product_types', 'total_price'));
     }
 
     public function likedProducts(): View
     {
-        $productTypes = $this->client->request('POST', 'api/products/liked',
+        $product_types = $this->client->request('POST', 'api/products/liked',
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
-        $productTypes = json_decode($productTypes, true);
-        $data['liked_ids'] = array_flip(array_column($productTypes, 'id'));
-        return view('api.liked', compact('productTypes', 'data'));
+        $product_types = json_decode($product_types, true);
+        $data['liked_ids'] = array_flip(array_column($product_types, 'id'));
+        return view('api.liked', compact('product_types', 'data'));
     }
 
-    public function likedToggle(int $productType_id): RedirectResponse
+    public function likedToggle(int $product_type_id): RedirectResponse
     {
         $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
         if ($prev_name == 'api.products') session(['backFilter' => true]);
-        $this->client->request('POST', 'api/products/liked/' . $productType_id,
+        $this->client->request('POST', 'api/products/liked/' . $product_type_id,
             ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
@@ -101,7 +101,7 @@ class FrontController extends Controller
     public function commentStore(int $product_id, StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        if (!empty($data['commentImages'])) APIFrontService::imgEncode($data);
+        if (!empty($data['comment_images'])) APIFrontService::imgEncode($data);
         $this->client->request('POST', 'api/products/' . $product_id . '/comment',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         return back();

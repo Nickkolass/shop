@@ -18,10 +18,9 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'rating' => $this->rating,
-            'countRating' => $this->countRating,
-            'countComments' => $this->countComments,
-            'product_types' => ProductTypesResource::collection($this->productTypes)->resolve(),
+            'count_rating' => $this->countRating,
+            'count_comments' => $this->countComments,
+            'product_types' => ShowProductTypesResource::collection($this->productTypes)->resolve(),
         ];
-
     }
 }

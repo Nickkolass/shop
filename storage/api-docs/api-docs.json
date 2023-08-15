@@ -84,7 +84,7 @@
                                             "type": "integer",
                                             "example": "2"
                                         },
-                                        "totalPrice": {
+                                        "total_price": {
                                             "type": "integer",
                                             "example": "600"
                                         }
@@ -137,7 +137,7 @@
                                                         "type": "integer",
                                                         "example": "1"
                                                     },
-                                                    "productTypes": {
+                                                    "product_types": {
                                                         "type": "array",
                                                         "items": {
                                                             "properties": {
@@ -307,7 +307,7 @@
                                             "type": "integer",
                                             "example": "1"
                                         },
-                                        "productTypes": {
+                                        "product_types": {
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -323,7 +323,7 @@
                                                         "type": "integer",
                                                         "example": "400"
                                                     },
-                                                    "optionValues": {
+                                                    "option_values": {
                                                         "properties": {
                                                             "Цвет": {
                                                                 "type": "string",
@@ -360,7 +360,7 @@
                                                         "type": "string",
                                                         "example": "Отправлен 2023-07-03 10:55:50"
                                                     },
-                                                    "orderPerformer_id": {
+                                                    "order_performer_id": {
                                                         "type": "integer",
                                                         "example": "1"
                                                     }
@@ -578,11 +578,11 @@
                                                                 "type": "integer",
                                                                 "example": "5"
                                                             },
-                                                            "countRating": {
+                                                            "count_rating": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
-                                                            "countComments": {
+                                                            "count_comments": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
@@ -699,11 +699,11 @@
                                                                 "type": "integer",
                                                                 "example": "5"
                                                             },
-                                                            "countRating": {
+                                                            "count_rating": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
-                                                            "countComments": {
+                                                            "count_comments": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
@@ -865,7 +865,7 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "productTypes": {
+                                        "product_types": {
                                             "properties": {
                                                 "current_page": {
                                                     "type": "integer",
@@ -953,11 +953,11 @@
                                                                         "type": "integer",
                                                                         "example": "5"
                                                                     },
-                                                                    "countRating": {
+                                                                    "count_rating": {
                                                                         "type": "integer",
                                                                         "example": "1"
                                                                     },
-                                                                    "countComments": {
+                                                                    "count_comments": {
                                                                         "type": "integer",
                                                                         "example": "1"
                                                                     },
@@ -1056,14 +1056,14 @@
                                                         2
                                                     ]
                                                 },
-                                                "optionValues": {
+                                                "option_values": {
                                                     "type": "object",
                                                     "example": [
                                                         1,
                                                         2
                                                     ]
                                                 },
-                                                "propertyValues": {
+                                                "property_values": {
                                                     "type": "object",
                                                     "example": [
                                                         1,
@@ -1124,7 +1124,7 @@
                                                         "type": "object"
                                                     }
                                                 },
-                                                "optionValues": {
+                                                "option_values": {
                                                     "properties": {
                                                         "Цвет": {
                                                             "type": "array",
@@ -1149,7 +1149,7 @@
                                                     },
                                                     "type": "object"
                                                 },
-                                                "propertyValues": {
+                                                "property_values": {
                                                     "properties": {
                                                         "Упаковка": {
                                                             "type": "array",
@@ -1332,11 +1332,11 @@
                                                                 "type": "integer",
                                                                 "example": "5"
                                                             },
-                                                            "countRating": {
+                                                            "count_rating": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
-                                                            "countComments": {
+                                                            "count_comments": {
                                                                 "type": "integer",
                                                                 "example": "1"
                                                             },
@@ -1603,11 +1603,11 @@
                                                     "type": "integer",
                                                     "example": "5"
                                                 },
-                                                "countRating": {
+                                                "count_rating": {
                                                     "type": "integer",
                                                     "example": "1"
                                                 },
-                                                "countComments": {
+                                                "count_comments": {
                                                     "type": "integer",
                                                     "example": "1"
                                                 },
@@ -1615,7 +1615,7 @@
                                                     "type": "boolean",
                                                     "example": "true"
                                                 },
-                                                "ratingAndComments": {
+                                                "rating_and_comments": {
                                                     "type": "array",
                                                     "items": {
                                                         "properties": {
@@ -1640,7 +1640,7 @@
                                                                 },
                                                                 "type": "object"
                                                             },
-                                                            "commentImages": {
+                                                            "comment_images": {
                                                                 "type": "object",
                                                                 "example": [
                                                                     "comments/1.jpg",
@@ -1699,7 +1699,7 @@
                                         "type": "string",
                                         "example": "So sweety"
                                     },
-                                    "commentImages": {
+                                    "comment_images": {
                                         "type": "array",
                                         "items": {
                                             "properties": {

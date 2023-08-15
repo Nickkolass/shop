@@ -47,3 +47,17 @@ services:
         depends_on:
             - db
         container_name: shop_phpmyadmin
+
+    redis:
+        image: redis
+        restart: always
+        depends_on:
+            - app
+        ports:
+            - 6379:6379
+        volumes:
+            - ../RedisData/data:/data
+        container_name: shop_redis
+
+
+

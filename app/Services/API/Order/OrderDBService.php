@@ -10,49 +10,29 @@ use Illuminate\Support\Facades\DB;
 
 class OrderDBService
 {
-    public function store(array $data): ?string
+    public function store(array $data): void
     {
         DB::beginTransaction();
-        try {
-
-            $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
-
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
+        DB::commit();
     }
 
-    public function update(Order $order): ?string
+    public function update(Order $order): void
     {
         DB::beginTransaction();
-        try {
-            $order->update(['status' => 'Получен ' . now()]);
-            $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $order->update(['status' => 'Получен ' . now()]);
+        $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
+        DB::commit();
     }
 
-    public function delete(Order $order): ?string
+    public function delete(Order $order): void
     {
         DB::beginTransaction();
-        try {
-            $order->orderPerformers()->update(['status' => 'Отменен ' . now()]);
-            $order->orderPerformers()->delete();
-            $order->update(['status' => 'Отменен ' . now()]);
-            $order->delete();
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $order->orderPerformers()->update(['status' => 'Отменен ' . now()]);
+        $order->orderPerformers()->delete();
+        $order->update(['status' => 'Отменен ' . now()]);
+        $order->delete();
+        DB::commit();
     }
 
     private function productCountUpdate(array &$cart): OrderDBService

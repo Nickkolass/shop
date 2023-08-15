@@ -2,11 +2,11 @@
 
 namespace App\Services\Admin\Product;
 
-use App\Components\Method;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductType;
 use App\Models\ProductTypeOptionValue;
+use App\Services\Methods\Maper;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -38,17 +38,17 @@ class ProductService
             ])
             ->simplePaginate(4);
 
-        $products->map(fn(Product $product) => Method::countingRatingAndComments($product));
+        $products->map(fn(Product $product) => Maper::countingRatingAndComments($product));
         return $products;
     }
 
-    public function store(array $data, array $types): int|string
+    public function store(array $data, array $types): int
     {
         $relations = $this->productTypeService->relationService->getRelations($data);
         $relations['optionValues'] = array_filter(array_unique(array_merge(...array_column($types, 'optionValues'))));
+
         DB::beginTransaction();
         try {
-
             $product = Product::firstOrCreate(['title' => $data['title']], $data);
             $this->productTypeService->relationService->relationsProduct($product, $relations);
             foreach ($types as $type) $attach[] = $this->productTypeService->storeType($product, $type, true);
@@ -56,13 +56,16 @@ class ProductService
             ProductTypeOptionValue::insert(array_merge(...array_column($attach, 'optionValues')));
             $productImages = array_merge(...array_column($attach, 'productImages'));
             ProductImage::insert($productImages);
-
             DB::commit();
             return $product->id;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            if(!empty($productImages)) $this->productTypeService->imageService->deleteImages(array_column($productImages, 'file_path'));
-            return $exception->getMessage();
+        } catch (\Exception $e) {
+            if (isset ($productImages)) $file_paths = array_column($productImages, 'file_path');
+            if (isset($attach)) $file_paths = collect($attach)->pluck('preview_image')->flatten()->merge($file_paths ?? [])->all();
+            if (isset ($file_paths)) $this->productTypeService->imageService->deleteImages($file_paths);
+            Storage::deleteDirectory('/public/product_images/' . $product->id);
+            Storage::deleteDirectory('/public/preview_images/' . $product->id);
+            report($e);
+            abort(back()->withErrors([$e->getMessage()])->withInput());
         }
     }
 
@@ -89,28 +92,20 @@ class ProductService
             }
         ]);
 
-        Method::countingRatingAndComments($product);
-        Method::optionsAndProperties($product);
-        $product->productTypes->map(fn(ProductType $productType) => Method::valuesToKeys($productType, 'optionValues'));
+        Maper::countingRatingAndComments($product);
+        Maper::optionsAndProperties($product);
+        $product->productTypes->map(fn(ProductType $productType) => Maper::valuesToKeys($productType, 'optionValues'));
     }
 
-    public function update(Product $product, array $data, array $relations): ?string
+    public function update(Product $product, array $data, array $relations): void
     {
         DB::beginTransaction();
-        try {
-
-            $product->update($data);
-            $this->productTypeService->relationService->relationsProduct($product, $relations, false);
-
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $product->update($data);
+        $this->productTypeService->relationService->relationsProduct($product, $relations, false);
+        DB::commit();
     }
 
-    public function delete(Product $product)
+    public function delete(Product $product): void
     {
         $images = $product
             ->load(['productTypes.productImages:productType_id,file_path', 'ratingAndComments.commentImages'])
@@ -122,19 +117,11 @@ class ProductService
             ->all();
 
         DB::beginTransaction();
-        try {
-
-            $product->delete();
-            $this->productTypeService->imageService->deleteImages($images);
-            Storage::deleteDirectory('/public/product_images/' . $product->id);
-            Storage::deleteDirectory('/public/comments/' . $product->id);
-
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $product->delete();
+        $this->productTypeService->imageService->deleteImages($images);
+        Storage::deleteDirectory('/public/product_images/' . $product->id);
+        Storage::deleteDirectory('/public/comments/' . $product->id);
+        DB::commit();
     }
 
     public function publish(Product $product): void

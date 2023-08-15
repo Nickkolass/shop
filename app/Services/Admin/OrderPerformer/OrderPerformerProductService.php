@@ -2,9 +2,9 @@
 
 namespace App\Services\Admin\OrderPerformer;
 
-use App\Components\Method;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
+use App\Services\Methods\Maper;
 use Illuminate\Contracts\Pagination\Paginator;
 
 class OrderPerformerProductService
@@ -42,7 +42,7 @@ class OrderPerformerProductService
                 $productTypeFromOrder = $productTypesFromOrder->where('productType_id', $productType->id)->first();
                 $productType->amount = $productTypeFromOrder['amount'];
                 $productType->price = $productTypeFromOrder['price'];
-                Method::valuesToKeys($productType, 'optionValues');
+                Maper::valuesToKeys($productType, 'optionValues');
             });
     }
 }

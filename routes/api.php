@@ -28,7 +28,7 @@ Route::prefix('/products')->controller(BackController::class)->group(function ()
     Route::post('/', 'index');
     Route::post('/liked', 'likedProducts')->middleware('jwt.auth');
     Route::post('/{category:title}', 'productIndex');
-    Route::post('/show/{productType}', 'productShow');
+    Route::post('/show/{productType}', 'productShow')->name('back.api.productType.show');
     Route::post('/liked/{productType}', 'likedToggle')->middleware('jwt.auth');
     Route::post('/{product}/comment', 'commentStore')->middleware('jwt.auth');
 });
