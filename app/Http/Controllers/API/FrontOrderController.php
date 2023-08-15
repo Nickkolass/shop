@@ -41,8 +41,8 @@ class FrontOrderController extends Controller
      */
     public function create(): View
     {
-        $totalPrice = request('totalPrice');
-        return view('api.order.create', compact('totalPrice'));
+        $total_price = request('total_price');
+        return view('api.order.create', compact('total_price'));
     }
 
     /**

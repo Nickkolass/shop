@@ -47,28 +47,28 @@
                     <td>
                         <table class="table table-striped">
                             <tbody>
-                            @foreach($order['productTypes'] as $productType)
+                            @foreach($order['product_types'] as $product_type)
                                 <tr>
-                                    <td><a href="{{ route('api.product', $productType['id']) }}">
-                                            <img src="{{asset('/storage/'.$productType['preview_image'])}}"
+                                    <td><a href="{{ route('api.product', $product_type['id']) }}">
+                                            <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                                  style="height: 90px"></a></td>
-                                    <td>Название: {{ $productType['title'] }}<br>
-                                        Количество: {{ $productType['amount'] }}<br>
-                                        Стоимость: {{ $productType['price'] }}<br>
-                                        Статус: {{ $productType['status'] }}<br>
+                                    <td>Название: {{ $product_type['title'] }}<br>
+                                        Количество: {{ $product_type['amount'] }}<br>
+                                        Стоимость: {{ $product_type['price'] }}<br>
+                                        Статус: {{ $product_type['status'] }}<br>
                                         Продавец:
                                         @if(session('user.role') == 'admin')
                                             <a class="linkclass disabled"
-                                               href="{{ route('users.show', $productType['saler_id']) }}"> {{ $productType['saler'] }} </a>
+                                               href="{{ route('users.show', $product_type['saler_id']) }}"> {{ $product_type['saler'] }} </a>
                                             <br>
-                                            <a href="{{ route('admin.orders.show', $productType['orderPerformer_id']) }}">Перейти
+                                            <a href="{{ route('admin.orders.show', $product_type['order_performer_id']) }}">Перейти
                                                 к заказу</a>
                                         @else
-                                            {{ $productType['saler'] }}
+                                            {{ $product_type['saler'] }}
                                         @endif
                                     </td>
                                     <td>
-                                        @foreach($productType['optionValues'] as $option => $value)
+                                        @foreach($product_type['option_values'] as $option => $value)
                                             {{$option . ': ' . $value}}<br>
                                         @endforeach
                                     </td>
@@ -97,7 +97,7 @@
                 @csrf
                 @method('delete')
                 <input type="submit" class="btn btn-danger btn-lg" value="Отказаться"
-                       title="{{$blockCancel ? 'Заказ уже отменен' : ($blockReceived ? 'Заказ уже получен' : ($blockSent ? 'Заказ уже отправлен' : ''))}}" @disabled($order['status'] != 'В работе' || $blockSent || !empty(array_diff(array_column($order['productTypes'], 'status' ), ['В работе'])))>
+                       title="{{$blockCancel ? 'Заказ уже отменен' : ($blockReceived ? 'Заказ уже получен' : ($blockSent ? 'Заказ уже отправлен' : ''))}}" @disabled($order['status'] != 'В работе' || $blockSent || !empty(array_diff(array_column($order['product_types'], 'status' ), ['В работе'])))>
             </form>
         </div>
     </main>

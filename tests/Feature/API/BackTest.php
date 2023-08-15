@@ -62,6 +62,7 @@ class BackTest extends TestCase
     /**@test */
     public function test_can_getting_data_for_products_category_url()
     {
+        cache()->flush();
         $this->seed();
         View::share('categories', Category::all()->toArray());
 
@@ -69,32 +70,32 @@ class BackTest extends TestCase
 
         $res = $this->post('/api/products/' . Category::first()->title);
         $res->assertOk();
-        $res->assertJsonStructure(['productTypes', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
-        $res->assertJsonCount(8, 'productTypes.data');
-        $res->assertJsonCount(9, 'productTypes.data.0');
+        $res->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
+        $res->assertJsonCount(8, 'product_types.data');
+        $res->assertJsonCount(10, 'product_types.data.0');
 
 //        посещение страницы
         $res = $this->post('/api/products/' . Category::first()->title);
         $res->assertOk();
-        $res->assertJsonStructure(['productTypes', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
-        $res->assertJsonCount(8, 'productTypes.data');
-        $res->assertJsonCount(9, 'productTypes.data.0');
+        $res->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
+        $res->assertJsonCount(8, 'product_types.data');
+        $res->assertJsonCount(10, 'product_types.data.0');
 
 //        переход на другую страницу
         $data = ['paginate' => ['page' => 3]];
         $res = $this->post('/api/products/' . Category::first()->title, $data);
         $res->assertOk();
-        $res->assertJsonStructure(['productTypes', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
-        $res->assertJsonCount(4, 'productTypes.data');
-        $res->assertJsonCount(9, 'productTypes.data.0');
+        $res->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
+        $res->assertJsonCount(4, 'product_types.data');
+        $res->assertJsonCount(10, 'product_types.data.0');
 
 //        фильтр
         $data = ['filter' => ['salers' => User::take(5)->pluck('id')->all()], 'paginate' => ['perPage' => 4, 'orderBy' => 'ASC']];
         $res = $this->post('/api/products/' . Category::first()->title, $data);
         $res->assertOk();
-        $res->assertJsonStructure(['productTypes', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
-        $res->assertJsonCount(4, 'productTypes.data');
-        $res->assertJsonCount(9, 'productTypes.data.0');
+        $res->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category', 'liked_ids']);
+        $res->assertJsonCount(4, 'product_types.data');
+        $res->assertJsonCount(10, 'product_types.data.0');
     }
 
     /**@test */
@@ -181,13 +182,13 @@ class BackTest extends TestCase
 
         Storage::fake('public');
         $file = File::create('file.jpeg');
-        $img = [[
+        $img = [
             'path' => $file->getPathname(),
             'originalName' => $file->getClientOriginalName(),
             'mimeType' => $file->getClientMimeType(),
-        ]];
+        ];
         $product_id++;
-        $data = ['product_id' => $product_id, 'rating' => 1, 'message' => '1', 'commentImages' => $img];
+        $data = ['product_id' => $product_id, 'rating' => 1, 'message' => '1', 'comment_images' => [$img]];
         $this->withHeader('Authorization', session('jwt'))->post("/api/products/{$product_id}/comment", $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->count() == 3);
         $file_path = CommentImage::latest('id')->first()->file_path;

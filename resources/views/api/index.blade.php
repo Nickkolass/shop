@@ -27,10 +27,10 @@
         <div class="latest-products">
             <div class="container-fluid">
                 <div class="row">
-                    @foreach ($data['viewed'] as $productType)
+                    @foreach ($data['viewed'] as $product_type)
                         <div class="col-md-3">
                             <div class="product-item" style="text-align:center">
-                                <h4>{{$productType['product']['title']}}</h4><br>
+                                <h4>{{$product_type['product']['title']}}</h4><br>
                                 @include('api.product.components.carousel')
                                 @include('api.product.components.rating')
                                 @include('api.product.components.types')
@@ -51,10 +51,10 @@
         <div class="latest-products">
             <div class="container-fluid">
                 <div class="row">
-                    @foreach ($data['liked'] as $productType)
+                    @foreach ($data['liked'] as $product_type)
                         <div class="col-md-3">
                             <div class="product-item" style="text-align:center">
-                                <h4>{{$productType['product']['title']}}</h4><br>
+                                <h4>{{$product_type['product']['title']}}</h4><br>
                                 @include('api.product.components.carousel')
                                 @include('api.product.components.rating')
                                 @include('api.product.components.types')

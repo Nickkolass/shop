@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Components;
+namespace App\Services\Methods;
 
 use App\Models\Option;
 use App\Models\OptionValue;
@@ -11,18 +11,18 @@ use App\Models\PropertyValue;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
-class Method
+class Maper
 {
 
-    public static function optionsAndProperties(Product &$product): void
+    public static function optionsAndProperties(Product $product): void
     {
-        Method::valuesToKeys($product, 'propertyValues');
-        Method::valuesToGroups($product, 'optionValues');
+        Maper::valuesToKeys($product, 'propertyValues');
+        Maper::valuesToGroups($product, 'optionValues');
     }
 
-    public static function valuesToKeys(Product|ProductType &$product, string $relation, ?bool $group_to_value_id = false): void
+    public static function valuesToKeys(Product|ProductType $product, string $relation, ?bool $group_to_value_id = false): void
     {
-        $product->setRelation($relation, Method::toKeys($product->$relation, $group_to_value_id));
+        $product->setRelation($relation, Maper::toKeys($product->$relation, $group_to_value_id));
     }
 
     public static function toKeys(Collection $relation, ?bool $group_to_value_id = false): Collection
@@ -34,9 +34,9 @@ class Method
         );
     }
 
-    public static function valuesToGroups(Product|ProductType &$product, string $relation): void
+    public static function valuesToGroups(Product|ProductType $product, string $relation): void
     {
-        $product->setRelation($relation, Method::toGroups($product->$relation));
+        $product->setRelation($relation, Maper::toGroups($product->$relation));
     }
 
     public static function toGroups(Collection $relation): Collection
@@ -46,23 +46,23 @@ class Method
         });
     }
 
-    public static function OptionOrPropertyValues(Collection $optionOrPropertyValues): Collection
+    public static function OptionOrPropertyValues(Collection $optionsOrProperties): Collection
     {
-        return $optionOrPropertyValues->mapWithKeys(function (Option|Property $optionOrPropertyValue) {
-            $value = $optionOrPropertyValue->optionValues ?? $optionOrPropertyValue->propertyValues;
-            return [$optionOrPropertyValue->title => $value->pluck('value', 'id')];
+        return $optionsOrProperties->mapWithKeys(function (Option|Property $optionOrProperty) {
+            $value = $optionOrProperty->optionValues ?? $optionOrProperty->propertyValues;
+            return [$optionOrProperty->title => $value->pluck('value', 'id')];
         });
     }
 
     public static function mapAfterGettingProducts(Paginator|Collection &$productTypes): void
     {
         $productTypes->map(function (ProductType $productType) {
-            Method::valuesToGroups($productType, 'optionValues');
-            Method::countingRatingAndComments($productType->product);
+            Maper::valuesToGroups($productType, 'optionValues');
+            Maper::countingRatingAndComments($productType->product);
         });
     }
 
-    public static function countingRatingAndComments(Product &$product): void
+    public static function countingRatingAndComments(Product $product): void
     {
         $product->rating = round(($product->ratingAndComments->avg('rating') ?? 0)*2)/2;
         $product->countRating = $product->ratingAndComments->count();

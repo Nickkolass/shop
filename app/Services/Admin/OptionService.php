@@ -8,24 +8,16 @@ use Illuminate\Support\Facades\DB;
 
 class OptionService
 {
-    public function store(array $data): ?string
+    public function store(array $data): void
     {
         DB::beginTransaction();
-        try {
-
-            $option_id = Option::firstOrCreate(['title' => $data['title']])->id;
-            foreach ($data['optionValues'] as &$optionValue) $optionValue['option_id'] = $option_id;
-            OptionValue::insert($data['optionValues']);
-
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $option_id = Option::firstOrCreate(['title' => $data['title']])->id;
+        foreach ($data['optionValues'] as &$optionValue) $optionValue['option_id'] = $option_id;
+        OptionValue::insert($data['optionValues']);
+        DB::commit();
     }
 
-    public function update(Option $option, array $data): ?string
+    public function update(Option $option, array $data): void
     {
         $oldValues = $option->optionValues()->pluck('value')->all();
         $newValues = array_column($data['optionValues'], 'value');
@@ -34,20 +26,12 @@ class OptionService
         foreach ($create as &$optionValue) $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
 
         DB::beginTransaction();
-        try {
-
-            $option->optionValues()
-                ->where('option_id', $option->id)
-                ->whereIn('value', $delete)
-                ->delete();
-            OptionValue::insert($create);
-            $option->update(['title' => $data['title']]);
-
-            DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            return $exception->getMessage();
-        }
+        $option->optionValues()
+            ->where('option_id', $option->id)
+            ->whereIn('value', $delete)
+            ->delete();
+        OptionValue::insert($create);
+        $option->update(['title' => $data['title']]);
+        DB::commit();
     }
 }

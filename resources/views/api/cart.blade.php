@@ -16,7 +16,7 @@
     <h4 hidden>{{$i = 1}}</h4>
     <main class="cd-main-content">
 
-        @if(empty($productTypes))
+        @if(empty($product_types))
             <br>
             <h4 style="text-align: center">Корзина пока пуста</h4>
         @else
@@ -35,28 +35,28 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($productTypes as $k => $productType)
-                        <h4 hidden>{{(($productType['amount'] <= $productType['count']) & $productType['is_published']) ?: $block[$productType['id']]=true}}</h4>
+                    @foreach($product_types as $k => $product_type)
+                        <h4 hidden>{{(($product_type['amount'] <= $product_type['count']) & $product_type['is_published']) ?: $block[$product_type['id']]=true}}</h4>
                         <tr style="text-align: center">
                             <td style="vertical-align: middle">{{ $i++ }}</td>
-                            <td style="vertical-align: middle">{{ $productType['title'] }}</td>
+                            <td style="vertical-align: middle">{{ $product_type['title'] }}</td>
                             <td style="vertical-align: middle"><a
-                                    href="{{ route('api.product', $productType['id']) }}">
-                                    <img src="{{asset('/storage/'.$productType['preview_image'])}}"
-                                         style="opacity:{{$productType['is_published'] == 0 || $productType['count'] == 0 || ($block[$productType['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
+                                    href="{{ route('api.product', $product_type['id']) }}">
+                                    <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
+                                         style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 || ($block[$product_type['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
                             </td>
                             <td style="vertical-align: middle">
-                                @foreach($productType['option_values'] as $option => $value)
+                                @foreach($product_type['option_values'] as $option => $value)
                                     {{$option . ': ' . $value}}<br>
                                 @endforeach
                             </td>
-                            <td style="vertical-align: middle">{{ $productType['price'] }} руб.</td>
+                            <td style="vertical-align: middle">{{ $product_type['price'] }} руб.</td>
                             <td style="vertical-align: middle">
                                 @include('api.product.components.qty')
                             </td>
-                            <td style="vertical-align: middle">{{$productType['totalPrice']}} руб.</td>
+                            <td style="vertical-align: middle">{{$product_type['total_price']}} руб.</td>
                             <td style="vertical-align: middle">
-                                <form action="{{route('api.addToCart', ['addToCart' => [$productType['id'] => '']]) }}"
+                                <form action="{{route('api.addToCart', ['addToCart' => [$product_type['id'] => '']]) }}"
                                       method="post">
                                     @csrf
                                     <input type="submit" class="btn btn-danger" value="Удалить">
@@ -68,11 +68,11 @@
                 </table>
             </div>
             <div style="text-align: center">
-                <h4>Итого {{$i-1}} товаров общей стоимостью {{ $totalPrice }} рублей</h4><br>
+                <h4>Итого {{$i-1}} товаров общей стоимостью {{ $total_price }} рублей</h4><br>
                 @if(session()->has('user'))
                     <form action="{{route('api.orders.create')}}" method="post">
                         @csrf
-                        <input type="hidden" name="totalPrice" value="{{$totalPrice}}">
+                        <input type="hidden" name="total_price" value="{{$total_price}}">
                         <input type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"
                                @disabled($block ?? false)
                                value="{{($block ?? false) ? 'Имеются недоступные товары' : 'Перейти к оформлению' }}">

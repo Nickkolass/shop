@@ -64,42 +64,42 @@
         </div>
 
         <!-- Options -->
-        @foreach($data['filterable']['optionValues'] as $option => $optionValues)
+        @foreach($data['filterable']['option_values'] as $option => $option_values)
             <div class="cd-filter-block">
                 <h4>{{$option}}</h4>
                 <ul class="cd-filter-content cd-filters list">
-                    @foreach ($optionValues as $optionValue)
+                    @foreach ($option_values as $option_value)
                         <li>
-                            @if (!empty($data['filter']['optionValues'][$optionValue['option_id']]))
-                                <input class="filter" name="filter[optionValues][{{$optionValue['option_id']}}][]"
+                            @if (!empty($data['filter']['option_values'][$option_value['option_id']]))
+                                <input class="filter" name="filter[option_values][{{$option_value['option_id']}}][]"
                                        type="checkbox"
-                                       value="{{$optionValue['id']}}" @checked(in_array($optionValue['id'], $data['filter']['optionValues'][$optionValue['option_id']]))>
+                                       value="{{$option_value['id']}}" @checked(in_array($option_value['id'], $data['filter']['option_values'][$option_value['option_id']]))>
                             @else
-                                <input class="filter" name="filter[optionValues][{{$optionValue['option_id']}}][]"
-                                       type="checkbox" value="{{$optionValue['id']}}">
+                                <input class="filter" name="filter[option_values][{{$option_value['option_id']}}][]"
+                                       type="checkbox" value="{{$option_value['id']}}">
                             @endif
-                            <label class="checkbox-label">{{$optionValue['value']}}</label>
+                            <label class="checkbox-label">{{$option_value['value']}}</label>
                         </li>
                     @endforeach
                 </ul>
             </div>
         @endforeach
 
-        @foreach($data['filterable']['propertyValues'] as $property => $propertyValues)
+        @foreach($data['filterable']['property_values'] as $property => $property_values)
             <div class="cd-filter-block">
                 <h4>{{$property}}</h4>
                 <ul class="cd-filter-content cd-filters list">
-                    @foreach ($propertyValues as $propertyValue)
+                    @foreach ($property_values as $property_value)
                         <li>
-                            @if (!empty($data['filter']['propertyValues'][$propertyValue['property_id']]))
-                                <input class="filter" name="filter[propertyValues][{{$propertyValue['property_id']}}][]"
+                            @if (!empty($data['filter']['property_values'][$property_value['property_id']]))
+                                <input class="filter" name="filter[property_values][{{$property_value['property_id']}}][]"
                                        type="checkbox"
-                                       value="{{$propertyValue['id']}}" @checked(in_array($propertyValue['id'], $data['filter']['propertyValues'][$propertyValue['property_id']]))>
+                                       value="{{$property_value['id']}}" @checked(in_array($property_value['id'], $data['filter']['property_values'][$property_value['property_id']]))>
                             @else
-                                <input class="filter" name="filter[propertyValues][{{$propertyValue['property_id']}}][]"
-                                       type="checkbox" value="{{$propertyValue['id']}}">
+                                <input class="filter" name="filter[property_values][{{$property_value['property_id']}}][]"
+                                       type="checkbox" value="{{$property_value['id']}}">
                             @endif
-                            <label class="checkbox-label">{{$propertyValue['value']}}</label>
+                            <label class="checkbox-label">{{$property_value['value']}}</label>
                         </li>
                     @endforeach
                 </ul>

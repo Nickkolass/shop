@@ -23,10 +23,9 @@ class RunCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int
      */
     public function handle()
     {
-        dd('run');
+       dump(cache()->get('first_page_product_aggregate_data_without_filter_by_category_id:1'));
     }
 }
