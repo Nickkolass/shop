@@ -16,7 +16,7 @@
     <main class="cd-main-content">
 
 
-        @if(empty($productTypes))
+        @if(empty($product_types))
             <h4 style="text-align:center">Вы пока не отмечали товары понравившимися</h4>
         @else
             @include('api.product.components.index')

@@ -4,7 +4,7 @@
     @include('admin.product.errors')
 
     @if(session()->has('user'))
-        <form action="{{route('api.comment.store', $productType['product_id'])}}" method="post"
+        <form action="{{route('api.comment.store', $product_type['product_id'])}}" method="post"
               enctype="multipart/form-data">
             @csrf
             <div class="rating-area">
@@ -21,7 +21,7 @@
                             <div class="control-group">
                                 <div class="controls">
                                     <div class="entry input-group upload-input-group">
-                                        <input class="form-control" name="commentImages[]" type="file" multiple>
+                                        <input class="form-control" name="comment_images[]" type="file" multiple>
                                     </div>
                                 </div>
                             </div>
@@ -31,9 +31,9 @@
             </div>
 
             <textarea name="message" id="summernote"> {{old('message')}} </textarea>
-            <input type="hidden" name="product_id" value="{{$productType['product_id']}}">
+            <input type="hidden" name="product_id" value="{{$product_type['product_id']}}">
             <input type="submit" class="btn btn-primary btn-lg"
-                   title="{{!$productType['product']['commentable'] ? 'Вы уже комментировали этот товар' : ''}}" @disabled(!$productType['product']['commentable'])>
+                   title="{{!$product_type['product']['commentable'] ? 'Вы уже комментировали этот товар' : ''}}" @disabled(!$product_type['product']['commentable'])>
 
         </form>
     @else
@@ -41,8 +41,8 @@
             войдите. </h4>
     @endif
 
-    @if(!empty($productType['product']['ratingAndComments']))
-        @foreach( $productType['product']['ratingAndComments'] as $comment)
+    @if(!empty($product_type['product']['rating_and_comments']))
+        @foreach( $product_type['product']['rating_and_comments'] as $comment)
             <br>
             <div class="card">
                 <div class="card-header">
@@ -50,11 +50,11 @@
                     @for($i=1; $i<=5; $i++)
                         <i class="fa fa-star{{$i-1<$comment['rating'] & $comment['rating']<$i ? '-half' : ''}}{{$comment['rating']<$i ? '-o' : ''}}"></i>
                     @endfor
-                ({{ $productType['product']['countRating'] }})
+                ({{ $product_type['product']['count_rating'] }})
                 </div>
-                @if(!empty($comment['commentImages']))
+                @if(!empty($comment['comment_images']))
                     <div class="card-body" style="margin-inline: 50px">
-                        @foreach($comment['commentImages'] as $img)
+                        @foreach($comment['comment_images'] as $img)
                             <img src="{{ asset('/storage/'.$img) }}" width='150'
                                  class="img img-responsive">
                         @endforeach

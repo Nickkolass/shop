@@ -23,7 +23,10 @@ class ProductTypeResource extends JsonResource
             'preview_image' => $this->preview_image,
             'product_images' => $this->productImages->pluck('file_path'),
             'option_values' => $this->optionValues,
-            'product' => ProductResource::make($this->product)->resolve(),
+            'likeable' => $this->liked_exists ?? false,
+            'product' => $request->route()->getName() == 'back.api.productType.show'
+                ? ShowProductResource::make($this->product)->resolve()
+                : ProductResource::make($this->product)->resolve()
         ];
     }
 }

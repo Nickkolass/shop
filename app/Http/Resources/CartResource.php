@@ -24,7 +24,7 @@ class CartResource extends JsonResource
             'option_values' => $this->optionValues,
             'title' => $this->product->title,
             'amount' => (int)$this->amount,
-            'totalPrice' => $this->totalPrice,
+            'total_price' => $this->totalPrice,
         ];
 
     }

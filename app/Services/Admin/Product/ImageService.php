@@ -5,7 +5,6 @@ namespace App\Services\Admin\Product;
 use App\Models\ProductImage;
 use App\Models\ProductType;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class ImageService

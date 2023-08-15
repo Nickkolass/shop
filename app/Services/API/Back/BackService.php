@@ -2,15 +2,14 @@
 
 namespace App\Services\API\Back;
 
-use App\Components\Method;
 use App\Models\CommentImage;
 use App\Models\ProductType;
 use App\Models\RatingAndComment;
 use App\Services\Admin\Product\ImageService;
+use App\Services\Methods\Maper;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class BackService
 {
@@ -31,7 +30,7 @@ class BackService
                 }])
             ->find($productType_ids);
 
-        Method::mapAfterGettingProducts($productTypes);
+        Maper::mapAfterGettingProducts($productTypes);
         return $productTypes;
     }
 
@@ -51,7 +50,7 @@ class BackService
                 }])
             ->get();
 
-        Method::mapAfterGettingProducts($productTypes);
+        Maper::mapAfterGettingProducts($productTypes);
         return $productTypes->count() ? $productTypes : null;
     }
 
@@ -83,9 +82,9 @@ class BackService
                             }
                         ]);
                 }]);
-        Method::valuesToKeys($productType->product, 'propertyValues');
-        Method::valuesToKeys($productType, 'optionValues');
-        Method::countingRatingAndComments($productType->product);
+        Maper::valuesToKeys($productType->product, 'propertyValues');
+        Maper::valuesToKeys($productType, 'optionValues');
+        Maper::countingRatingAndComments($productType->product);
     }
 
     public function cart(?array $cart): ?Collection
@@ -100,36 +99,35 @@ class BackService
             ->each(function (ProductType $productType) use ($cart) {
                 $productType->amount = $cart[$productType->id];
                 $productType->totalPrice = $productType->amount * $productType->price;
-                Method::valuesToKeys($productType, 'optionValues');
+                Maper::valuesToKeys($productType, 'optionValues');
             });
         return $productTypes;
     }
 
-    public function commentStore(array $data): ?string
+    public function commentStore(array $data): void
     {
         DB::beginTransaction();
         try {
-            if (empty($data['commentImages'])) RatingAndComment::create($data);
+            if (empty($data['comment_images'])) RatingAndComment::create($data);
             else {
-                foreach ($data['commentImages'] as $img) $commentImages[] = new UploadedFile(...$img);
-                unset($data['commentImages']);
+                foreach ($data['comment_images'] as $img) $comment_images[] = new UploadedFile(...$img);
+                unset($data['comment_images']);
                 $comment_id = RatingAndComment::create($data)->id;
 
-                foreach ($commentImages as &$image) {
+                foreach ($comment_images as &$image) {
                     $image = [
                         'comment_id' => $comment_id,
                         'size' => $image->getSize(),
                         'file_path' => $image->storePublicly('comments/' . $data['product_id'] . '/' . $comment_id, 'public'),
                     ];
                 }
-                CommentImage::insert($commentImages);
+                CommentImage::insert($comment_images);
             }
             DB::commit();
-            return null;
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            if(isset($commentImages)) ImageService::deleteImages(array_column($commentImages, 'file_path'));
-            return $exception->getMessage();
+        } catch (\Exception $e) {
+            if (isset($comment_images)) ImageService::deleteImages(array_column($comment_images, 'file_path'));
+            report($e);
+            abort(back()->withErrors([$e->getMessage()])->withInput());
         }
     }
 }

@@ -21,12 +21,12 @@ class ShowProductResource extends JsonResource
             'option_values' => $this->optionValues,
             'category' => $this->category,
             'property_values' => $this->propertyValues,
-            'product_types' => ProductTypesResource::collection($this->productTypes)->resolve(),
+            'product_types' => ShowProductTypesResource::collection($this->productTypes)->resolve(),
             'rating' => $this->rating,
-            'countRating' => $this->countRating,
-            'countComments' => $this->countComments,
+            'count_rating' => $this->countRating,
+            'count_comments' => $this->countComments,
             'commentable' => !$this->rating_and_comments_exists,
-            'ratingAndComments' => RatingAndCommentsResource::collection($this->ratingAndComments)->resolve(),
+            'rating_and_comments' => RatingAndCommentsResource::collection($this->ratingAndComments)->resolve(),
         ];
 
     }

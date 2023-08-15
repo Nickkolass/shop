@@ -4,38 +4,38 @@ namespace App\Services\API;
 
 class APIFrontService
 {
-    public static function scenarioGetProducts(?array &$queryParams): void
+    public static function scenarioGetProducts(?array &$query_params): void
     {
-        if (!empty($queryParams['page']) || session()->pull('backFilter')) {
+        if (!empty($query_params['page']) || session()->pull('backFilter')) {
             //смена страницы либо добавление в корзину или избранное со страницы api.products
-            $queryParams['filter'] = session('filter') ?? null;
-            $queryParams['paginate'] = session('paginate');
-            $queryParams['paginate']['page'] = $queryParams['page'] ?? $queryParams['paginate']['page'];
-        } elseif (!empty($queryParams['filter']) || !empty($queryParams['paginate'])) {
+            $query_params['filter'] = session('filter') ?? null;
+            $query_params['paginate'] = session('paginate');
+            $query_params['paginate']['page'] = $query_params['page'] ?? $query_params['paginate']['page'];
+        } elseif (!empty($query_params['filter']) || !empty($query_params['paginate'])) {
             //применение фильтра
-            $queryParams['filter'] = $queryParams['filter'] ?? null;
-            $queryParams['paginate'] = $queryParams['paginate'] ?? null;
+            $query_params['filter'] = $query_params['filter'] ?? null;
+            $query_params['paginate'] = $query_params['paginate'] ?? null;
         }
         // переход на страницу api.products
-        $queryParams['cart'] = session('cart');
+        $query_params['cart'] = session('cart');
     }
 
     public static function afterGetProducts(array &$data): ?array
     {
         $data['cart'] = session('cart');
         session(['filter' => $data['filter'], 'paginate' => $data['paginate']]);
-        $productTypes = $data['productTypes'];
-        unset($data['productTypes']);
-        return $productTypes;
+        $product_types = $data['product_types'];
+        unset($data['product_types']);
+        return $product_types;
     }
 
     public static function imgEncode(array &$data): void
     {
-        foreach ($data['commentImages'] as &$img) {
+        foreach ($data['comment_images'] as &$img) {
             $img = [
                 'path' => $img->getPathname(),
-                'originalName' => $img->getClientOriginalName(),
-                'mimeType' => $img->getClientMimeType(),
+                'original_name' => $img->getClientOriginalName(),
+                'mime_type' => $img->getClientMimeType(),
             ];
         }
     }

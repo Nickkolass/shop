@@ -70,7 +70,7 @@ class SeederFactoryService
             Order::factory(1)->create();
 
             for ($n = 0; $n < count(cache()->get('factoryOrders')); $n++) {
-                cache()->put('factoryCurrentOrderSaler', $n, 60);
+                cache()->put('factoryCurrentOrderSaler', $n, 20);
                 OrderPerformer::factory(1)->create();
             }
         }

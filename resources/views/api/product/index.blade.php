@@ -29,7 +29,7 @@
 
         @include('api.product.components.index')
 
-        @if(empty($productTypes['data']))
+        @if(empty($product_types['data']))
             <h4 style="text-align:center">По вашему запросу товаров не найдено</h4>
         @else
             @include('api.product.components.paginate')

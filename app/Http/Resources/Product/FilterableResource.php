@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Order;
+namespace App\Http\Resources\Product;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,8 +15,8 @@ class FilterableResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'optionValues' => $this['optionValues'],
-            'propertyValues' => $this['propertyValues'],
+            'option_values' => $this['optionValues'],
+            'property_values' => $this['propertyValues'],
             'prices' => $this['prices'],
             'salers' => $this['salers'],
             'tags' => $this['tags'],
