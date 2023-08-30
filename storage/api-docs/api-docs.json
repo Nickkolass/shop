@@ -483,19 +483,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "liked_ids": {
-                                            "properties": {
-                                                "662341": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                },
-                                                "115521": {
-                                                    "type": "integer",
-                                                    "example": "2"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
                                         "liked": {
                                             "type": "array",
                                             "items": {
@@ -530,6 +517,10 @@
                                                             "product_images/1.jpg",
                                                             "product_images/2.jpg"
                                                         ]
+                                                    },
+                                                    "likeable": {
+                                                        "type": "boolean",
+                                                        "example": "true"
                                                     },
                                                     "option_values": {
                                                         "properties": {
@@ -899,6 +890,10 @@
                                                                 "type": "string",
                                                                 "example": "preview_images/1.jpg"
                                                             },
+                                                            "likeable": {
+                                                                "type": "boolean",
+                                                                "example": "true"
+                                                            },
                                                             "product_images": {
                                                                 "type": "object",
                                                                 "example": [
@@ -1211,19 +1206,6 @@
                                                 "updated_at": {
                                                     "format": "date",
                                                     "example": "2023-06-28T12:03:41.000000Z"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "liked_ids": {
-                                            "properties": {
-                                                "662341": {
-                                                    "type": "integer",
-                                                    "example": "2"
-                                                },
-                                                "115521": {
-                                                    "type": "integer",
-                                                    "example": "3"
                                                 }
                                             },
                                             "type": "object"

@@ -23,7 +23,7 @@ class ProductTypeUpdateRequest extends FormRequest
     {
         $this->merge([
             'is_published' => $this->count > 0 ? $this->is_published ?? 0 : 0,
-            'optionValues' => array_filter($this->optionValues),
+            'relations' => array_filter(array_map('array_filter', $this->relations)),
         ]);
     }
 
@@ -37,10 +37,13 @@ class ProductTypeUpdateRequest extends FormRequest
         return [
             'price' => 'required|integer',
             'count' => 'required|integer',
-            'is_published' => 'bool',
-            'preview_image' => 'file',
-            'productImages' => 'array',
-            'optionValues' => 'required|array',
+            'is_published' => 'nullable|bool',
+            'preview_image' => 'nullable|image',
+            'relations' => 'required|array',
+            'relations.productImages' => 'nullable|array',
+            'relations.productImages.*' => 'nullable|image',
+            'relations.optionValues' => 'required|array',
+            'relations.optionValues.*' => 'required|int|filled',
         ];
     }
 }

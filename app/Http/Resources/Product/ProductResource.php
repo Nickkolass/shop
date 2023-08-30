@@ -15,12 +15,12 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'rating' => $this->rating,
-            'count_rating' => $this->countRating,
-            'count_comments' => $this->countComments,
-            'product_types' => ShowProductTypesResource::collection($this->productTypes)->resolve(),
+            'id' => $this->resource->id,
+            'title' => $this->resource->title,
+            'rating' => $this->resource->rating,
+            'count_rating' => $this->resource->countRating,
+            'count_comments' => $this->resource->countComments,
+            'product_types' => ShowProductTypesResource::collection($this->resource->productTypes)->resolve(),
         ];
     }
 }

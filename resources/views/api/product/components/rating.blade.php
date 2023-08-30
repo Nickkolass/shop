@@ -16,7 +16,7 @@
                 @csrf
                 <button type="submit" class="border-0 bg-transparent"
                         title="{{!session()->has('user') ? 'Для добавления в избранное зарегистрируйтесь или войдите' : ''}}" @disabled(!session()->has('user'))>
-                    <i class="fa fa-heart{{isset($data['liked_ids'][$product_type['id']]) || !empty($product_type['likeable']) ? '': '-o'}}"
+                    <i class="fa fa-heart{{$product_type['likeable'] ? '-o': ''}}"
                        style="cursor: pointer;"></i>
                 </button>
             </form>

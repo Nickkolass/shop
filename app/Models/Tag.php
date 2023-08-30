@@ -2,8 +2,17 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+/**
+ * @property int id
+ * @property string title
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 
 class Tag extends Model
 {
@@ -12,9 +21,10 @@ class Tag extends Model
 
     protected $table = 'tags';
     protected $guarded = false;
-    protected $hidden = array('pivot');
+    protected $hidden = ['created_at', 'updated_at', 'pivot'];
 
-    public function products(){
+    public function products(): BelongsToMany
+    {
         return $this->beLongsToMany(Product::class, 'product_tags', 'tag_id','product_id');
     }
 }

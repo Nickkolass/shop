@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        cache()->flush();
         $this->storageService->storagePreparation();
         $this->factoryService->factory();
         $this->productService->completionsOfProducts();

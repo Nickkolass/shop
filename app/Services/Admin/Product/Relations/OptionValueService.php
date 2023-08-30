@@ -11,20 +11,18 @@ use Illuminate\Support\Collection;
 class OptionValueService
 {
 
-    public function forRelationsType(Product $product, ProductType $productType, array $relations, bool $isNewProduct): array
+    public function prepareOrAttachOptionValues(Product $product, ProductType $productType, array $optionValues, bool $isNewProduct): array
     {
-        if ($isNewProduct) {
-            foreach ($relations['optionValues'] as &$optionValue) {
-                $optionValue = ['productType_id' => $productType->id, 'optionValue_id' => $optionValue];
-            }
-        } else {
-            $productType->optionValues()->attach($relations['optionValues']);
-            $product->optionValues()->sync($relations['optionValues'], false);
+        if (!$isNewProduct) {
+            $productType->optionValues()->attach($optionValues);
+            $product->optionValues()->sync($optionValues, false);
+        } else foreach ($optionValues as $optionValue) {
+            $optionValuesForInsert[] = ['productType_id' => $productType->id, 'optionValue_id' => $optionValue];
         }
-        return $relations;
+        return $optionValuesForInsert ?? [];
     }
 
-    public function forRelationsProduct(Product $product, array $detachedOptionValues): void
+    public function unpublishTypesAfterUpdateProduct(Product $product, array $detachedOptionValues): void
     {
         $product->productTypes()->whereHas('optionValues', function ($b) use ($detachedOptionValues) {
             $b->whereIn('optionValues.id', $detachedOptionValues);

@@ -17,12 +17,11 @@ class ProductFilterAggregateResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'product_types' => $this['productTypes']->setCollection(collect(ProductTypeResource::collection($this['productTypes'])->resolve())),
-            'paginate' => $this['paginate'],
-            'filter' => $this['filter'],
-            'filterable' => new FilterableResource($this['filterable']),
-            'category' => $this['category'],
-            'liked_ids' => $this['liked_ids'] ?? [],
+            'product_types' => new ProductTypeCollection($this->resource['productTypes']),
+            'paginate' => $this->resource['paginate'],
+            'filter' => $this->resource['filter'],
+            'filterable' => new FilterableResource($this->resource['filterable']),
+            'category' => $this->resource['category'],
         ];
     }
 }

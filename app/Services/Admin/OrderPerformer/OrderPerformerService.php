@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\Mail;
 class OrderPerformerService
 {
 
-    public OrderPerformerProductService $service;
-
-    public function __construct(OrderPerformerProductService $service)
+    public function __construct(private readonly OrderPerformerProductService $service)
     {
-        $this->service = $service;
     }
 
     public function index(): Paginator

@@ -2,22 +2,22 @@
 
 namespace App\Services\Admin\Product;
 
+use App\Dto\Admin\Product\ProductDto;
+use App\Dto\Admin\Product\ProductRelationDto;
+use App\Exceptions\ProductImageException;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Models\ProductType;
-use App\Models\ProductTypeOptionValue;
 use App\Services\Methods\Maper;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductService
 {
-    public ProductTypeService $productTypeService;
 
-    public function __construct(ProductTypeService $productTypeService)
+    public function __construct(public readonly ProductTypeService $productTypeService)
     {
-        $this->productTypeService = $productTypeService;
     }
 
     public function index(): Paginator
@@ -25,9 +25,7 @@ class ProductService
         $user = session('user');
         $products = Product::query()
             ->when($user['role'] != 'admin', function ($q) use ($user) {
-                $q->whereHas('saler', function ($q) use ($user) {
-                    $q->where('id', $user['id']);
-                });
+                $q->whereHas('saler', fn($q) => $q->where('id', $user['id']));
             })
             ->select('id', 'title', 'saler_id', 'category_id')
             ->latest()
@@ -37,36 +35,31 @@ class ProductService
                 'ratingAndComments'
             ])
             ->simplePaginate(4);
-
-        $products->map(fn(Product $product) => Maper::countingRatingAndComments($product));
+        $products->getCollection()->map(fn(Product $product) => Maper::countingRatingAndComments($product));
         return $products;
     }
 
-    public function store(array $data, array $types): int
+    public function store(
+        ProductDto         $productDto,
+        ProductRelationDto $productRelationDto,
+        Collection         $collectionProductTypeDto,
+    ): int
     {
-        $relations = $this->productTypeService->relationService->getRelations($data);
-        $relations['optionValues'] = array_filter(array_unique(array_merge(...array_column($types, 'optionValues'))));
-
         DB::beginTransaction();
         try {
-            $product = Product::firstOrCreate(['title' => $data['title']], $data);
-            $this->productTypeService->relationService->relationsProduct($product, $relations);
-            foreach ($types as $type) $attach[] = $this->productTypeService->storeType($product, $type, true);
+            $product = Product::firstOrCreate(['title' => $productDto->title], (array)$productDto);
+            $this->productTypeService->relationService->createRelationsProduct($product, $productRelationDto);
 
-            ProductTypeOptionValue::insert(array_merge(...array_column($attach, 'optionValues')));
-            $productImages = array_merge(...array_column($attach, 'productImages'));
-            ProductImage::insert($productImages);
+            $productTypeRelationsForInsertDto = collect();
+            foreach ($collectionProductTypeDto as $productTypeDto) {
+                $productTypeRelationsForInsertDto->push($this->productTypeService->storeType($product, $productTypeDto, true));
+            }
+            $this->productTypeService->relationService->createRelationsProductTypes($productTypeRelationsForInsertDto);
             DB::commit();
-            return $product->id;
-        } catch (\Exception $e) {
-            if (isset ($productImages)) $file_paths = array_column($productImages, 'file_path');
-            if (isset($attach)) $file_paths = collect($attach)->pluck('preview_image')->flatten()->merge($file_paths ?? [])->all();
-            if (isset ($file_paths)) $this->productTypeService->imageService->deleteImages($file_paths);
-            Storage::deleteDirectory('/public/product_images/' . $product->id);
-            Storage::deleteDirectory('/public/preview_images/' . $product->id);
-            report($e);
-            abort(back()->withErrors([$e->getMessage()])->withInput());
+        } catch (\Throwable $e) {
+            ProductImageException::failedStoreProduct($e, $product->id);
         }
+        return $product->id;
     }
 
     public function show(Product &$product): void
@@ -97,11 +90,11 @@ class ProductService
         $product->productTypes->map(fn(ProductType $productType) => Maper::valuesToKeys($productType, 'optionValues'));
     }
 
-    public function update(Product $product, array $data, array $relations): void
+    public function update(Product $product, ProductDto $productDto, ProductRelationDto $productRelationDto): void
     {
         DB::beginTransaction();
-        $product->update($data);
-        $this->productTypeService->relationService->relationsProduct($product, $relations, false);
+        $product->update((array) $productDto);
+        $this->productTypeService->relationService->createRelationsProduct($product, $productRelationDto, false);
         DB::commit();
     }
 
@@ -118,7 +111,7 @@ class ProductService
 
         DB::beginTransaction();
         $product->delete();
-        $this->productTypeService->imageService->deleteImages($images);
+        $this->productTypeService->relationService->imageService->deleteImages($images);
         Storage::deleteDirectory('/public/product_images/' . $product->id);
         Storage::deleteDirectory('/public/comments/' . $product->id);
         DB::commit();
@@ -132,6 +125,6 @@ class ProductService
                 $q->whereIn('optionValues.id', $product->optionValues);
             })
             ->where('count', '!=', 0)
-            ->update(['is_published' => request()->has('publish') ? 1 : 0]);
+            ->update(['is_published' => request()->has('publish')]);
     }
 }

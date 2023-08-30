@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\BackController;
-use App\Http\Controllers\API\BackOrderController;
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\Client\API\APIProductController;
+use App\Http\Controllers\Client\API\JWTAuthController;
+use App\Http\Controllers\Client\API\APIUserActiveController;
+use App\Http\Controllers\Client\API\APIOrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,27 +17,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('auth')->controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-    Route::post('me', 'me');
-});
-
-Route::post('/cart', [BackController::class, 'cart']);
-Route::prefix('/products')->controller(BackController::class)->group(function () {
+Route::post('/cart', [APIProductController::class, 'cart']);
+Route::prefix('/products')->controller(APIProductController::class)->group(function () {
+    Route::post('/liked', 'liked')->middleware('jwt.auth');
     Route::post('/', 'index');
-    Route::post('/liked', 'likedProducts')->middleware('jwt.auth');
-    Route::post('/{category:title}', 'productIndex');
-    Route::post('/show/{productType}', 'productShow')->name('back.api.productType.show');
-    Route::post('/liked/{productType}', 'likedToggle')->middleware('jwt.auth');
-    Route::post('/{product}/comment', 'commentStore')->middleware('jwt.auth');
+    Route::post('/{category:title}', 'filter')->name('back.api.products.filter');
+    Route::post('/show/{productType}', 'show');
 });
 
-Route::prefix('/orders')->middleware('jwt.auth')->controller(BackOrderController::class)->group(function () {
+Route::prefix('/products')->controller(APIUserActiveController::class)->middleware('jwt.auth')->group(function () {
+    Route::post('/liked/{productType}', 'likedToggle');
+    Route::post('{product}/comment', 'commentStore');
+});
+
+Route::prefix('/orders')->middleware(['jwt.auth', 'verified'])->controller(APIOrderController::class)->group(function () {
     Route::post('/', 'index')->name('back.api.orders.index');
     Route::post('/store', 'store');
     Route::post('/{order}', 'show')->withTrashed();
     Route::patch('/{order}', 'update');
     Route::delete('/{order}', 'destroy');
+});
+
+Route::prefix('auth')->controller(JWTAuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+    Route::post('me', 'me');
 });

@@ -17,6 +17,17 @@ class ProductTypeStoreRequest extends FormRequest
     }
 
     /**
+     * Handle a passed validation attempt.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_published' => $this->count > 0 ? $this->is_published ?? 0 : 0,
+            'relations' => array_filter(array_map('array_filter', $this->relations)),
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -27,9 +38,12 @@ class ProductTypeStoreRequest extends FormRequest
             'price' => 'required|integer',
             'count' => 'required|integer',
             'is_published' => 'nullable|bool',
-            'preview_image' => 'required|file',
-            'productImages' => 'required|array',
-            'optionValues' => 'required|array',
+            'preview_image' => 'required|image',
+            'relations' => 'required|array',
+            'relations.productImages' => 'required|array',
+            'relations.productImages.*' => 'required|image',
+            'relations.optionValues' => 'required|array',
+            'relations.optionValues.*' => 'required|int|filled',
         ];
     }
 }

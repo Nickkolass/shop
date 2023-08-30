@@ -3,28 +3,61 @@
 namespace App\Models;
 
 use App\Notifications\ResetPasswordNotificationQueue;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * @property int id
+ * @property int role
+ * @property string name
+ * @property string email
+ * @property string password
+ * @property string surname
+ * @property string patronymic
+ * @property int age
+ * @property int gender
+ * @property ?string address
+ * @property ?int card
+ * @property ?int postcode
+ * @property ?int INN
+ * @property ?string registredOffice
+ * @property string remember_token
+ * @property Carbon email_verified_at
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     protected $table = 'users';
     protected $guarded = false;
+    protected $hidden = ['password', 'remember_token'];
+    protected $casts = ['email_verified_at' => 'datetime'];
+    protected $fillable = [
+        'role', 'surname',
+        'email', 'password',
+        'name', 'patronymic',
+        'age', 'address',
+        'card', 'postcode',
+        'gender', 'address',
+        'INN', 'registredOffice',
+    ];
 
     const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
-
     const ROLE_ADMIN = 1;
     const ROLE_SALER = 2;
     const ROLE_CLIENT = 3;
 
-    public static function getRoles()
+    public static function getRoles(): array
     {
         return [
             self::ROLE_ADMIN => 'admin',
@@ -33,27 +66,27 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         ];
     }
 
-    public function getRoleTitleAttribute()
+    public function getRoleTitleAttribute(): string
     {
         return self::getRoles()[$this->role];
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return self::getRoles()[$this->role] == 'admin';
     }
 
-    public function isSaler()
+    public function isSaler(): bool
     {
         return self::getRoles()[$this->role] == 'saler';
     }
 
-    public function isClient()
+    public function isClient(): bool
     {
         return self::getRoles()[$this->role] == 'client';
     }
 
-    static function getGenders()
+    static function getGenders(): array
     {
         return [
             self::GENDER_MALE => 'Мужской',
@@ -61,98 +94,57 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         ];
     }
 
-    public function getGenderTitleAttribute()
+    public function getGenderTitleAttribute(): string
     {
         return self::getGenders()[$this->gender];
     }
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'role',
-        'name',
-        'email',
-        'password',
-        'surname',
-        'patronymic',
-        'age',
-        'address',
-        'gender',
-        'card',
-        'postcode',
-        'address',
-        'INN',
-        'registredOffice',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function hasVerifiedEmail()
+    public function hasVerifiedEmail(): bool
     {
-        return ! is_null($this->email_verified_at);
+        return !is_null($this->email_verified_at);
     }
 
-    public function products()
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'saler_id', 'id');
     }
 
-    public function productTypes()
+    public function productTypes(): HasManyThrough
     {
         return $this->hasManyThrough(ProductType::class, Product::class, 'saler_id', 'product_id', 'id', 'id');
     }
 
-    public function orders()
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'user_id', 'id');
     }
 
-    public function orderPerformers()
+    public function orderPerformers(): HasMany
     {
         return $this->hasMany(OrderPerformer::class, 'saler_id', 'id');
     }
 
-    public function liked()
+    public function liked(): BelongsToMany
     {
-        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id','productType_id');
+        return $this->beLongsToMany(ProductType::class, 'productType_user_likes', 'user_id', 'productType_id');
     }
 
-    public function ratingAndComments()
+    public function ratingAndComments(): HasMany
     {
         return $this->hasMany(RatingAndComment::class, 'user_id', 'id');
     }
 
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
         return [];
     }
 
-    public function sendPasswordResetNotification($token)
+    public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotificationQueue($token));
     }

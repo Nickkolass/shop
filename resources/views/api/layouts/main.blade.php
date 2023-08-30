@@ -43,7 +43,7 @@
 <header>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('api.index') }}">
+            <a class="navbar-brand" href="{{ route('api.products.index') }}">
                 <table>
                     <th><img src="{{asset('/storage/view/wand.svg')}}" alt="" width="30"></th>
                     <th>
@@ -58,7 +58,7 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('api.index') }}">Главная</a>
+                        <a class="nav-link" href="{{ route('api.products.index') }}">Главная</a>
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
@@ -66,7 +66,7 @@
                             <div class="dropdown-menu">
                                 @foreach ($categories as $category)
                                     <a class="dropdown-item"
-                                       href="{{ route('api.products', $category['title']) }}">{{ $category['title_rus'] }}</a>
+                                       href="{{ route('api.products.filter', $category['title']) }}">{{ $category['title_rus'] }}</a>
                                 @endforeach
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                             <a class="nav-link" href="{{ route('api.orders.index') }}">Заказы</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('api.liked') }}">Отложенное</a>
+                            <a class="nav-link" href="{{ route('api.products.liked') }}">Отложенное</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('users.show', session('user.id')) }}"
@@ -132,7 +132,7 @@
                         <li><a href="https://instagram.com/"><i class="fa fa-instagram"></i></a></li>
                     </ul>
                     <p>Copyright &copy; 2022-{{ now()->year }} <a rel="nofollow noopener"
-                                                                  href="{{ route('api.index') }}"
+                                                                  href="{{ route('api.products.index') }}"
                                                                   target="_blank">Lumos</a></p>
                 </div>
             </div>

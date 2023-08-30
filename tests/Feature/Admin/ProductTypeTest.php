@@ -72,9 +72,10 @@ class ProductTypeTest extends TestCase
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
-        $data['productImages'] = [File::create('productImage.jpeg')];
-        $data['optionValues'] = $product->optionValues()->take(2)->pluck('optionValues.id')->all();
-        $data['product_id'] = $another_product->id;
+        $data['relations'] = [
+            'productImages' => [File::create('productImage.jpeg')],
+            'optionValues' => $product->optionValues()->groupBy('option_id')->take(2)->pluck('optionValues.id')->all(),
+        ];
 
         $this->post(route('admin.productTypes.store', $another_product->id), $data)->assertNotFound();
 
@@ -90,7 +91,6 @@ class ProductTypeTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $data['product_id'] = $product->id;
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
@@ -100,21 +100,20 @@ class ProductTypeTest extends TestCase
             session()->flush();
             $productType = ProductType::latest('id')->first();
             $this->assertEquals($productType->price, $data['price']);
-            $this->assertCount($productType->optionValues()->count(), $data['optionValues']);
-            $this->assertCount($productType->productImages()->count(), $data['productImages']);
+            $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
+            $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
             $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
         }
         $user->role = 1;
         $user->save();
-        $data['product_id'] = $another_product->id;
         $another_product->productTypes()->take(1)->delete();
         $this->actingAs($user)->post(route('admin.productTypes.store', $another_product->id), $data)
             ->assertRedirect(route('admin.products.show', $another_product->id));
         session()->flush();
         $productType = ProductType::latest('id')->first();
         $this->assertEquals($productType->price, $data['price']);
-        $this->assertCount($productType->optionValues()->count(), $data['optionValues']);
-        $this->assertCount($productType->productImages()->count(), $data['productImages']);
+        $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
+        $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
         $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
     }
 
@@ -166,9 +165,10 @@ class ProductTypeTest extends TestCase
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
-        $data['productImages'] = [File::create('productImage.jpeg')];
-        $data['optionValues'] = $productType->product->optionValues()->take(2)->pluck('optionValues.id')->all();
-        $data['product_id'] = $anotherProductType->product_id;
+        $data['relations'] = [
+            'productImages' => [File::create('productImage.jpeg')],
+            'optionValues' => $productType->product->optionValues()->take(2)->pluck('optionValues.id')->all(),
+        ];
 
         $this->patch(route('admin.productTypes.update', $anotherProductType->id), $data)->assertNotFound();
 
@@ -184,13 +184,11 @@ class ProductTypeTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $data['product_id'] = $productType->product_id;
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
             $data['preview_image'] = File::create('preview_image.jpeg');
-            $data['productImages'] = [File::create('productImage.jpeg')];
-            $productType->refresh();
+            $data['relations']['productImages'] = [File::create('productImage.jpeg')];
             $this->actingAs($user)->patch(route('admin.productTypes.update', $productType->id), $data)
                 ->assertRedirect(route('admin.products.show', $productType->product_id));
             session()->flush();
@@ -200,14 +198,13 @@ class ProductTypeTest extends TestCase
             $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
             $this->assertTrue(Storage::disk('public')->exists($productType->productImages->first()->file_path));
             $this->assertEquals($data['price'], $productType->price);
-            $this->assertCount($productType->optionValues()->count(), $data['optionValues']);
-            $this->assertCount($productType->productImages()->count(), $data['productImages']);
+            $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
+            $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
         }
         $user->role = 1;
         $user->save();
-        $data['product_id'] = $anotherProductType->product_id;
         $data['preview_image'] = File::create('preview_image.jpeg');
-        $data['productImages'] = [File::create('productImage.jpeg')];
+        $data['relations']['productImages'] = [File::create('productImage.jpeg')];
 
         Storage::disk('public')->delete($productType->preview_image);
         $this->actingAs($user)->patch(route('admin.productTypes.update', $anotherProductType->id), $data)
@@ -219,8 +216,8 @@ class ProductTypeTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($anotherProductType->preview_image));
         $this->assertTrue(Storage::disk('public')->exists($anotherProductType->productImages->first()->file_path));
         $this->assertEquals($anotherProductType->price, $data['price']);
-        $this->assertCount($anotherProductType->optionValues()->count(), $data['optionValues']);
-        $this->assertCount($anotherProductType->productImages()->count(), $data['productImages']);
+        $this->assertCount($anotherProductType->optionValues()->count(), $data['relations']['optionValues']);
+        $this->assertCount($anotherProductType->productImages()->count(), $data['relations']['productImages']);
     }
 
     /**@test */

@@ -16,17 +16,16 @@ class ShowOrderResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'id' => $this->resource->id,
             'product_types' =>
                 $request->route()->getName() == 'back.api.orders.index'
-                    ? OrdersProductsResource::collection($this->productTypes)->resolve()
-                    : ShowOrderProductsResource::collection($this->productTypes)->resolve(),
-            'delivery' => $this->delivery,
-            'total_price' => $this->total_price,
-            'status' => $this->status,
-            'created_at' => $this->created_at->toDateString(),
-            'dispatch_time' => $this->orderPerformers->max('dispatch_time'),
+                    ? OrdersProductsResource::collection($this->resource->productTypes)->resolve()
+                    : ShowOrderProductsResource::collection($this->resource->productTypes)->resolve(),
+            'delivery' => $this->resource->delivery,
+            'total_price' => $this->resource->total_price,
+            'status' => $this->resource->status,
+            'created_at' => $this->resource->created_at->toDateString(),
+            'dispatch_time' => $this->resource->orderPerformers->max('dispatch_time'),
         ];
-
     }
 }

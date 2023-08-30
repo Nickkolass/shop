@@ -15,11 +15,11 @@ class RatingAndCommentsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'message' => $this->message,
-            'rating' => $this->rating,
-            'user' => $this->user,
-            'comment_images' => $this->commentImages->pluck('file_path'),
-            'created_at' => $this->created_at->diffForHumans(),
+            'message' => $this->resource->message,
+            'rating' => $this->resource->rating,
+            'user' => $this->resource->user,
+            'comment_images' => $this->resource->commentImages->pluck('file_path'),
+            'created_at' => $this->resource->created_at->diffForHumans(),
         ];
     }
 }

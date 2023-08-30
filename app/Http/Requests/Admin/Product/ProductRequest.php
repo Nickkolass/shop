@@ -17,16 +17,6 @@ class ProductRequest extends FormRequest
     }
 
     /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'saler_id' => session('user.id'),
-        ]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -34,11 +24,10 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string|unique:products,title,' . $this->product_id ?? '',
+            'title' => 'required|string|unique:products,title,' . $this->product_id ?? 0,
             'description' => 'required|string',
             'category_id' => 'required|integer',
             'saler_id' => 'required|integer',
-            'tags' => 'required|array',
         ];
     }
 }

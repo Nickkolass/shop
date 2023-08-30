@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Dto\Admin\Product\ProductDto;
+use App\Dto\Admin\Product\ProductRelationDto;
+use App\Dto\Admin\Product\ProductTypeDto;
+use App\Dto\Admin\Product\ProductTypeRelationDto;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Product\StoreRequest;
-use App\Http\Requests\Admin\Product\UpdateRequest;
+use App\Http\Requests\Admin\Product\ProductTypesRequest;
+use App\Http\Requests\Admin\Product\UpdateRelationsRequest;
 use App\Models\Product;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Contracts\View\View;
@@ -13,12 +17,9 @@ use Illuminate\Http\RedirectResponse;
 class ProductController extends Controller
 {
 
-    public ProductService $service;
-
-    public function __construct(ProductService $service)
+    public function __construct(private readonly ProductService $service)
     {
         $this->authorizeResource(Product::class, 'product');
-        $this->service = $service;
     }
 
     /**
@@ -35,13 +36,21 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
+     * @param ProductTypesRequest $request
      * @return RedirectResponse
      */
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(ProductTypesRequest $request): RedirectResponse
     {
-        $data = $request->validated()['types'];
-        $product_id = $this->service->store(session()->pull('create'), $data);
+        $productDto = new ProductDto(...session()->pull('create.product'));
+        $productRelationDto = new ProductRelationDto(...session()->pull('create.relations'));
+
+        $collectionProductTypeDto = collect($request->validated()['types'])->map(function (array $productType) {
+            $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($productType));
+            return new ProductTypeDto(...$productType);
+        });
+
+        $product_id = $this->service->store($productDto, $productRelationDto, $collectionProductTypeDto);
+
         return redirect()->route('admin.products.show', $product_id);
     }
 
@@ -60,14 +69,17 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
+     * @param UpdateRelationsRequest $request
      * @param Product $product
      * @return RedirectResponse
      */
-    public function update(UpdateRequest $request, Product $product): RedirectResponse
+    public function update(UpdateRelationsRequest $request, Product $product): RedirectResponse
     {
-        $data = $request->validated();
-        $this->service->update($product, session()->pull('edit'), $data);
+        $this->service->update(
+            $product,
+            new ProductDto(...session()->pull('edit')),
+            new ProductRelationDto(...$request->validated())
+        );
         return redirect()->route('admin.products.show', $product->id);
     }
 
@@ -91,7 +103,7 @@ class ProductController extends Controller
      */
     public function publish(Product $product): RedirectResponse
     {
-        if($product->saler_id != auth()->id() & session('user.role') != 'admin') abort (403);
+        if ($product->saler_id != auth()->id() & session('user.role') != 'admin') abort(403);
         $this->service->publish($product);
         return back();
     }

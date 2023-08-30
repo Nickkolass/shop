@@ -42,13 +42,13 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="text" name="title" , value="{{ $property->title }}" class="form-control"
+                            <input type="text" name="title" , value="{{ old('title') ?? $property->title }}" class="form-control"
                                    placeholder="title">
                         </div>
 
                         <div class="form-group">
                             <label>Категории</label>
-                            <select name="categories[]" class="categories" multiple="multiple" style="width: 100%;" required>
+                            <select name="category_ids[]" class="categories" multiple="multiple" style="width: 100%;" required>
                                 @foreach($categories as $category_id => $category_title_rus)
                                     <option
                                         value="{{ $category_id }}" @selected($property->categories->contains($category_id))>{{ $category_title_rus }}</option>
@@ -58,7 +58,7 @@
 
                         <div class="form-group">
                             <h5>Значения</h5>
-                            <div id="multi" data-old="{{json_encode($property->propertyValues->toArray())}}">
+                            <div id="multi" data-old="{{json_encode(old('propertyValues') ?? $property->propertyValues->pluck('value')->all())}}">
                                 <div class="js-row input-group">
                                     <input type="text" name="propertyValues[0][value]" data-name="propertyValues"
                                            class="form-control">

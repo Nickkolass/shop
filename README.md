@@ -8,15 +8,13 @@
 - в файле .env:
   -  в поле REDIS_HOST установить значение ip адреса wsl (для win10: параметры->сеть и интернет->просмотр свойств оборудования и сети->vEthernet (WSL)->IPv4)
   -  в поле MAIL_USERNAME и MAIL_PASSWORD установить значения используемого почтового ящика в домене yandex.ru
-- поместить в ./storage/app/public изображения из https://disk.yandex.ru/d/qzbLR1NnyshCBg.
 -     docker compose up -d
 -     docker exec -it shop_app bash
-  -     php artisan storage:link
-  -     php artisan key:generate
-  -     php artisan jwt:secret
-  -     php artisan migrate --seed
+  -     curl https://disk.yandex.ru/d/qzbLR1NnyshCBg/photo.zip -o storage/app/public/photo.zip
+  -     unzip storage/app/public/photo -d storage/app/public
+  -     rm storage/app/public/photo.zip
+  -     php artisan init
   -     chmod 777 -R ./storage/app/public
-  -     php artisan optimize
   -     npm run dev
 
 ## Начало работы

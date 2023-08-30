@@ -17,20 +17,6 @@ class OptionRequest extends FormRequest
     }
 
     /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        $optionValues = [];
-        foreach ($this->optionValues as $optionValue) {
-            if (isset($optionValue['value']) & (array_search($optionValue, $optionValues) === false)) {
-                $optionValues[] = $optionValue;
-            }
-        }
-        $this->merge(['optionValues' => $optionValues]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -40,7 +26,7 @@ class OptionRequest extends FormRequest
         return [
             'title' => 'required|string',
             'optionValues' => 'required|array',
-            'optionValues.*.value' => 'required|string',
+            'optionValues.*' => 'required|string|filled|distinct',
         ];
     }
 }

@@ -64,14 +64,14 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $data = User::factory()->raw();
-        $data['password_confirmation'] = $data['password'];
+        unset($data['card'], $data['postcode'], $data['address'], $data['password']);
 
-        $this->post(route('users.store'), $data)->assertNotFound();
+        $this->from(route('users.create'))->post(route('users.store'), $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->post(route('users.store'), $data)->assertNotFound();
+            $this->actingAs($user)->from(route('users.create'))->post(route('users.store'), $data)->assertNotFound();
             session()->flush();
         }
 
@@ -79,13 +79,12 @@ class UserTest extends TestCase
 
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->post(route('users.store'), $data);
+        $this->actingAs($user)->from(route('users.create'))->post(route('users.store'), $data);
         $this->assertDatabaseCount('users', 2);
         $this->assertDatabaseCount('jobs', 2);
 
-        $data['password'] = Hash::make($data['password']);
         $user = User::first()->toArray();
-        unset($user['id'], $user['email_verified_at'], $user['created_at'], $user['updated_at'], $data['email_verified_at']);
+        unset($user['id'], $user['email_verified_at'], $user['created_at'], $user['updated_at'], $data['email_verified_at'], $data['password']);
 
         $this->assertEquals(sort($data), sort($user));
     }
@@ -165,6 +164,7 @@ class UserTest extends TestCase
 
         $data = User::factory()->raw();
         $data['id'] = $user->id;
+        unset($data['card'], $data['postcode'], $data['address']);
 
         $this->patch(route('users.update', $another_user->id), $data)->assertNotFound();
 

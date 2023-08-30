@@ -1,5 +1,6 @@
 <div class="cd-filter">
-    <form action="{{ route('api.products', $data['category']['title']) }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('api.products.filter', $data['category']['title']) }}" method="post"
+          enctype="multipart/form-data">
         @csrf
 
         <div class="cd-filter-block">
@@ -69,15 +70,8 @@
                 <h4>{{$option}}</h4>
                 <ul class="cd-filter-content cd-filters list">
                     @foreach ($option_values as $option_value)
-                        <li>
-                            @if (!empty($data['filter']['option_values'][$option_value['option_id']]))
-                                <input class="filter" name="filter[option_values][{{$option_value['option_id']}}][]"
-                                       type="checkbox"
-                                       value="{{$option_value['id']}}" @checked(in_array($option_value['id'], $data['filter']['option_values'][$option_value['option_id']]))>
-                            @else
-                                <input class="filter" name="filter[option_values][{{$option_value['option_id']}}][]"
-                                       type="checkbox" value="{{$option_value['id']}}">
-                            @endif
+                        <li><input class="filter" name="filter[optionValues][{{$option_value['option_id']}}][]" type="checkbox"
+                                   value="{{$option_value['id']}}" @checked(in_array($option_value['id'], $data['filter']['optionValues'][$option_value['option_id']] ?? []))>
                             <label class="checkbox-label">{{$option_value['value']}}</label>
                         </li>
                     @endforeach
@@ -90,15 +84,8 @@
                 <h4>{{$property}}</h4>
                 <ul class="cd-filter-content cd-filters list">
                     @foreach ($property_values as $property_value)
-                        <li>
-                            @if (!empty($data['filter']['property_values'][$property_value['property_id']]))
-                                <input class="filter" name="filter[property_values][{{$property_value['property_id']}}][]"
-                                       type="checkbox"
-                                       value="{{$property_value['id']}}" @checked(in_array($property_value['id'], $data['filter']['property_values'][$property_value['property_id']]))>
-                            @else
-                                <input class="filter" name="filter[property_values][{{$property_value['property_id']}}][]"
-                                       type="checkbox" value="{{$property_value['id']}}">
-                            @endif
+                        <li><input class="filter" name="filter[propertyValues][{{$property_value['property_id']}}][]" type="checkbox"
+                                   value="{{$property_value['id']}}" @checked(in_array($property_value['id'], $data['filter']['propertyValues'][$property_value['property_id']] ?? []))>
                             <label class="checkbox-label">{{$property_value['value']}}</label>
                         </li>
                     @endforeach
@@ -143,7 +130,8 @@
 
         <div class="form-group">
             <input type="submit" class="btn-btn-primary" value="Применить">
-            <a type="button" class="btn-btn-primary" href="{{ route('api.products', $data['category']['title']) }}">Очистить</a>
+            <a type="button" class="btn-btn-primary"
+               href="{{ route('api.products.filter', $data['category']['title']) }}">Очистить</a>
         </div>
     </form>
     <a href="#0" class="cd-close">Закрыть</a>

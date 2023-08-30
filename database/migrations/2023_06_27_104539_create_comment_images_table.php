@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('comment_id')->index()->constrained('rating_and_comments')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('file_path');
-            $table->string('size');
+            $table->unsignedInteger('size');
             $table->timestamps();
         });
     }
