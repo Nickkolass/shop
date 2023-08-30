@@ -32,7 +32,7 @@ class SeederProductService
                     $productImage = $productType->productImages['2']->file_path;
                     $previewImage = str_replace('product_images', 'preview_images', $productImage);
                     Storage::copy('public/' . $productImage, 'public/' . $previewImage);
-                    $productType->count == 0 ? $is_published = 0 : $is_published = 1;
+                    $is_published = $productType->count == 0 ? 0 : 1;
 
                     $productType->update(['is_published' => $is_published, 'preview_image' => $previewImage]);
                 }

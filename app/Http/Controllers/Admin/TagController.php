@@ -22,7 +22,7 @@ class TagController extends Controller
      */
     public function index(): View
     {
-        $tags = Tag::all();
+        $tags = Tag::toBase()->get();
         return view('admin.tag.index', compact('tags'));
     }
 

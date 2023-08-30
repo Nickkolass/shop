@@ -15,11 +15,11 @@ class FilterableResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'option_values' => $this['optionValues'],
-            'property_values' => $this['propertyValues'],
-            'prices' => $this['prices'],
-            'salers' => $this['salers'],
-            'tags' => $this['tags'],
+            'option_values' => $this->resource['optionValues'],
+            'property_values' => $this->resource['propertyValues'],
+            'prices' => $this->resource['prices'],
+            'salers' => $this->resource['salers'],
+            'tags' => $this->resource['tags'],
         ];
     }
 }

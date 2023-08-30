@@ -62,7 +62,7 @@ class PropertyTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $data = ['title' => 'asfas', 'categories' => [$category->id], 'propertyValues' => [['value' => '1'], ['value' => '2'], ['value' => '3']]];
+        $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
 
         $this->post(route('admin.properties.store'), $data)->assertNotFound();
 
@@ -138,7 +138,7 @@ class PropertyTest extends TestCase
         $property = Property::create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         PropertyValue::factory(4)->create();
-        $data = ['title' => 'asfas', 'categories' => [$category->id], 'propertyValues' => [['value' => '1'], ['value' => '2'], ['value' => '3']]];
+        $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
 
         $this->patch(route('admin.properties.update', $property->id), $data)->assertNotFound();
 

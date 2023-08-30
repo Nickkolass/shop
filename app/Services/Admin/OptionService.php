@@ -2,36 +2,37 @@
 
 namespace App\Services\Admin;
 
+use App\Dto\Admin\OptionDto;
 use App\Models\Option;
 use App\Models\OptionValue;
 use Illuminate\Support\Facades\DB;
 
 class OptionService
 {
-    public function store(array $data): void
+    public function store(OptionDto $dto): void
     {
         DB::beginTransaction();
-        $option_id = Option::firstOrCreate(['title' => $data['title']])->id;
-        foreach ($data['optionValues'] as &$optionValue) $optionValue['option_id'] = $option_id;
-        OptionValue::insert($data['optionValues']);
+        $option_id = Option::firstOrCreate(['title' => $dto->title])->id;
+        foreach ($dto->optionValues as $optionValue) $data[] = ['option_id' => $option_id, 'value' => $optionValue];
+        OptionValue::insert($data);
         DB::commit();
     }
 
-    public function update(Option $option, array $data): void
+    public function update(Option $option, OptionDto $dto): void
     {
         $oldValues = $option->optionValues()->pluck('value')->all();
-        $newValues = array_column($data['optionValues'], 'value');
-        $delete = array_diff($oldValues, $newValues);
-        $create = array_diff($newValues, $oldValues);
-        foreach ($create as &$optionValue) $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
+        $newValues = $dto->optionValues;
+        $deleteValue = array_diff($oldValues, $newValues);
+        $createValue = array_diff($newValues, $oldValues);
+        foreach ($createValue as &$optionValue) $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
 
         DB::beginTransaction();
         $option->optionValues()
             ->where('option_id', $option->id)
-            ->whereIn('value', $delete)
+            ->whereIn('value', $deleteValue)
             ->delete();
-        OptionValue::insert($create);
-        $option->update(['title' => $data['title']]);
+        OptionValue::insert($createValue);
+        $option->update(['title' => $dto->title]);
         DB::commit();
     }
 }

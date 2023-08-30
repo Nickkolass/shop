@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('productTypes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unsignedInteger('price');
             $table->unsignedInteger('count');
             $table->boolean('is_published')->default(false);

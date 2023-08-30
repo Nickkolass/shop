@@ -38,11 +38,15 @@
                                     <td>Классификаторы</td>
                                     <td>
                                         @foreach($optionValues as $option => $values)
-                                            <select name="optionValues[]" class="tags" style="width:200px">
+                                            <select name="relations[optionValues][]" class="tags" style="width:200px">
                                                 <option value=0 selected>{{ $option }}</option>
                                                 @foreach($values as $value)
-                                                    <option
-                                                        value="{{ $value['id'] }}" @selected($productType->optionValues->contains($value['id']))>{{ $value['value'] }}</option>
+                                                    <option value="{{ $value['id'] }}"
+                                                        @selected(
+                                                            session()->has('_old_input')
+                                                            ? in_array($value['id'], old('relations.optionValues'))
+                                                            : $productType->optionValues->contains($value['id'])
+                                                        )>{{ $value['value'] }}</option>
                                                 @endforeach
                                             </select>
                                         @endforeach
@@ -51,17 +55,18 @@
                                 <tr>
                                     <td>Цена</td>
                                     <td><input type="number" name="price" class="form-control"
-                                               value="{{ $productType->price }}" required></td>
+                                               value="{{ old('price') ?? $productType->price }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Остаток</td>
                                     <td><input type="number" name="count" class="form-control"
-                                               value="{{ $productType->count }}" required></td>
+                                               value="{{ old('count') ?? $productType->count }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Опубликовать</td>
                                     <td><input style="width:50px;" type="checkbox" name="is_published" value='1'
-                                               class="form-control" @checked($productType->is_published)></td>
+                                               class="form-control" @checked(session()->has('_old_input') ? old('is_published') : $productType->is_published)>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Заставка</td>
@@ -76,7 +81,8 @@
                                                                        class="form-control">
                                                                 <img
                                                                     src="{{ asset('/storage/'.$productType->preview_image) }}"
-                                                                    width='70' height='70' class="img img-responsive" style="margin-left: 10px">
+                                                                    width='70' height='70' class="img img-responsive"
+                                                                    style="margin-left: 10px">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -94,12 +100,14 @@
                                                     <div class="control-group" id="fields">
                                                         <div class="controls">
                                                             <div class="entry input-group upload-input-group">
-                                                                <input class="form-control" name="productImages[]"
+                                                                <input class="form-control"
+                                                                       name="relations[productImages][]"
                                                                        type="file" multiple>
                                                                 @foreach($productType->productImages as $img)
                                                                     <img src="{{ asset('/storage/'.$img->file_path) }}"
                                                                          width='70' height='70'
-                                                                         class="img img-responsive" style="margin-left: 10px">
+                                                                         class="img img-responsive"
+                                                                         style="margin-left: 10px">
                                                                 @endforeach
                                                             </div>
                                                         </div>

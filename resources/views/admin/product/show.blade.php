@@ -22,7 +22,7 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                @if(url()->previous() == route('admin.products.editProperties', $product->id) & $product->productTypes->count() != 0)
+                @if(url()->previous() == route('admin.products.edit.relations', $product->id) & $product->productTypes->count() != 0)
                     <div class="card" style="background:red">
                         <h4>После редактирования продукта, проверьте соответствие его разновидностей новым
                             классификаторам. <br>

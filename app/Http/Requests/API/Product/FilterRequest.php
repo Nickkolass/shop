@@ -24,19 +24,17 @@ class FilterRequest extends FormRequest
     public function rules()
     {
         return [
-            'filter' => [
-                'tags.array' => '',
-                'salers.array' => '',
-                'optionValues.array' => '',
-                'propertyValues.array' => '',
-                'prices.array' => '',
-                'search.string' => ''
-            ],
-            'paginate' => [
-                'orderBy.string' => '',
-                'perPage.integer' => '',
-                'page.integer' => '',
-            ],
+            'filter' => 'array',
+            'filter.tags' => 'array',
+            'filter.salers' => 'array',
+            'filter.optionValues' => 'array',
+            'filter.propertyValues' => 'array',
+            'filter.prices' => 'array',
+            'filter.search' => 'string',
+            'paginate' => 'array',
+            'paginate.orderBy' => 'string',
+            'paginate.perPage' => 'integer',
+            'paginate.page' => 'integer',
             'cart' => 'array',
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Dto\Admin\PropertyDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PropertyRequest;
 use App\Models\Category;
@@ -52,7 +53,7 @@ class PropertyController extends Controller
     public function store(PropertyRequest $request): View
     {
         $data = $request->validated();
-        $this->service->store($data);
+        $this->service->store(new PropertyDto(...$data));
         return $this->index();
     }
 
@@ -91,7 +92,7 @@ class PropertyController extends Controller
     public function update(PropertyRequest $request, Property $property): View
     {
         $data = $request->validated();
-        $this->service->update($property, $data);
+        $this->service->update($property, new PropertyDto(...$data));
         return $this->show($property);
     }
 

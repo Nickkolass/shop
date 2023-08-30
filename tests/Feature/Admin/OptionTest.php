@@ -60,7 +60,7 @@ class OptionTest extends TestCase
     public function test_a_option_can_be_stored_with_premissions()
     {
         $user = User::factory()->create();
-        $data = ['title' => 'asfas', 'optionValues' => [['value' => '1'], ['value' => '2'], ['value' => '3']]];
+        $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
 
         $this->post(route('admin.options.store'), $data)->assertNotFound();
 
@@ -131,7 +131,7 @@ class OptionTest extends TestCase
         $user = User::factory()->create();
         $option = Option::create(['title' => 'sadfsdf']);
         OptionValue::factory(4)->create();
-        $data = ['title' => 'asfas', 'optionValues' => [['value' => '1'], ['value' => '2'], ['value' => '3']]];
+        $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
 
         $this->patch(route('admin.options.update', $option->id), $data)->assertNotFound();
 

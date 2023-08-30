@@ -48,9 +48,9 @@
 
                         <div class="form-group">
                             <h5>Значения</h5>
-                            <div id="multi" data-old="{{json_encode($option->optionValues->toArray())}}">
+                            <div id="multi" data-old="{{json_encode(old('optionValues') ?? $option->optionValues->pluck('value')->toArray())}}">
                                 <div class="js-row input-group">
-                                    <input type="text" name="optionValues[0][value]" data-name="optionValues"
+                                    <input type="text" name="optionValues[0]" data-name="optionValues"
                                            class="form-control">
                                     <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+
                                     </button>

@@ -9,25 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
-    public function productImages(ProductType $productType, array &$productImages, ?bool $isNewProduct = true): void
+    public function prepareOrCreateProductImages(ProductType $productType, array $images, ?bool $isNewProduct = true): array
     {
-        foreach ($productImages as &$productImage) {
-            $filePath = $productImage->storePublicly('product_images/' . $productType->product_id, 'public');
-            $productImage = [
-                'productType_id' => $productType->id,
-                'file_path' => $filePath,
-                'size' => $productImage->getSize(),
-            ];
-        }
+        foreach ($images as $image) $productImagesForInsert[] = [
+            'productType_id' => $productType->id,
+            'file_path' => $image->storePublicly('product_images/' . $productType->product_id, 'public'),
+            'size' => $image->getSize(),
+        ];
+        session()->push('image_paths_for_failed_create_product.productImages', array_column($productImagesForInsert, 'file_path'));
+
         if (!$isNewProduct) {
-            if (!empty($productType->productImages)) ProductImage::whereIn('id', $productType->productImages->pluck('id'))->delete();
-            ProductImage::insert($productImages);
+            $productType->productImages()->delete();
+            ProductImage::insert($productImagesForInsert);
         }
+        return $productImagesForInsert;
     }
 
-    public function previewImage(UploadedFile $preview_image, int $product_id): string
+    public function createPreviewImage(UploadedFile &$preview_image, int $product_id): void
     {
-        return $preview_image->storePublicly('preview_images/' . $product_id, 'public');
+        $preview_image = $preview_image->storePublicly('preview_images/' . $product_id, 'public');
+        session()->push('image_paths_for_failed_create_product.preview_images', $preview_image);
     }
 
     public static function deleteImages(array|string $image_paths): void

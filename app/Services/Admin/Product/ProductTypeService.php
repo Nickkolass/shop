@@ -2,84 +2,67 @@
 
 namespace App\Services\Admin\Product;
 
+use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
+use App\Dto\Admin\Product\ProductTypeDto;
+use App\Exceptions\ProductImageException;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Admin\Product\Relations\RelationService;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 
 class ProductTypeService
 {
 
-    public ImageService $imageService;
-    public RelationService $relationService;
 
-    public function __construct(ImageService $imageService, RelationService $relationService)
+    public function __construct (public RelationService $relationService)
     {
-        $this->imageService = $imageService;
-        $this->relationService = $relationService;
     }
 
     /** storeType для недопущения повторного запуска транзакции при создании продукта (напрямую дергается метод storeType) */
-
-    public function store(Product $product, array $type): void
+    public function store(Product $product, ProductTypeDto $productTypeDto): void
     {
         DB::beginTransaction();
         try {
-            $attach = $this->storeType($product, $type);
+            $this->storeType($product, $productTypeDto);
             DB::commit();
-        } catch (\Exception $e) {
-            if (isset ($attach['productImages'])) $file_paths = array_column($attach['productImages'], 'file_path');
-            if (is_string($type['preview_image'] ?? null)) $file_paths[] = $type['preview_image'];
-            if (isset ($file_paths)) $this->imageService->deleteImages($file_paths);
-            report($e);
-            abort(back()->withErrors([$e->getMessage()])->withInput());
+        } catch (\Throwable $e) {
+            ProductImageException::failedStoreProduct($e);
         }
     }
 
-    public function storeType(Product $product, array &$type, ?bool $isNewProduct = false): array
+    public function storeType(Product $product, ProductTypeDto $productTypeDto, ?bool $isNewProduct = false): ProductTypeRelationForInsertDto
     {
-        $relations = $this->relationService->getRelations($type);
-        $relations['optionValues'] = array_filter($relations['optionValues']);
+        $this->relationService->imageService->createPreviewImage($productTypeDto->preview_image, $product->id);
 
-        $type['product_id'] = $product->id;
-        $type['is_published'] = $type['count'] > 0 ? $type['is_published'] ?? 0 : 0;
-        $type['preview_image'] = $this->imageService->previewImage($type['preview_image'], $product->id);
+        $productTypeRelationDto = $productTypeDto->productTypeRelationDto;
+        unset($productTypeDto->productTypeRelationDto);
 
-        $productType = ProductType::create($type);
-        $this->imageService->productImages($productType, $relations['productImages'], $isNewProduct);
-        $attach = $this->relationService->relationsType($product, $productType, $relations, $isNewProduct);
-        $attach['preview_image'] = $type['preview_image'];
-        return $attach;
+        $productType = ProductType::create((array) $productTypeDto + ['product_id' => $product->id]);
+        return $this->relationService->createRelationsProductType($product, $productType, $productTypeRelationDto, $isNewProduct);
     }
 
-    public function update(ProductType $productType, array $type): void
+    public function update(ProductType $productType, ProductTypeDto $productTypeDto): void
     {
-        $relations = $this->relationService->getRelations($type);
-
         DB::beginTransaction();
         try {
-            if (!empty($relations['productImages'])) {
+            if (!empty($productTypeDto->productTypeRelationDto->productImages)) {
                 $productType->load('productImages:id,productType_id,file_path');
                 $old_image_paths = $productType->productImages->pluck('file_path')->all();
-                $this->imageService->productImages($productType, $relations['productImages'], false);
-                $new_image_paths = array_column($relations['productImages'], 'file_path');
+                $this->relationService->imageService->prepareOrCreateProductImages($productType, $productTypeDto->productTypeRelationDto->productImages, false);
             }
-
-            if (!empty($type['preview_image'])) {
-                $type['preview_image'] = $new_image_paths[] = $this->imageService->previewImage($type['preview_image'], $productType->product_id);
+            if (!empty($productTypeDto->preview_image)) {
+                $this->relationService->imageService->createPreviewImage($productTypeDto->preview_image, $productType->product_id);
                 $old_image_paths[] = $productType->preview_image;
             }
-
-            $productType->update($type);
-            $productType->optionValues()->sync($relations['optionValues']);
+            $productType->optionValues()->sync($productTypeDto->productTypeRelationDto->optionValues);
             $this->relationService->optionValueService->detachProductOptionValues($productType);
+            unset($productTypeDto->productTypeRelationDto);
+            $productType->update(array_filter((array) $productTypeDto));
+
             DB::commit();
-            if (isset($old_image_paths)) $this->imageService->deleteImages($old_image_paths);
-        } catch (\Exception $e) {
-            if (isset ($new_image_paths)) $this->imageService->deleteImages($new_image_paths);
-            report($e);
-            abort(back()->withErrors([$e->getMessage()])->withInput());
+            if (isset($old_image_paths)) $this->relationService->imageService->deleteImages($old_image_paths);
+        } catch (\Throwable $e) {
+            ProductImageException::failedStoreProduct($e);
         }
     }
 
@@ -89,7 +72,7 @@ class ProductTypeService
         $productType->load('productImages:productType_id,file_path')->delete();
         $image_paths = $productType->productImages->pluck('file_path')->push($productType->preview_image)->all();
         $this->relationService->optionValueService->detachProductOptionValues($productType);
-        $this->imageService->deleteImages($image_paths);
+        $this->relationService->imageService->deleteImages($image_paths);
         DB::commit();
     }
 }

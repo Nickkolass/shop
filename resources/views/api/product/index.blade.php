@@ -21,7 +21,7 @@
                 @foreach ($categories as $cat)
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="{{ route('api.products', $cat['title']) }}">{{ $cat['title_rus'] }}</a>
+                           href="{{ route('api.products.filter', $cat['title']) }}">{{ $cat['title_rus'] }}</a>
                     </li>
                 @endforeach
             </ul>

@@ -15,18 +15,18 @@ class ProductTypeResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'product_id' => $this->product_id,
-            'price' => $this->price,
-            'count' => $this->count,
-            'is_published' => (bool) $this->is_published,
-            'preview_image' => $this->preview_image,
-            'product_images' => $this->productImages->pluck('file_path'),
-            'option_values' => $this->optionValues,
-            'likeable' => $this->liked_exists ?? false,
-            'product' => $request->route()->getName() == 'back.api.productType.show'
-                ? ShowProductResource::make($this->product)->resolve()
-                : ProductResource::make($this->product)->resolve()
+            'id' => $this->resource->id,
+            'product_id' => $this->resource->product_id,
+            'price' => $this->resource->price,
+            'count' => $this->resource->count,
+            'is_published' => (bool) $this->resource->is_published,
+            'preview_image' => $this->resource->preview_image,
+            'product_images' => $this->resource->productImages->pluck('file_path'),
+            'option_values' => $this->resource->optionValues,
+            'likeable' => !$this->resource->liked_exists,
+            'product' => $request->route()->getName() == 'back.api.products.filter'
+                ? ProductResource::make($this->resource->product)->resolve()
+                : ShowProductResource::make($this->resource->product)->resolve()
         ];
     }
 }

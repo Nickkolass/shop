@@ -19,12 +19,13 @@ class IndexController extends Controller
             ->where('status', 'В работе')
             ->select('id', 'total_price')
             ->orderBy('total_price', 'DESC')
+            ->toBase()
             ->get();
 
         $query = $user->orderPerformers()->where('status', 'like', 'Получен' . '%');
         $data['revenue'] = [
             'month' => now()->monthName,
-            'orders' => $query->limit(3)->select('id', 'total_price')->get(),
+            'orders' => $query->limit(3)->select('id', 'total_price')->toBase()->get(),
             'count_orders' => $query->count(),
             'revenue' => $query->whereMonth('created_at', '=', now()->month)->sum('total_price')
         ];
@@ -35,6 +36,7 @@ class IndexController extends Controller
             ->limit(3)
             ->select('productTypes.id', 'product_id', 'title')
             ->groupBy('product_id')
+            ->toBase()
             ->get();
 
         $data['products_rating'] = $user->products()
@@ -44,6 +46,7 @@ class IndexController extends Controller
             ->selectRaw('COUNT(rating) AS rating_count, AVG(rating) AS rating')
             ->groupBy('id')
             ->orderBy('rating', 'DESC')
+            ->toBase()
             ->get();
 
         $data['productTypes_liked'] = $user->productTypes()
@@ -53,17 +56,24 @@ class IndexController extends Controller
             ->selectRaw('COUNT(users.id) AS liked_count')
             ->groupBy('id')
             ->orderBy('liked_count', 'DESC')
+            ->toBase()
             ->get();
 
         $data['productTypes_ordered'] = $user->orderPerformers()
             ->pluck('productTypes')
             ->flatten(1)
             ->groupBy('productType_id')
-            ->map(fn($productType) => ['amount' => $productType->sum('amount'), 'price' =>  $productType->sum('price')])
+            ->map(fn($productType) => [
+                'amount' => $productType->sum('amount'),
+                'price' => $productType->sum('price')
+            ])
             ->sortDesc()
             ->take(3)
             ->map(function ($data, $productType_id) {
-                $product = Product::whereHas('productTypes', fn($q) => $q->limit(1)->where('productTypes.id', $productType_id))->select('id', 'title')->first();
+                $product = Product::query()
+                    ->whereHas('productTypes', fn($q) => $q->limit(1)->where('productTypes.id', $productType_id))
+                    ->select('id', 'title')
+                    ->first();
                 return [
                     'productType_id' => $product->id,
                     'amount' => $data['amount'],

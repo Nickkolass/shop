@@ -2,8 +2,18 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * @property int id
+ * @property string title
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 
 class Property extends Model
 {
@@ -11,16 +21,16 @@ class Property extends Model
 
     protected $table = 'properties';
     protected $guarded = false;
+    protected $hidden = ['created_at', 'updated_at'];
 
-    
-    public function propertyValues()
+    public function propertyValues(): HasMany
     {
         return $this->hasMany(PropertyValue::class, 'property_id', 'id');
     }
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->beLongsToMany(Category::class, 'category_properties', 'property_id', 'category_id');
     }
-}  
+}
 

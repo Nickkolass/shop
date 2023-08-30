@@ -15,18 +15,18 @@ class ShowProductResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->description,
-            'option_values' => $this->optionValues,
-            'category' => $this->category,
-            'property_values' => $this->propertyValues,
-            'product_types' => ShowProductTypesResource::collection($this->productTypes)->resolve(),
-            'rating' => $this->rating,
-            'count_rating' => $this->countRating,
-            'count_comments' => $this->countComments,
-            'commentable' => !$this->rating_and_comments_exists,
-            'rating_and_comments' => RatingAndCommentsResource::collection($this->ratingAndComments)->resolve(),
+            'id' => $this->resource->id,
+            'title' => $this->resource->title,
+            'description' => $this->resource->description,
+            'option_values' => $this->resource->optionValues,
+            'category' => $this->resource->category,
+            'property_values' => $this->resource->propertyValues,
+            'product_types' => ShowProductTypesResource::collection($this->resource->productTypes)->resolve(),
+            'rating' => $this->resource->rating,
+            'count_rating' => $this->resource->countRating,
+            'count_comments' => $this->resource->countComments,
+            'commentable' => !$this->resource->rating_and_comments_exists,
+            'rating_and_comments' => RatingAndCommentsResource::collection($this->resource->ratingAndComments)->resolve(),
         ];
 
     }

@@ -15,29 +15,32 @@ class ProductCreateEditService
 
     public function index(): array
     {
-        $data['tags'] = Tag::pluck('title', 'id');
-        $data['categories'] = Category::pluck('title_rus', 'id');
+        $data['categories'] = collect(cache()->get('categories'))->pluck('title_rus', 'id');
         return $data;
     }
 
-    public function properties(int $category_id): array
+    public function relations(int $category_id): array
     {
-        $data['optionValues'] = Option::with('optionValues:id,option_id,value')->select('id', 'title')->get();
-        $data['optionValues'] = Maper::OptionOrPropertyValues($data['optionValues']);
+        $data['tags'] = Tag::pluck('title', 'id');
         $data['properties'] = Property::query()
-            ->whereHas('categories', function ($q) use ($category_id) {
-                $q->where('category_id', $category_id);
-            })
+            ->whereHas('categories', fn($q) => $q->where('category_id', $category_id))
             ->with('propertyValues:id,property_id,value')
             ->select('id', 'title')
             ->get();
+        $data['optionValues'] = Option::query()
+            ->with('optionValues:id,option_id,value')
+            ->select('id', 'title')
+            ->get();
+        $data['optionValues'] = Maper::OptionOrPropertyValues($data['optionValues']);
         return $data;
     }
 
     public function types(array $optionValues): Collection
     {
-        $optionValues = array_merge(...array_values($optionValues));
-        $optionValues = OptionValue::with('option:id,title')->select('id', 'option_id', 'value')->find($optionValues);
+        $optionValues = OptionValue::query()
+            ->with('option:id,title')
+            ->select('id', 'option_id', 'value')
+            ->find($optionValues);
         return Maper::toGroups($optionValues);
     }
 }

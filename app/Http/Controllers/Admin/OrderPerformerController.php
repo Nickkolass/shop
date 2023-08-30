@@ -11,12 +11,9 @@ use Illuminate\Http\RedirectResponse;
 class OrderPerformerController extends Controller
 {
 
-    public OrderPerformerService $service;
-
-    public function __construct(OrderPerformerService $service)
+    public function __construct(private readonly OrderPerformerService $service)
     {
         $this->authorizeResource(OrderPerformer::class, 'order');
-        $this->service = $service;
     }
 
     /**

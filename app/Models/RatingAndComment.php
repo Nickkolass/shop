@@ -2,8 +2,21 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * @property int id
+ * @property int product_id
+ * @property int user_id
+ * @property ?string message
+ * @property int rating
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 
 class RatingAndComment extends Model
 {
@@ -12,17 +25,17 @@ class RatingAndComment extends Model
     protected $table = 'rating_and_comments';
     protected $guarded = false;
 
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'id', 'product_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function commentImages()
+    public function commentImages(): HasMany
     {
         return $this->hasMany(CommentImage::class, 'comment_id', 'id');
     }

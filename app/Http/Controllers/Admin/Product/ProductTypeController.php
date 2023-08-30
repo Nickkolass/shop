@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Dto\Admin\Product\ProductTypeDto;
+use App\Dto\Admin\Product\ProductTypeRelationDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\ProductType\ProductTypeStoreRequest;
 use App\Http\Requests\Admin\Product\ProductType\ProductTypeUpdateRequest;
@@ -14,11 +16,8 @@ use Illuminate\Http\RedirectResponse;
 class ProductTypeController extends Controller
 {
 
-    public ProductTypeService $productTypeService;
-
-    public function __construct(ProductTypeService $productTypeService)
+    public function __construct(public readonly ProductTypeService $productTypeService)
     {
-        $this->productTypeService = $productTypeService;
     }
 
     /**
@@ -47,8 +46,11 @@ class ProductTypeController extends Controller
     public function store(ProductTypeStoreRequest $request, Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
+
         $data = $request->validated();
-        $this->productTypeService->store($product, $data);
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+
+        $this->productTypeService->store($product, new ProductTypeDto(...$data));
         return redirect()->route('admin.products.show', $product->id);
     }
 
@@ -76,8 +78,11 @@ class ProductTypeController extends Controller
     public function update(ProductTypeUpdateRequest $request, ProductType $productType): RedirectResponse
     {
         $this->authorize('update', $productType);
+
         $data = $request->validated();
-        $this->productTypeService->update($productType, $data);
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+
+        $this->productTypeService->update($productType, new ProductTypeDto(...$data));
         return redirect()->route('admin.products.show', $productType->product_id);
     }
 
@@ -90,7 +95,7 @@ class ProductTypeController extends Controller
     public function publish(ProductType $productType): RedirectResponse
     {
         if ($productType->product()->pluck('saler_id')->first() != auth()->id() & session('user.role') != 'admin') abort(403);
-        $productType->update(['is_published' => $productType->is_published == 0 ? 1 : 0]);
+        $productType->update(['is_published' => !$productType->is_published]);
         return back();
     }
 

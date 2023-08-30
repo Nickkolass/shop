@@ -6,7 +6,7 @@
             <div class="owl-banner owl-carousel">
                 @foreach ($categories as $category)
                     <div>
-                        <a class="nav-link" href="{{ route('api.products', $category['title']) }}"> <img
+                        <a class="nav-link" href="{{ route('api.products.filter', $category['title']) }}"> <img
                                 src="{{asset('/storage/view/'.$category['title'].'.jpg')}}" alt="">
                             <div class="text-content">
                                 <p><strong>

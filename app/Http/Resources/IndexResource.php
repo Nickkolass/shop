@@ -16,9 +16,8 @@ class IndexResource extends JsonResource
     public function toArray($request)
     {
         return [
-           'liked_ids' => !empty($this['liked']) ? $this['liked']->pluck('id')->flip() : null,
-           'liked' => !empty($this['liked']) ? ProductTypeResource::collection($this['liked'])->resolve() : null,
-           'viewed' => !empty($this['viewed']) ? ProductTypeResource::collection($this['viewed'])->resolve() : null,
+           'liked' => !empty($this->resource['liked']) ? ProductTypeResource::collection($this->resource['liked'])->resolve() : null,
+           'viewed' => !empty($this->resource['viewed']) ? ProductTypeResource::collection($this->resource['viewed'])->resolve() : null,
         ];
     }
 }

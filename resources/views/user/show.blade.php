@@ -70,14 +70,6 @@ $user->isSaler() || session('user.role') == 'admin'
                                     <td>Пол</td>
                                     <td>{{ $user->getGenderTitleAttribute() }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Почтовый индекс</td>
-                                    <td>{{ $user->postcode }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Адрес</td>
-                                    <td>{{ $user->address }}</td>
-                                </tr>
                                 @if($user->isAdmin() || $user->isSaler())
                                     <tr>
                                         <td>ИНН</td>
@@ -86,6 +78,15 @@ $user->isSaler() || session('user.role') == 'admin'
                                     <tr>
                                         <td>Юр. Адрес</td>
                                         <td>{{ $user->registredOffice }}</td>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <td>Почтовый индекс</td>
+                                        <td>{{ $user->postcode }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес</td>
+                                        <td>{{ $user->address }}</td>
                                     </tr>
                                 @endif
                             </table>
@@ -96,11 +97,7 @@ $user->isSaler() || session('user.role') == 'admin'
                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
                         </div>
                         <div class="mr-3">
-                            <form action="{{route('users.password.edit', $user->id) }}" method="post">
-                                @csrf
-                                @method('post')
-                                <input type="submit" class="btn btn-primary" value="Сменить пароль">
-                            </form>
+                            <a href="{{ route('users.password.edit', $user->id) }}" class="btn btn-primary">Сменить пароль</a>
                         </div>
                         <div class="mr-3">
                             <form action="{{route('users.destroy', $user->id) }}" method="post">

@@ -40,27 +40,28 @@
 
                         <div class="form-group">
                             <input type="text" name="title" value="{{ old('title') }}" class="form-control"
-                                   placeholder="Название" required>
+                                   placeholder="Название">
                         </div>
 
                         <div class="form-group">
                             <label>Категория</label>
-                            <select name="categories[]" id="categories" multiple="multiple" class="categories" style="width: 100%;"
-                                    required>
+                            <select name="category_ids[]" id="categories" multiple="multiple" class="categories"
+                                    style="width: 100%;" required>
                                 @foreach($categories as $category_id => $category_title_rus)
                                     <option
-                                        value="{{ $category_id }}" @selected(in_array($category_id, old('categories') ?? []))>{{ $category_title_rus }}</option>
+                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids') ?? []))>{{ $category_title_rus }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="form-group">
                             <h5>Значения</h5>
-                            <div id="multi" data-old="{{json_encode('')}}">
+                            <div id="multi" data-old="{{json_encode(old('propertyValues'))}}">
                                 <div class="js-row input-group">
-                                    <input type="text" name="propertyValues[0][value]" data-name="propertyValues"
-                                           class="form-control">
-                                    <button type="button" class="js-add btn btn-outline-primary">+</button>
+                                    <input type="text" name="propertyValues[0]" data-name="propertyValues"
+                                           class="form-control" value="{{old('propertyValues.0')}}">
+                                    <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+</button>
                                 </div>
                             </div>
                         </div>

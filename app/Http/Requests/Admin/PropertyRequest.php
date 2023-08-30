@@ -17,20 +17,6 @@ class PropertyRequest extends FormRequest
     }
 
     /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        $propertyValues = [];
-        foreach ($this->propertyValues as $propertyValue) {
-            if (isset($propertyValue['value']) & (array_search($propertyValue, $propertyValues) === false)) {
-                $propertyValues[] = $propertyValue;
-            }
-        }
-        $this->merge(['propertyValues' => $propertyValues]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -39,9 +25,9 @@ class PropertyRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'categories' => 'required|array',
+            'category_ids' => 'required|array',
             'propertyValues' => 'required|array',
-            'propertyValues.*.value' => 'required|string',
+            'propertyValues.*' => 'required|string|filled|distinct',
         ];
     }
 }

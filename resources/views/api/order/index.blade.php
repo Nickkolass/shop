@@ -50,7 +50,7 @@
                             </td>
                             <td style="vertical-align: middle">
                                 @foreach($order['product_types'] as $product_type)
-                                    <a href="{{ route('api.product', $product_type['id']) }}">
+                                    <a href="{{ route('api.products.show', $product_type['id']) }}">
                                         <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                              style="height: 50px"></a>
                                     {{$product_type['amount'].' шт.'}}

@@ -9,16 +9,12 @@ class HomeController extends Controller
 {
     use HasVerify;
 
-     /**
-     * Show the application dashboard.
-     *
-     * @return RedirectResponse
-     */
+     /** Show the application dashboard */
     public function __invoke(): RedirectResponse
     {
         $role = session('user.role');
         $this->verify($role);
         if(!$role) abort(redirect('login'));
-        return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.index');
+        return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.products.index');
     }
 }

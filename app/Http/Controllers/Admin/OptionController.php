@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Dto\Admin\OptionDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\OptionRequest;
 use App\Models\Option;
@@ -50,7 +51,7 @@ class OptionController extends Controller
     public function store(OptionRequest $request): View
     {
         $data = $request->validated();
-        $this->service->store($data);
+        $this->service->store(new OptionDto(...$data));
         return $this->index();
     }
 
@@ -88,7 +89,7 @@ class OptionController extends Controller
     public function update(OptionRequest $request, Option $option): View
     {
         $data = $request->validated();
-        $this->service->update($option, $data);
+        $this->service->update($option, new OptionDto(...$data));
         return $this->show($option);
     }
 

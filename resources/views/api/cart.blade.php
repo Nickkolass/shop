@@ -41,7 +41,7 @@
                             <td style="vertical-align: middle">{{ $i++ }}</td>
                             <td style="vertical-align: middle">{{ $product_type['title'] }}</td>
                             <td style="vertical-align: middle"><a
-                                    href="{{ route('api.product', $product_type['id']) }}">
+                                    href="{{ route('api.products.show', $product_type['id']) }}">
                                     <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                          style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 || ($block[$product_type['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
                             </td>

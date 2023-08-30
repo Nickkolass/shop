@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Dto\Admin\UserDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UserPasswordRequest;
 use App\Http\Requests\Admin\User\UserStoreRequest;
@@ -15,6 +16,7 @@ class UserController extends Controller
 {
 
     public UserService $service;
+
     public function __construct(UserService $service)
     {
         $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'passwordEdit', 'passwordUpdate']);
@@ -30,7 +32,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $users = User::simplePaginate(5);
+        $users = User::toBase()->simplePaginate(5);
         return view('user.index', compact('users'));
     }
 
@@ -53,7 +55,7 @@ class UserController extends Controller
     public function store(UserStoreRequest $request): View
     {
         $data = $request->validated();
-        $this->service->store($data);
+        $this->service->store(new UserDto(...$data));
         return $this->index();
     }
 
@@ -89,7 +91,7 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user): View
     {
         $data = $request->validated();
-        $user->update($data);
+        $this->service->update($user, new UserDto(...$data));
         return $this->show($user);
     }
 

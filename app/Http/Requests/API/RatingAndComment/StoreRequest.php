@@ -34,7 +34,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id'=> ['required', 'integer', Rule::unique('rating_and_comments')->where(fn (Builder $query) => $query->where('product_id', $this->product_id)->where('user_id', $this->user_id))],
+            'user_id'=> ['required', 'integer', Rule::unique('rating_and_comments')
+                ->where(fn ($q) => $q->where(['product_id' => $this->product_id, 'user_id' => $this->user_id]))],
             'product_id' => 'required|integer',
             'rating' => 'required|integer',
             'message' => 'nullable|string',

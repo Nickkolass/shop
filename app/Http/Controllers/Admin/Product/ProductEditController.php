@@ -10,11 +10,9 @@ use Illuminate\Contracts\View\View;
 
 class ProductEditController extends Controller
 {
-    public ProductCreateEditService $service;
 
-    public function __construct(ProductCreateEditService $service)
+    public function __construct(private readonly ProductCreateEditService $service)
     {
-        $this->service = $service;
     }
 
     public function index(Product $product): View
@@ -22,15 +20,15 @@ class ProductEditController extends Controller
         $this->authorize('update', $product);
         $product->load('tags:id');
         $data = $this->service->index();
-        return view('admin.product.edit.index_edit', compact('product', 'data'));
+        return view('admin.product.edit.index', compact('product', 'data'));
     }
 
-    public function properties(Product $product, ProductRequest $request): View
+    public function relations(Product $product, ProductRequest $request): View
     {
         $data = $request->validated();
         session(['edit' => $data]);
         $product->load('propertyValues:id', 'optionValues:id');
-        $data = $this->service->properties($data['category_id']);
-        return view('admin.product.edit.properties_edit', compact('product', 'data'));
+        $data = $this->service->relations($data['category_id']);
+        return view('admin.product.edit.relations', compact('product', 'data'));
     }
 }

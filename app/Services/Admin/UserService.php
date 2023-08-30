@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Dto\Admin\UserDto;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
@@ -10,16 +11,22 @@ use Illuminate\Support\Str;
 
 class UserService
 {
-    public function store(array $data): void
+    public function store(UserDto $dto): void
     {
-        $password = Str::random(10);
-        $data['password'] = Hash::make($password);
-
+        $password_generated = Str::random(10);
         DB::beginTransaction();
-        $user = User::firstOrCreate(['email' => $data['email'], 'INN' => $data['INN']], $data);
-        $user->password_generated = $password;
+        $user = User::firstOrCreate(
+            ['email' => $dto->email, 'INN' => $dto->INN],
+            (array) $dto + ['password' => Hash::make($password_generated)]
+        );
+        $user->password_generated = $password_generated;
         event(new Registered($user));
         DB::commit();
+    }
+
+    public function update(User $user, UserDto $dto): void
+    {
+        $user->update(array_filter((array) $dto));
     }
 
     public function passwordUpdate(User $user, string $new_password): void

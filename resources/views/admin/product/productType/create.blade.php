@@ -37,7 +37,7 @@
                                     <td>Классификаторы</td>
                                     <td>
                                         @foreach($optionValues as $option => $values)
-                                            <select name="optionValues[]" class="tags" style="width:200px">
+                                            <select name="relations[optionValues][]" class="tags" style="width:200px">
                                                 <option value=0 selected>{{ $option }}</option>
                                                 @foreach($values as $value)
                                                     <option
@@ -90,7 +90,7 @@
                                                     <div class="control-group" id="fields">
                                                         <div class="controls">
                                                             <div class="entry input-group upload-input-group">
-                                                                <input class="form-control" name="productImages[]"
+                                                                <input class="form-control" name="relations[productImages][]"
                                                                        type="file" multiple>
                                                             </div>
                                                         </div>

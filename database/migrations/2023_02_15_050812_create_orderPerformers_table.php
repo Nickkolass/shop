@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('saler_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->date('dispatch_time');
+            $table->timestamp('dispatch_time');
             $table->string('status')->default('В работе');
             $table->jsonb('productTypes');
             $table->string('delivery');

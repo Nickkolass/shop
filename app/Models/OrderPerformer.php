@@ -2,9 +2,26 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
+/**
+ * @property int id
+ * @property int user_id
+ * @property int saler_id
+ * @property int order_id
+ * @property Carbon dispatch_time
+ * @property string status
+ * @property array productTypes
+ * @property string delivery
+ * @property int total_price
+ * @property ?Carbon deleted_at
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 
 class OrderPerformer extends Model
 {
@@ -14,17 +31,17 @@ class OrderPerformer extends Model
     protected $guarded = false;
     protected $casts = ['productTypes' => 'array'];
 
-    public function saler()
+    public function saler(): BelongsTo
     {
         return $this->beLongsTo(User::class, 'saler_id', 'id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->beLongsTo(User::class, 'user_id', 'id');
     }
 
-    public function order()
+    public function order(): BelongsTo
     {
         return $this->beLongsTo(Order::class, 'order_id', 'id');
     }

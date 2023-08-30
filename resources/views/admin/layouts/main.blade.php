@@ -52,7 +52,7 @@
             <!-- Authentication Links -->
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('api.index') }}">Перейти в магазин</a>
+                    <a class="nav-link" href="{{ route('api.products.index') }}">Перейти в магазин</a>
                 </li>
                 @guest
                     @if (session()->has('user'))

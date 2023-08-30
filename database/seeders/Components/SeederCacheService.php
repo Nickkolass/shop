@@ -3,14 +3,14 @@
 namespace Database\Seeders\Components;
 
 use App\Models\Category;
-use App\Services\API\Back\BackProductsService;
+use App\Services\Client\API\Product\ProductFilterService;
 
 class SeederCacheService
 {
 
-    private BackProductsService $productsService;
+    private ProductFilterService $productsService;
 
-    public function __construct(BackProductsService $productsService)
+    public function __construct(ProductFilterService $productsService)
     {
         $this->productsService = $productsService;
     }
@@ -21,10 +21,9 @@ class SeederCacheService
             ->select('id', 'title', 'title_rus')
             ->get()
             ->each(function (Category $category) {
-                $data['category'] = $category;
-                $data = $this->productsService->getProductFilterAggregateDataCache($data, $category);
+                $data = $this->productsService->getProductFilterAggregateDataCache([], $category);
                 cache()->forever('first_page_product_aggregate_data_without_filter_by_category_id:' . $category->id, $data);
             });
-        cache()->forever('categories', $categories->all());
+        cache()->forever('categories', $categories->toArray());
     }
 }

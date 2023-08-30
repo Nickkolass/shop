@@ -15,10 +15,10 @@ class ShowProductTypesResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'product_id' => $this->product_id,
-            'preview_image' => $this->preview_image,
-            'is_published' => (bool) $this->is_published,
+            'id' => $this->resource->id,
+            'product_id' => $this->resource->product_id,
+            'preview_image' => $this->resource->preview_image,
+            'is_published' => (bool) $this->resource->is_published,
         ];
     }
 }

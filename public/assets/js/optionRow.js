@@ -2,7 +2,7 @@ var Multi = function(id) {
     var container = document.getElementById(id);
     var that = this;
     old = JSON.parse(container.getAttribute('data-old'));
-
+console.log(old);
     this.start = function(id) {
         container.querySelector('.js-add').addEventListener('click', function() {
             let newElement = container.querySelector('.js-row').cloneNode(true);
@@ -31,9 +31,9 @@ var Multi = function(id) {
                     let inputs = rows[key].querySelectorAll('input');
                     for (let i in inputs) {
                         if (inputs.hasOwnProperty(i)) {
-                            inputs[i].name = `${inputs[i].getAttribute('data-name')}[${rowNum}][value]`;
+                            inputs[i].name = `${inputs[i].getAttribute('data-name')}[${rowNum}]`;
                             if(old != null) {
-                                if (old[rowNum] != null) inputs[i].setAttribute('value', old[rowNum]['value']);
+                                if (old[rowNum] != null) inputs[i].setAttribute('value', old[rowNum]);
                                 else if(inputs[i].value == inputs[0].value) inputs[i].setAttribute('value', '');
                             }
                         }

@@ -11,7 +11,7 @@ class OrderPerformerProductService
 {
     public function getProductsForIndex(Paginator &$orders): void
     {
-        $productType_ids = $orders->pluck('productTypes.*.productType_id')->flatten();
+        $productType_ids = $orders->getCollection()->pluck('productTypes.*.productType_id')->flatten();
         $preview_images = ProductType::query()
             ->whereIn('id', $productType_ids)
             ->pluck('preview_image', 'id');
