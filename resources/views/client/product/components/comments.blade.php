@@ -4,7 +4,7 @@
     @include('admin.product.errors')
 
     @if(session()->has('user'))
-        <form action="{{route('api.comment.store', $product_type['product_id'])}}" method="post"
+        <form action="{{route('client.comment.store', $product_type['product_id'])}}" method="post"
               enctype="multipart/form-data">
             @csrf
             <div class="rating-area">

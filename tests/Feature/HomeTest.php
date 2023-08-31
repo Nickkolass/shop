@@ -22,7 +22,7 @@ class HomeTest extends TestCase
 
         $user->role = 3;
         $user->save();
-        $this->actingAs($user)->get(route('home'))->assertRedirect(route('api.products.index'));
+        $this->actingAs($user)->get(route('home'))->assertRedirect(route('client.products.index'));
         session()->flush();
 
         $user->role = 2;

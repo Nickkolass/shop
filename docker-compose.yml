@@ -20,6 +20,8 @@ services:
             dockerfile: _docker/app/DockerFile
         volumes:
             - ./:/var/www
+        environment:
+            - PHP_IDE_CONFIG=serverName=xdebug
         depends_on:
             - db
         container_name: shop_app
@@ -58,6 +60,3 @@ services:
         volumes:
             - ../RedisData/data:/data
         container_name: shop_redis
-
-
-

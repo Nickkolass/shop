@@ -1,7 +1,7 @@
 @extends(
-$user->isSaler() || session('user.role') == 'admin'
+$user->isSaler() || session('admin.user.role') == 'admin'
 ? 'admin.layouts.main'
-: 'api.layouts.main'
+: 'client.layouts.main'
 )
 @section('content')
     <!-- Content Header (Page header) -->
@@ -97,7 +97,8 @@ $user->isSaler() || session('user.role') == 'admin'
                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Редактировать</a>
                         </div>
                         <div class="mr-3">
-                            <a href="{{ route('users.password.edit', $user->id) }}" class="btn btn-primary">Сменить пароль</a>
+                            <a href="{{ route('users.password.edit', $user->id) }}" class="btn btn-primary">Сменить
+                                пароль</a>
                         </div>
                         <div class="mr-3">
                             <form action="{{route('users.destroy', $user->id) }}" method="post">
@@ -108,6 +109,7 @@ $user->isSaler() || session('user.role') == 'admin'
                         </div>
                     </div>
                 </div>
-            </div><!-- /.container-fluid -->
+            </div>
+        </div><!-- /.container-fluid -->
     </section>
 @endsection

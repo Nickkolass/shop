@@ -27,7 +27,7 @@ class FrontProductController extends Controller
         $data = json_decode($data, true);
         $data['cart'] = session('cart') ?? [];
 
-        return view('api.index', compact('data'));
+        return view('client.index', compact('data'));
     }
 
     public function filter(string $category_title, ProductsRequest $request)
@@ -40,7 +40,7 @@ class FrontProductController extends Controller
         $data = json_decode($data, true);
         $product_types = FrontService::afterGetProducts($data);
 
-        return view('api.product.index', compact('data', 'product_types'));
+        return view('client.product.index', compact('data', 'product_types'));
     }
 
     public function show(int $product_type_id): View
@@ -53,7 +53,7 @@ class FrontProductController extends Controller
         $data['cart'][$product_type['id']] = session('cart.' . $product_type['id']);
         session(['viewed.' . $product_type_id => '']);
 
-        return view('api.product.show', compact('data', 'product_type'));
+        return view('client.product.show', compact('data', 'product_type'));
     }
 
     public function cart(): View
@@ -64,7 +64,7 @@ class FrontProductController extends Controller
             $product_types = json_decode($product_types, true);
             $total_price = array_sum(array_column($product_types, 'total_price'));
         }
-        return view('api.cart', compact('product_types', 'total_price'));
+        return view('client.cart', compact('product_types', 'total_price'));
     }
 
     public function liked(): View
@@ -72,6 +72,6 @@ class FrontProductController extends Controller
         $product_types = $this->client->request('POST', 'api/products/liked',
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $product_types = json_decode($product_types, true);
-        return view('api.liked', compact('product_types'));
+        return view('client.liked', compact('product_types'));
     }
 }

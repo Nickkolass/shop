@@ -1,5 +1,5 @@
 <div class="cd-filter">
-    <form action="{{ route('api.products.filter', $data['category']['title']) }}" method="post"
+    <form action="{{ route('client.products.filter', $data['category']['title']) }}" method="post"
           enctype="multipart/form-data">
         @csrf
 
@@ -131,7 +131,7 @@
         <div class="form-group">
             <input type="submit" class="btn-btn-primary" value="Применить">
             <a type="button" class="btn-btn-primary"
-               href="{{ route('api.products.filter', $data['category']['title']) }}">Очистить</a>
+               href="{{ route('client.products.filter', $data['category']['title']) }}">Очистить</a>
         </div>
     </form>
     <a href="#0" class="cd-close">Закрыть</a>

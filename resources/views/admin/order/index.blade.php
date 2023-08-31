@@ -52,7 +52,7 @@
                                     @foreach($orders as $order)
                                         <tr style="text-align: center">
                                             @if(session('user.role') == 'admin')
-                                                <td><a href="{{ route('api.orders.show', $order->order_id) }}">
+                                                <td><a href="{{ route('client.orders.show', $order->order_id) }}">
                                                         {{ $order->order_id }}</a></td>
                                                 <td><a href="{{ route('users.show', $order->user->id) }}">
                                                         {{ $order->user->name }}</a></td>

@@ -5,9 +5,8 @@
 -     git clone https://github.com/Nickkolass/shop.git
 -     composer install
 -     cp .env.example .env
-- в файле .env:
-  -  в поле REDIS_HOST установить значение ip адреса wsl (для win10: параметры->сеть и интернет->просмотр свойств оборудования и сети->vEthernet (WSL)->IPv4)
-  -  в поле MAIL_USERNAME и MAIL_PASSWORD установить значения используемого почтового ящика в домене yandex.ru
+- в файле .env в поле MAIL_USERNAME и MAIL_PASSWORD установить значения используемого почтового ящика в домене yandex.ru
+- в файле .env в поле TELEGRAM_LOGGER_CHAT_ID и TELEGRAM_LOGGER_BOT_TOKEN установить значения чата в telegram и токена приглашенного в него бота
 -     docker compose up -d
 -     docker exec -it shop_app bash
   -     curl https://disk.yandex.ru/d/qzbLR1NnyshCBg/photo.zip -o storage/app/public/photo.zip

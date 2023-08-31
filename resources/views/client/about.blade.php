@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
 
     <div class="page-heading about header-text">
