@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
     <div class="page-heading {{$product_type['product']['category']['title']}} header-text">
         <div class="container">
@@ -20,7 +20,7 @@
             <div class="row align-items-start">
                 <div class="col-md-6">
                     <div class="product-item" style="text-align: center">
-                        @include('api.product.components.carousel')
+                        @include('client.product.components.carousel')
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -43,14 +43,14 @@
                             @endforeach
                             </tbody>
                         </table>
-                        @include('api.product.components.rating')
-                        @include('api.product.components.qty')
+                        @include('client.product.components.rating')
+                        @include('client.product.components.qty')
                     </div>
                 </div>
                 <p style="text-align:left">{{$product_type['product']['description']}}</p>
-                @include('api.product.components.types')
+                @include('client.product.components.types')
             </div>
-            @include('api.product.components.comments')
+            @include('client.product.components.comments')
         </div>
     </main>
 

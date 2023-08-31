@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
 
     <div class="page-heading cart header-text">
@@ -16,7 +16,7 @@
     <div class="container-md">
         <div class="row justify-content-md-center">
             <div class="col-3">
-                <form action="{{ route('api.orders.store') }}" method="post" style="text-align: center">
+                <form action="{{ route('client.orders.store') }}" method="post" style="text-align: center">
                     @csrf
                     <div class="card-body table-responsive">
                         <table class="table table-striped">

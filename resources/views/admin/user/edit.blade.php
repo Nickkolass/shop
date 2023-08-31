@@ -1,7 +1,7 @@
 @extends(
-$user->isSaler() || session('user.role') == 'admin'
+$user->isSaler() || session('admin.user.role') == 'admin'
 ? 'admin.layouts.main'
-: 'api.layouts.main'
+: 'client.layouts.main'
 )
 @section('content')
     <!-- Content Header (Page header) -->
@@ -50,14 +50,16 @@ $user->isSaler() || session('user.role') == 'admin'
                         <div class="row mb-3">
                             <label for="surname" class="col-md-6 col-form-label text-md-end">{{ __('Фамилия') }}</label>
                             <div class="col-md-6">
-                                <input type="text" value="{{ old('surname') ?? $user->surname }}" name="surname" class="form-control"
+                                <input type="text" value="{{ old('surname') ?? $user->surname }}" name="surname"
+                                       class="form-control"
                                        placeholder="Фамилия" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="name" class="col-md-6 col-form-label text-md-end">{{ __('Имя') }}</label>
                             <div class="col-md-6">
-                                <input type="text" value="{{ old('name') ?? $user->name }}" name="name" class="form-control"
+                                <input type="text" value="{{ old('name') ?? $user->name }}" name="name"
+                                       class="form-control"
                                        placeholder="Имя" required>
                             </div>
                         </div>
@@ -65,21 +67,24 @@ $user->isSaler() || session('user.role') == 'admin'
                             <label for="patronymic"
                                    class="col-md-6 col-form-label text-md-end">{{ __('Отчество') }}</label>
                             <div class="col-md-6">
-                                <input type="text" value="{{ old('patronymic') ?? $user->patronymic }}" name="patronymic"
+                                <input type="text" value="{{ old('patronymic') ?? $user->patronymic }}"
+                                       name="patronymic"
                                        class="form-control" placeholder="Отчество" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="age" class="col-md-6 col-form-label text-md-end">{{ __('Возраст') }}</label>
                             <div class="col-md-6">
-                                <input type="text" value="{{ old('age') ?? $user->age }}" name="age" class="form-control"
+                                <input type="text" value="{{ old('age') ?? $user->age }}" name="age"
+                                       class="form-control"
                                        placeholder="Возраст" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="email" class="col-md-6 col-form-label text-md-end">{{ __('Email') }}</label>
                             <div class="col-md-6">
-                                <input type="text" value="{{ old('email') ?? $user->email }}" name="email" class="form-control"
+                                <input type="text" value="{{ old('email') ?? $user->email }}" name="email"
+                                       class="form-control"
                                        placeholder="Email" required>
                             </div>
                         </div>
@@ -87,7 +92,8 @@ $user->isSaler() || session('user.role') == 'admin'
                             <div class="row mb-3">
                                 <label for="INN" class="col-md-6 col-form-label text-md-end">{{ __('ИНН') }}</label>
                                 <div class="col-md-6">
-                                    <input type="text" value="{{ old('INN') ?? $user->INN }}" name="INN" class="form-control"
+                                    <input type="text" value="{{ old('INN') ?? $user->INN }}" name="INN"
+                                           class="form-control"
                                            placeholder="ИНН" required>
                                 </div>
                             </div>
@@ -95,23 +101,27 @@ $user->isSaler() || session('user.role') == 'admin'
                                 <label for="registredOffice"
                                        class="col-md-6 col-form-label text-md-end">{{ __('Юр. Адрес') }}</label>
                                 <div class="col-md-6">
-                                    <input type="text" value="{{ old('registredOffice') ?? $user->registredOffice }}" name="registredOffice"
+                                    <input type="text" value="{{ old('registredOffice') ?? $user->registredOffice }}"
+                                           name="registredOffice"
                                            class="form-control" placeholder="Юр. Адрес" required>
                                 </div>
                             </div>
                         @else
-                        <div class="row mb-3">
+                            <div class="row mb-3">
                                 <label for="postcode"
                                        class="col-md-6 col-form-label text-md-end">{{ __('Почтовый индекс') }}</label>
                                 <div class="col-md-6">
-                                    <input type="text" value="{{ old('postcode') ?? $user->postcode }}" name="postcode" class="form-control"
+                                    <input type="text" value="{{ old('postcode') ?? $user->postcode }}" name="postcode"
+                                           class="form-control"
                                            placeholder="Почтовый индекс" required>
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="address" class="col-md-6 col-form-label text-md-end">{{ __('Адрес') }}</label>
+                                <label for="address"
+                                       class="col-md-6 col-form-label text-md-end">{{ __('Адрес') }}</label>
                                 <div class="col-md-6">
-                                    <input type="text" value="{{ old('address') ?? $user->address }}" name="address" class="form-control"
+                                    <input type="text" value="{{ old('address') ?? $user->address }}" name="address"
+                                           class="form-control"
                                            placeholder="Адрес" required>
                                 </div>
                             </div>

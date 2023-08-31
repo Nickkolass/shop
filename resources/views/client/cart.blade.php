@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
 
     <div class="page-heading cart header-text">
@@ -41,7 +41,7 @@
                             <td style="vertical-align: middle">{{ $i++ }}</td>
                             <td style="vertical-align: middle">{{ $product_type['title'] }}</td>
                             <td style="vertical-align: middle"><a
-                                    href="{{ route('api.products.show', $product_type['id']) }}">
+                                    href="{{ route('client.products.show', $product_type['id']) }}">
                                     <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                          style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 || ($block[$product_type['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
                             </td>
@@ -52,11 +52,11 @@
                             </td>
                             <td style="vertical-align: middle">{{ $product_type['price'] }} руб.</td>
                             <td style="vertical-align: middle">
-                                @include('api.product.components.qty')
+                                @include('client.product.components.qty')
                             </td>
                             <td style="vertical-align: middle">{{$product_type['total_price']}} руб.</td>
                             <td style="vertical-align: middle">
-                                <form action="{{route('api.addToCart', ['addToCart' => [$product_type['id'] => '']]) }}"
+                                <form action="{{route('client.addToCart', ['addToCart' => [$product_type['id'] => '']]) }}"
                                       method="post">
                                     @csrf
                                     <input type="submit" class="btn btn-danger" value="Удалить">
@@ -70,7 +70,7 @@
             <div style="text-align: center">
                 <h4>Итого {{$i-1}} товаров общей стоимостью {{ $total_price }} рублей</h4><br>
                 @if(session()->has('user'))
-                    <form action="{{route('api.orders.create')}}" method="post">
+                    <form action="{{route('client.orders.create')}}" method="post">
                         @csrf
                         <input type="hidden" name="total_price" value="{{$total_price}}">
                         <input type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"

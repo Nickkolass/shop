@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
 
     <div class="page-heading orders header-text">
@@ -49,7 +49,7 @@
                             <tbody>
                             @foreach($order['product_types'] as $product_type)
                                 <tr>
-                                    <td><a href="{{ route('api.products.show', $product_type['id']) }}">
+                                    <td><a href="{{ route('client.products.show', $product_type['id']) }}">
                                             <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                                  style="height: 90px"></a></td>
                                     <td>Название: {{ $product_type['title'] }}<br>
@@ -82,7 +82,7 @@
             </table>
         </div>
         <div class="card-header d-flex p-3" style="text-align:center">
-            <form action="{{ route('api.orders.update', $order['id']) }}" method="post">
+            <form action="{{ route('client.orders.update', $order['id']) }}" method="post">
                 @csrf
                 @method('patch')
                 <div class="mr-3">
@@ -93,7 +93,7 @@
                            title="{{$blockCancel ? 'Заказ уже отменен' : ($blockReceived ? 'Заказ уже получен': '')}}" @disabled($blockCancel || $blockReceived)>
                 </div>
             </form>
-            <form action="{{route('api.orders.destroy', $order['id']) }}" method="post">
+            <form action="{{route('client.orders.destroy', $order['id']) }}" method="post">
                 @csrf
                 @method('delete')
                 <input type="submit" class="btn btn-danger btn-lg" value="Отказаться"

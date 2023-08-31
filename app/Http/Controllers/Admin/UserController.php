@@ -33,7 +33,7 @@ class UserController extends Controller
     public function index(): View
     {
         $users = User::toBase()->simplePaginate(5);
-        return view('user.index', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
     /**
@@ -43,7 +43,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        return view('user.create');
+        return view('admin.user.create');
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
-        return view('user.show', compact('user'));
+        return view('admin.user.show', compact('user'));
     }
 
     /**
@@ -78,7 +78,7 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        return view('user.edit', compact('user'));
+        return view('admin.user.edit', compact('user'));
     }
 
     /**
@@ -116,7 +116,7 @@ class UserController extends Controller
     public function passwordEdit(int $user_id): View
     {
         if($user_id != auth()->id()) abort(401);
-        return view('user.password');
+        return view('admin.user.password');
     }
 
     /**

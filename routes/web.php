@@ -40,8 +40,8 @@ Route::get('/users/{user}/password', [UserController::class, 'passwordEdit'])->n
 Route::patch('/users/{user}/password', [UserController::class, 'passwordUpdate'])->name('users.password.update');
 Route::resource('/users', UserController::class);
 
-Route::name('api.')->group(function () {
-    Route::view('/about', 'api.about')->name('about');
+Route::name('client.')->group(function () {
+    Route::view('/about', 'client.about')->name('about');
     Route::post('/orders/create', [FrontOrderController::class, 'create'])->middleware('client')->name('orders.create');
     Route::apiResource('/orders', FrontOrderController::class)->middleware('verified');
     Route::controller(FrontUserActiveController::class)->group(function () {

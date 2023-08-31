@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
 
     <div class="page-heading orders header-text">
@@ -34,10 +34,10 @@
                     @foreach($orders['data'] as $order)
                         <tr style="text-align: center">
                             <td style="vertical-align: middle"><a
-                                    href="{{ route('api.orders.show', $order['id']) }}">{{ $order['id'] }}</a></td>
+                                    href="{{ route('client.orders.show', $order['id']) }}">{{ $order['id'] }}</a></td>
                             <td style="vertical-align: middle">
                                 @if ($order['status'] == 'В работе' || str_starts_with($order['status'], 'Отправлен'))
-                                    <form action="{{ route('api.orders.update', $order['id']) }}" method="post">
+                                    <form action="{{ route('client.orders.update', $order['id']) }}" method="post">
                                         @csrf
                                         @method('patch')
                                         <div class="form-group">
@@ -50,7 +50,7 @@
                             </td>
                             <td style="vertical-align: middle">
                                 @foreach($order['product_types'] as $product_type)
-                                    <a href="{{ route('api.products.show', $product_type['id']) }}">
+                                    <a href="{{ route('client.products.show', $product_type['id']) }}">
                                         <img src="{{asset('/storage/'.$product_type['preview_image'])}}"
                                              style="height: 50px"></a>
                                     {{$product_type['amount'].' шт.'}}
@@ -65,7 +65,7 @@
                     </tbody>
                 </table>
             </div>
-            @include('api.product.components.paginate')
+            @include('client.product.components.paginate')
         @endif
     </main>
 @endsection

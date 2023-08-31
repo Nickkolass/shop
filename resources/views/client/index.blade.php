@@ -1,4 +1,4 @@
-@extends('api.layouts.main')
+@extends('client.layouts.main')
 @section('content')
     <!-- Page Content -->
     <div class="section-heading">
@@ -6,7 +6,7 @@
             <div class="owl-banner owl-carousel">
                 @foreach ($categories as $category)
                     <div>
-                        <a class="nav-link" href="{{ route('api.products.filter', $category['title']) }}"> <img
+                        <a class="nav-link" href="{{ route('client.products.filter', $category['title']) }}"> <img
                                 src="{{asset('/storage/view/'.$category['title'].'.jpg')}}" alt="">
                             <div class="text-content">
                                 <p><strong>
@@ -31,10 +31,10 @@
                         <div class="col-md-3">
                             <div class="product-item" style="text-align:center">
                                 <h4>{{$product_type['product']['title']}}</h4><br>
-                                @include('api.product.components.carousel')
-                                @include('api.product.components.rating')
-                                @include('api.product.components.types')
-                                @include('api.product.components.qty')
+                                @include('client.product.components.carousel')
+                                @include('client.product.components.rating')
+                                @include('client.product.components.types')
+                                @include('client.product.components.qty')
                             </div>
                         </div>
                     @endforeach
@@ -55,10 +55,10 @@
                         <div class="col-md-3">
                             <div class="product-item" style="text-align:center">
                                 <h4>{{$product_type['product']['title']}}</h4><br>
-                                @include('api.product.components.carousel')
-                                @include('api.product.components.rating')
-                                @include('api.product.components.types')
-                                @include('api.product.components.qty')
+                                @include('client.product.components.carousel')
+                                @include('client.product.components.rating')
+                                @include('client.product.components.types')
+                                @include('client.product.components.qty')
                             </div>
                         </div>
                     @endforeach

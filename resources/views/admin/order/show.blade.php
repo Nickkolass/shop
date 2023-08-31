@@ -70,7 +70,7 @@
                                                     <a class="linkclass disabled"
                                                        href="{{ route('users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a>
                                                     <br>
-                                                    <a href="{{ route('api.orders.show', $order->order_id) }}">Перейти к
+                                                    <a href="{{ route('client.orders.show', $order->order_id) }}">Перейти к
                                                         заказу</a>
                                                 @else
                                                     {{ $order->saler->name }}

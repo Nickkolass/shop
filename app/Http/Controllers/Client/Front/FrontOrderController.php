@@ -31,7 +31,7 @@ class FrontOrderController extends Controller
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
-        return view('api.order.index', compact('orders'));
+        return view('client.order.index', compact('orders'));
     }
 
     /**
@@ -42,7 +42,7 @@ class FrontOrderController extends Controller
     public function create(): View
     {
         $total_price = request('total_price');
-        return view('api.order.create', compact('total_price'));
+        return view('client.order.create', compact('total_price'));
     }
 
     /**
@@ -57,7 +57,7 @@ class FrontOrderController extends Controller
         $this->client->request('POST', 'api/orders/store',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         session()->forget(['cart', 'filter', 'paginate']);
-        return redirect()->route('api.orders.index');
+        return redirect()->route('client.orders.index');
     }
 
     /**
@@ -71,7 +71,7 @@ class FrontOrderController extends Controller
         $order = $this->client->request('POST', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $order = json_decode($order, true);
-        return view('api.order.show', compact('order'));
+        return view('client.order.show', compact('order'));
     }
 
     /**

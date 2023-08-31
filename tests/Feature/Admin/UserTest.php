@@ -34,7 +34,7 @@ class UserTest extends TestCase
 
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->get(route('users.index'))->assertViewIs('user.index');
+        $this->actingAs($user)->get(route('users.index'))->assertViewIs('admin.user.index');
         session()->flush();
     }
 
@@ -56,7 +56,7 @@ class UserTest extends TestCase
 
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->get(route('users.create'))->assertViewIs('user.create');
+        $this->actingAs($user)->get(route('users.create'))->assertViewIs('admin.user.create');
     }
 
     /**@test */
@@ -113,12 +113,12 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.show', $user->id))->assertViewIs('user.show');
+            $this->actingAs($user)->get(route('users.show', $user->id))->assertViewIs('admin.user.show');
             session()->flush();
         }
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->get(route('users.show', $another_user->id))->assertViewIs('user.show');
+        $this->actingAs($user)->get(route('users.show', $another_user->id))->assertViewIs('admin.user.show');
     }
 
     /**@test */
@@ -145,12 +145,12 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.edit', $user->id))->assertViewIs('user.edit');
+            $this->actingAs($user)->get(route('users.edit', $user->id))->assertViewIs('admin.user.edit');
             session()->flush();
         }
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->get(route('users.edit', $another_user->id))->assertViewIs('user.edit');
+        $this->actingAs($user)->get(route('users.edit', $another_user->id))->assertViewIs('admin.user.edit');
     }
 
     /**@test */
@@ -265,7 +265,7 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.password.edit', $user->id))->assertViewIs('user.password');
+            $this->actingAs($user)->get(route('users.password.edit', $user->id))->assertViewIs('admin.user.password');
             session()->flush();
         }
     }

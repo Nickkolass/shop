@@ -1,7 +1,7 @@
 @extends(
-session('user.role') == 'admin' || session('user.role') == 'saler'
+session('admin.user.role') == 'admin' || session('admin.user.role') == 'saler'
 ? 'admin.layouts.main'
-: 'api.layouts.main'
+: 'client.layouts.main'
 )
 @section('content')
     <!-- Content Header (Page header) -->

@@ -1,4 +1,4 @@
-<form action="{{ route('api.addToCart') }}" method="post">
+<form action="{{ route('client.addToCart') }}" method="post">
     @csrf
 
     @empty($total_price)

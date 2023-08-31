@@ -15,6 +15,6 @@ class HomeController extends Controller
         $role = session('user.role');
         $this->verify($role);
         if(!$role) abort(redirect('login'));
-        return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'api.products.index');
+        return redirect()->route(($role == 'saler' || $role == 'admin') ? 'admin.index' : 'client.products.index');
     }
 }

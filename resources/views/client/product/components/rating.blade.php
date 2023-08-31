@@ -12,7 +12,7 @@
         </div>
 
         <div class="col-sm">
-            <form action="{{ route('api.liked.toggle', $product_type['id']) }}" method="post">
+            <form action="{{ route('client.liked.toggle', $product_type['id']) }}" method="post">
                 @csrf
                 <button type="submit" class="border-0 bg-transparent"
                         title="{{!session()->has('user') ? 'Для добавления в избранное зарегистрируйтесь или войдите' : ''}}" @disabled(!session()->has('user'))>
