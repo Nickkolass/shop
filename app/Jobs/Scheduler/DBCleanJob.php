@@ -3,25 +3,23 @@
 namespace App\Jobs\Scheduler;
 
 use App\Models\PropertyValue;
+use Database\Seeders\Components\SeederCacheService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 
 class DBCleanJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
+    public function handle(SeederCacheService $service): void
     {
+        Artisan::call('telescope:prune', ['--env' => 'local']);
         PropertyValue::doesntHave('products')->delete();
-        Cache::delete('first_page_product_aggregate_data_without_filter_by_category_id');
+        $service->caching();
     }
 }
+
