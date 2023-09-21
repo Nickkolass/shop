@@ -5,7 +5,6 @@ namespace Tests\Feature\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
@@ -13,8 +12,6 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-
-    use RefreshDatabase;
 
     /**@test */
     public function test_a_user_can_be_viewed_any_with_premissions()
@@ -230,14 +227,14 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $deleted_user = $users->pop();
             $deleted_user->role = $i;
-            $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirect('/users');
+            $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirect(route('users.index'));
             session()->flush();
             $this->assertDatabaseCount('users', 5 - $i);
             $this->assertTrue($deleted_user->products()->count() == 0);
         }
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->delete(route('users.destroy', $users->last()->id))->assertRedirect('/users');
+        $this->actingAs($user)->delete(route('users.destroy', $users->last()->id))->assertRedirect(route('users.index'));
         $this->assertDatabaseCount('users', 1);
         $this->assertTrue($deleted_user->products()->count() == 0);
     }
@@ -299,7 +296,7 @@ class UserTest extends TestCase
             $user->save();
             $password = Hash::make(Str::random(5));
             $data = ['password' => (string)$i, 'new_password' => $password, 'new_password_confirmation' => $password];
-            $this->actingAs($user)->patch(route('users.password.update', $user->id), $data)->assertRedirect('users/' . $user->id);
+            $this->actingAs($user)->patch(route('users.password.update', $user->id), $data)->assertRedirect(route('users.show', $user->id));
             session()->flush();
         }
     }

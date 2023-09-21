@@ -150,6 +150,17 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3" style="text-align:center">
+                            <div class="col-md-4 col-form-label text-md-end">
+                                <input type="radio" style="width:20px" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="radio-label" for="radio">
+                                <a href="{{$policy}}" target="_blank">Согласен с условиями правил пользования торговой площадкой и правилами возврата</a>
+                                </label>
+                            </div>
+                        </div>
+
                         <input type="hidden" name="role" value="3">
 
                         <div class="row mb-0">

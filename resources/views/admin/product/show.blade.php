@@ -161,11 +161,11 @@
                                                 {{$option . ': ' . $value}}<br>
                                             @endforeach
                                         </td>
-                                        <td><img src="{{ asset('/storage/'.$productType->preview_image) }}" width='50'
+                                        <td><img src="{{\Illuminate\Support\Facades\Storage::url($productType->preview_image) }}" width='50'
                                                  height='50' class="img img-responsive"></td>
                                         <td>
                                             @foreach($productType->productImages as $img)
-                                                <img src="{{ asset('/storage/'.$img->file_path) }}" width='50'
+                                                <img src="{{\Illuminate\Support\Facades\Storage::url($img->file_path) }}" width='50'
                                                      height='50' class="img img-responsive">
                                             @endforeach
                                         </td>
@@ -220,7 +220,7 @@
                                         @if(!empty($comment->commentImages))
                                             <div class="card-body" style="margin-inline: 50px">
                                                 @foreach($comment->commentImages as $img)
-                                                    <img src="{{ asset('/storage/'.$img->file_path) }}" width='150'
+                                                    <img src="{{\Illuminate\Support\Facades\Storage::url($img->file_path) }}" width='150'
                                                          class="img img-responsive">
                                                 @endforeach
                                             </div>

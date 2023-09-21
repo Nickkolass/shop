@@ -65,8 +65,9 @@
                                         <ul class="cd-filter-content cd-filters list">
                                             <li>
                                                 <input class="filter" type="radio" name="offer" value=true required>
-                                                <label class="radio-label" for="radio">Согласен с условиями правил
-                                                    пользования <br> торговой площадкой и правилами возврата</label>
+                                                <label class="radio-label" for="radio">
+                                                    <a href="{{$policy}}" target="_blank">Согласен с условиями правил пользования <br> торговой площадкой и правилами возврата</a>
+                                                </label>
                                             </li>
                                         </ul>
                                     </div>

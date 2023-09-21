@@ -29,13 +29,13 @@ class FrontService
         return $product_types;
     }
 
-    public static function imgEncode(array &$data): void
+    public static function imgEncode(array &$images): void
     {
-        foreach ($data['comment_images'] as &$img) {
+        foreach ($images as &$img) {
             $img = [
                 'path' => $img->getPathname(),
-                'original_name' => $img->getClientOriginalName(),
-                'mime_type' => $img->getClientMimeType(),
+                'originalName' => $img->getClientOriginalName(),
+                'mimeType' => $img->getClientMimeType(),
             ];
         }
     }

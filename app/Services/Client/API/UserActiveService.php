@@ -31,7 +31,7 @@ class UserActiveService
                     $image = [
                         'comment_id' => $comment_id,
                         'size' => $image->getSize(),
-                        'file_path' => $image->storePublicly('comments/' . $data['product_id'] . '/' . $comment_id, 'public'),
+                        'file_path' => $image->storePublicly('comment_images/' . $data['product_id']),
                     ];
                 }
                 CommentImage::insert($comment_images);

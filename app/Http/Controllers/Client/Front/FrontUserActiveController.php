@@ -40,7 +40,7 @@ class FrontUserActiveController extends Controller
     public function commentStore(int $product_id, StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        if (!empty($data['comment_images'])) FrontService::imgEncode($data);
+        if (!empty($data['comment_images'])) FrontService::imgEncode($data['comment_images']);
         $this->client->request('POST', 'api/products/' . $product_id . '/comment',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         return back();

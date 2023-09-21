@@ -5,7 +5,6 @@ namespace Tests\Feature\Admin;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -13,12 +12,21 @@ use Tests\TestCase;
 class ProductTypeTest extends TestCase
 {
 
-    use RefreshDatabase;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed();
+    }
+
+    protected function tearDown(): void
+    {
+        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        parent::tearDown();
+    }
 
     /**@test */
     public function test_a_product_type_can_be_created_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();
@@ -63,12 +71,9 @@ class ProductTypeTest extends TestCase
     /**@test */
     public function test_a_product_type_can_be_stored_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();
-
-        Storage::fake('public');
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
@@ -102,7 +107,7 @@ class ProductTypeTest extends TestCase
             $this->assertEquals($productType->price, $data['price']);
             $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
             $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
-            $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
+            $this->assertTrue(Storage::exists($productType->preview_image));
         }
         $user->role = 1;
         $user->save();
@@ -114,13 +119,12 @@ class ProductTypeTest extends TestCase
         $this->assertEquals($productType->price, $data['price']);
         $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
         $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
-        $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
+        $this->assertTrue(Storage::exists($productType->preview_image));
     }
 
     /**@test */
     public function test_a_product_type_can_be_edited_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $productType = $user->productTypes()->first();
         $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->first();
@@ -156,12 +160,9 @@ class ProductTypeTest extends TestCase
     /**@test */
     public function test_a_product_type_can_be_updated_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $productType = $user->productTypes()->with('productImages')->first();
         $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
-
-        Storage::fake('public');
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
@@ -192,11 +193,11 @@ class ProductTypeTest extends TestCase
             $this->actingAs($user)->patch(route('admin.productTypes.update', $productType->id), $data)
                 ->assertRedirect(route('admin.products.show', $productType->product_id));
             session()->flush();
-            $this->assertFalse(Storage::disk('public')->exists($productType->preview_image));
-            $this->assertFalse(Storage::disk('public')->exists($productType->productImages->first()->file_path));
+            $this->assertFalse(Storage::exists($productType->preview_image));
+            $this->assertFalse(Storage::exists($productType->productImages->first()->file_path));
             $productType->refresh();
-            $this->assertTrue(Storage::disk('public')->exists($productType->preview_image));
-            $this->assertTrue(Storage::disk('public')->exists($productType->productImages->first()->file_path));
+            $this->assertTrue(Storage::exists($productType->preview_image));
+            $this->assertTrue(Storage::exists($productType->productImages->first()->file_path));
             $this->assertEquals($data['price'], $productType->price);
             $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
             $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
@@ -206,15 +207,15 @@ class ProductTypeTest extends TestCase
         $data['preview_image'] = File::create('preview_image.jpeg');
         $data['relations']['productImages'] = [File::create('productImage.jpeg')];
 
-        Storage::disk('public')->delete($productType->preview_image);
+        Storage::delete($productType->preview_image);
         $this->actingAs($user)->patch(route('admin.productTypes.update', $anotherProductType->id), $data)
             ->assertRedirect(route('admin.products.show', $anotherProductType->product_id));
         session()->flush();
-        $this->assertFalse(Storage::disk('public')->exists($anotherProductType->preview_image));
-        $this->assertFalse(Storage::disk('public')->exists($anotherProductType->productImages->first()->file_path));
+        $this->assertFalse(Storage::exists($anotherProductType->preview_image));
+        $this->assertFalse(Storage::exists($anotherProductType->productImages->first()->file_path));
         $anotherProductType->refresh();
-        $this->assertTrue(Storage::disk('public')->exists($anotherProductType->preview_image));
-        $this->assertTrue(Storage::disk('public')->exists($anotherProductType->productImages->first()->file_path));
+        $this->assertTrue(Storage::exists($anotherProductType->preview_image));
+        $this->assertTrue(Storage::exists($anotherProductType->productImages->first()->file_path));
         $this->assertEquals($anotherProductType->price, $data['price']);
         $this->assertCount($anotherProductType->optionValues()->count(), $data['relations']['optionValues']);
         $this->assertCount($anotherProductType->productImages()->count(), $data['relations']['productImages']);
@@ -223,10 +224,8 @@ class ProductTypeTest extends TestCase
     /**@test */
     public function test_a_product_type_can_be_deleted_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
-        Storage::fake('public');
 
         $this->delete(route('admin.productTypes.destroy', $anotherProductType->id))->assertNotFound();
 
@@ -249,8 +248,8 @@ class ProductTypeTest extends TestCase
             $this->actingAs($user)->delete(route('admin.productTypes.destroy', $productType->id))
                 ->assertRedirect(route('admin.products.show', $productType->product_id));
             session()->flush();
-            $this->assertFalse(Storage::disk('public')->exists($productType->preview_image));
-            $this->assertFalse(Storage::disk('public')->exists($productType->productImages->first()->file_path));
+            $this->assertFalse(Storage::exists($productType->preview_image));
+            $this->assertFalse(Storage::exists($productType->productImages->first()->file_path));
             $this->assertEmpty(ProductType::find($productType->id));
             $this->assertEmpty($productType->optionValues()->count());
             $this->assertEmpty($productType->productImages()->count());
@@ -260,8 +259,8 @@ class ProductTypeTest extends TestCase
         $this->actingAs($user)->delete(route('admin.productTypes.destroy', $anotherProductType->id))
             ->assertRedirect(route('admin.products.show', $anotherProductType->product_id));
         session()->flush();
-        $this->assertFalse(Storage::disk('public')->exists($anotherProductType->preview_image));
-        $this->assertFalse(Storage::disk('public')->exists($anotherProductType->productImages->first()->file_path));
+        $this->assertFalse(Storage::exists($anotherProductType->preview_image));
+        $this->assertFalse(Storage::exists($anotherProductType->productImages->first()->file_path));
         $this->assertEmpty(ProductType::find($anotherProductType->id));
         $this->assertEmpty($anotherProductType->optionValues()->count());
         $this->assertEmpty($anotherProductType->productImages()->count());

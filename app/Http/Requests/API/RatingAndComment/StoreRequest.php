@@ -40,6 +40,9 @@ class StoreRequest extends FormRequest
             'rating' => 'required|integer',
             'message' => 'nullable|string',
             'comment_images' => 'nullable|array',
+            'comment_images.*.path' => 'nullable|string',
+            'comment_images.*.originalName' => 'nullable|string',
+            'comment_images.*.mimeType' => 'nullable|string',
         ];
     }
 }

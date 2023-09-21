@@ -7,7 +7,7 @@
                 @foreach ($categories as $category)
                     <div>
                         <a class="nav-link" href="{{ route('client.products.filter', $category['title']) }}"> <img
-                                src="{{asset('/storage/view/'.$category['title'].'.jpg')}}" alt="">
+                                src="{{\Illuminate\Support\Facades\Storage::url('view/'.$category['title'].'.jpg')}}" alt="">
                             <div class="text-content">
                                 <p><strong>
                                         <h2>{{$category['title_rus']}}</h2>

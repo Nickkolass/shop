@@ -7,6 +7,8 @@
 -     cp .env.example .env
   - в файле .env в поле MAIL_USERNAME и MAIL_PASSWORD установить значения используемого почтового ящика в домене yandex.ru
   - в файле .env в поле TELEGRAM_LOGGER_CHAT_ID и TELEGRAM_LOGGER_BOT_TOKEN установить значения чата в telegram и токена приглашенного в него бота
+  - в файле .env в поле YANDEX_DISK_OAUTH_TOKEN установить значение токена для сервиса Yandex.disk
+  - в файле .env в поля YANDEX_CLOUD_KEY, YANDEX_CLOUD_SECRET, YANDEX_CLOUD_BUCKET установить соответствующие значения сервиса Yandex.cloud 
 -     docker compose up -d
 -     docker exec -it shop_app bash
   -     php artisan init
@@ -27,3 +29,7 @@
 Для обработки процессов, поставленных в очередь выполнять команды
 -     docker exec -it shop_app bash
   -     php artisan queue:work
+  
+Перед тестированием запустить
+-     docker exec -it shop_app bash
+  -     php artisan config:clear

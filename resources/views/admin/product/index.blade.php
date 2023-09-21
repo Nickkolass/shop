@@ -56,7 +56,7 @@
                                             </td>
                                         @endif
                                         <td>@foreach($product->productTypes as $productType)
-                                                <img src="{{ asset('/storage/'.$productType->preview_image) }}"
+                                                <img src="{{\Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
                                                      width='50'
                                                      height='50'
                                                      class="img img-responsive">

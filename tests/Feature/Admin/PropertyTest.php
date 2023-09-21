@@ -6,13 +6,10 @@ use App\Models\Category;
 use App\Models\Property;
 use App\Models\PropertyValue;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PropertyTest extends TestCase
 {
-
-    use RefreshDatabase;
 
     /**@test */
     public function test_a_property_can_be_viewed_any_with_premissions()

@@ -80,7 +80,7 @@
                                                                 <input name="preview_image" type="file"
                                                                        class="form-control">
                                                                 <img
-                                                                    src="{{ asset('/storage/'.$productType->preview_image) }}"
+                                                                    src="{{ \Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
                                                                     width='70' height='70' class="img img-responsive"
                                                                     style="margin-left: 10px">
                                                             </div>
@@ -104,7 +104,7 @@
                                                                        name="relations[productImages][]"
                                                                        type="file" multiple>
                                                                 @foreach($productType->productImages as $img)
-                                                                    <img src="{{ asset('/storage/'.$img->file_path) }}"
+                                                                    <img src="{{\Illuminate\Support\Facades\Storage::url( $img->file_path) }}"
                                                                          width='70' height='70'
                                                                          class="img img-responsive"
                                                                          style="margin-left: 10px">

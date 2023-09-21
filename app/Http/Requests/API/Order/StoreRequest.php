@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
         $user = auth('api')->user();
         $this->merge([
             'user_id' => $user->id,
-            'delivery' => $this->delivery . '. Получатель: ' . $user->surname . ' ' . $user->name . ' ' . $user->patronymic . '. Адрес: ' . $user->address,
+            'delivery' => "$this->delivery. Получатель: $user->surname $user->name $user->patronymic. Адрес: $user->address",
         ]);
     }
 

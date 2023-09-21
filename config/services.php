@@ -31,4 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'yandexdisk' => [
+        'oauth_token' => env('YANDEX_DISK_OAUTH_TOKEN'),
+    ],
 ];

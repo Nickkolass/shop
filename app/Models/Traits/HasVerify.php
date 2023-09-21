@@ -8,7 +8,7 @@ trait HasVerify
 {
     public function verify(&$role)
     {
-        if (!$role) if ($user = auth()->user()) {
+        if (!$role && $user = auth()->user()) {
             session([
                 'jwt' => 'bearer ' . auth('api')->fromUser($user),
                 'user' => [

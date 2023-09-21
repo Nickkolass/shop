@@ -5,13 +5,10 @@ namespace Tests\Feature\Admin;
 use App\Models\Option;
 use App\Models\OptionValue;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class OptionTest extends TestCase
 {
-
-    use RefreshDatabase;
 
     /**@test */
     public function test_a_option_can_be_viewed_any_with_premissions()

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unsignedInteger('price');
             $table->unsignedInteger('count');
-            $table->boolean('is_published')->default(false);
+            $table->boolean('is_published')->nullable()->default(false);
             $table->string('preview_image');
             $table->timestamps();
         });

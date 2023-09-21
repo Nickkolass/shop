@@ -6,21 +6,24 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Tests\TestCase;
 
 class APIOrderTest extends TestCase
 {
 
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        cache()->flush();
         $this->seed();
         View::share('categories', Category::all()->toArray());
+    }
+
+    protected function tearDown(): void
+    {
+        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        parent::tearDown();
     }
 
     /**@test */
