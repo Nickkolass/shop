@@ -6,13 +6,10 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TagTest extends TestCase
 {
-
-    use RefreshDatabase;
 
     /**@test */
     public function test_a_tag_can_be_viewed_any_with_premissions()

@@ -9,7 +9,6 @@ use App\Models\ProductImage;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,12 +17,21 @@ use Tests\TestCase;
 class ProductTest extends TestCase
 {
 
-    use RefreshDatabase;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed();
+    }
+
+    protected function tearDown(): void
+    {
+        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        parent::tearDown();
+    }
 
     /**@test */
     public function test_a_product_can_be_viewed_any_with_premissions()
     {
-        $this->seed();
         $user = User::first();
 
         $this->get(route('admin.products.index'))->assertNotFound();
@@ -46,7 +54,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_viewed_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();
@@ -75,7 +82,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_create_index_with_premissions()
     {
-        $this->seed();
         $user = User::first();
 
         $this->get(route('admin.products.create'))->assertNotFound();
@@ -98,7 +104,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_create_relations_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $data = [
             'title' => '1',
@@ -128,7 +133,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_create_types_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $data['tags'] = Tag::take(3)->pluck('id')->all();
         $data['propertyValues'] = PropertyValue::groupBy('property_id')->take(2)->pluck('value', 'property_id')->all();
@@ -158,9 +162,7 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_stored_with_premissions()
     {
-        $this->seed();
         $user = User::first();
-        Storage::fake('public');
 
         $session = ['create' => [
             'product' => [
@@ -222,8 +224,8 @@ class ProductTest extends TestCase
             $this->assertTrue($product->tags->count() == 3);
 
             $file_path = ProductImage::latest('id')->first()->file_path;
-            $this->assertTrue(Storage::disk('public')->exists($file_path));
-            $this->assertTrue(Storage::disk('public')->exists($product->productTypes->first()->preview_image));
+            $this->assertTrue(Storage::exists($file_path));
+            $this->assertTrue(Storage::exists($product->productTypes->first()->preview_image));
 
             $this->actingAs($user)->delete(route('admin.products.destroy', $product->id));
             $this->assertFalse(Product::where('id', $product->id)->exists());
@@ -234,7 +236,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_edit_index_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();
@@ -270,7 +271,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_edit_relations_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $data = [
@@ -285,7 +285,7 @@ class ProductTest extends TestCase
 
         $user->role = 3;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id). '?' . $data)->assertNotFound();
+        $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id) . '?' . $data)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -293,7 +293,7 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id). '?' . $data)
+            $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id) . '?' . $data)
                 ->assertViewIs('admin.product.edit.relations');
             session()->flush();
         }
@@ -302,7 +302,6 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_updated_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();
@@ -373,10 +372,8 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_deleted_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $another_product = Product::where('saler_id', '!=', $user->id)->with('productTypes.productImages')->first();
-        Storage::fake('public');
 
         $this->delete(route('admin.products.destroy', $another_product->id))->assertNotFound();
 
@@ -407,8 +404,8 @@ class ProductTest extends TestCase
             $this->assertEmpty(OptionValue::whereIn('productType_id', $productType_ids)->count());
             $this->assertEmpty(Product::find($product->id));
 
-            $this->assertFalse(Storage::disk('public')->exists($product->productTypes->first()->productImages->first()->file_path));
-            $this->assertFalse(Storage::disk('public')->exists($product->productTypes->first()->preview_image));
+            $this->assertFalse(Storage::exists($product->productTypes->first()->productImages->first()->file_path));
+            $this->assertFalse(Storage::exists($product->productTypes->first()->preview_image));
         }
         $user->role = 1;
         $user->save();
@@ -423,14 +420,13 @@ class ProductTest extends TestCase
         $this->assertEquals(OptionValue::whereIn('productType_id', $productType_ids)->count(), 0);
         $this->assertEmpty(Product::find($another_product->id));
 
-        $this->assertFalse(Storage::disk('public')->exists($another_product->productTypes->first()->productImages->first()->file_path));
-        $this->assertFalse(Storage::disk('public')->exists($another_product->productTypes->first()->preview_image));
+        $this->assertFalse(Storage::exists($another_product->productTypes->first()->productImages->first()->file_path));
+        $this->assertFalse(Storage::exists($another_product->productTypes->first()->preview_image));
     }
 
     /**@test */
     public function test_a_product_can_be_published_with_premissions()
     {
-        $this->seed();
         $user = User::first();
         $product = $user->products()->first();
         $another_product = Product::where('saler_id', '!=', $user->id)->first();

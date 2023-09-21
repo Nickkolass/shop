@@ -1625,8 +1625,8 @@
                                                             "comment_images": {
                                                                 "type": "object",
                                                                 "example": [
-                                                                    "comments/1.jpg",
-                                                                    "comments/2.jpg"
+                                                                    "comment_images/1.jpg",
+                                                                    "comment_images/2.jpg"
                                                                 ]
                                                             },
                                                             "created_at": {

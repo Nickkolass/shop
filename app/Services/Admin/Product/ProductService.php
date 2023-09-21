@@ -4,7 +4,7 @@ namespace App\Services\Admin\Product;
 
 use App\Dto\Admin\Product\ProductDto;
 use App\Dto\Admin\Product\ProductRelationDto;
-use App\Exceptions\ProductImageException;
+use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Methods\Maper;
@@ -57,7 +57,7 @@ class ProductService
             $this->productTypeService->relationService->createRelationsProductTypes($productTypeRelationsForInsertDto);
             DB::commit();
         } catch (\Throwable $e) {
-            ProductImageException::failedStoreProduct($e, $product->id);
+            ProductException::failedStoreProductOrType($e, $productDto, $productRelationDto, $product->id ?? null);
         }
         return $product->id;
     }
@@ -112,8 +112,8 @@ class ProductService
         DB::beginTransaction();
         $product->delete();
         $this->productTypeService->relationService->imageService->deleteImages($images);
-        Storage::deleteDirectory('/public/product_images/' . $product->id);
-        Storage::deleteDirectory('/public/comments/' . $product->id);
+        Storage::deleteDirectory('product_images/' . $product->id);
+        Storage::deleteDirectory('comment_images/' . $product->id);
         DB::commit();
     }
 

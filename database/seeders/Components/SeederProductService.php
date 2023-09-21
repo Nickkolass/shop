@@ -20,7 +20,7 @@ class SeederProductService
                     ->select('optionValues.id', 'option_id')
                     ->get()
                     ->groupBy('option_id')
-                    ->map(fn (Collection $optionValues) => $optionValues->pluck('id'));
+                    ->map(fn(Collection $optionValues) => $optionValues->pluck('id'));
 
                 $optionValues = $optionValues->pop()->crossJoin(...$optionValues);
 
@@ -29,14 +29,13 @@ class SeederProductService
 
                     if (rand(1, 100) < 30) $productType->liked()->attach(User::inRandomOrder()->limit(random_int(1, 3))->pluck('id'));
 
-                    $productImage = $productType->productImages['2']->file_path;
+                    $productImage = $productType->productImages->first()->file_path;
                     $previewImage = str_replace('product_images', 'preview_images', $productImage);
-                    Storage::copy('public/' . $productImage, 'public/' . $previewImage);
+                    Storage::copy($productImage, $previewImage);
                     $is_published = $productType->count == 0 ? 0 : 1;
 
                     $productType->update(['is_published' => $is_published, 'preview_image' => $previewImage]);
                 }
             });
-        Storage::deleteDirectory('/public/fact/');
     }
 }

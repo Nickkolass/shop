@@ -7,7 +7,6 @@ use App\Models\CommentImage;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -16,14 +15,17 @@ use Tests\TestCase;
 class APIUserActiveTest extends TestCase
 {
 
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        cache()->flush();
         $this->seed();
         View::share('categories', Category::all()->toArray());
+    }
+
+    protected function tearDown(): void
+    {
+        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        parent::tearDown();
     }
 
     /**@test */
@@ -73,7 +75,6 @@ class APIUserActiveTest extends TestCase
         $this->withHeader('Authorization', session('jwt'))->post("/api/products/{$product_id}/comment", $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->count() == 2);
 
-        Storage::fake('public');
         $file = File::create('file.jpeg');
         $img = [
             'path' => $file->getPathname(),
@@ -85,6 +86,6 @@ class APIUserActiveTest extends TestCase
         $this->withHeader('Authorization', session('jwt'))->post("/api/products/{$product_id}/comment", $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->count() == 3);
         $file_path = CommentImage::latest('id')->first()->file_path;
-        $this->assertTrue(Storage::disk('public')->exists($file_path));
+        $this->assertTrue(Storage::exists($file_path));
     }
 }

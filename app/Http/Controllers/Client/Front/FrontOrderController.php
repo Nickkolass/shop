@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
+use Arhitector\Yandex\Disk;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -42,7 +43,8 @@ class FrontOrderController extends Controller
     public function create(): View
     {
         $total_price = request('total_price');
-        return view('client.order.create', compact('total_price'));
+        $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
+        return view('client.order.create', compact('total_price', 'policy'));
     }
 
     /**

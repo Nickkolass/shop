@@ -21,21 +21,18 @@ class SeederFactoryService
 {
     public function factory(): void
     {
-        $categories = SeederInitialData::getCategories();
-        $options = SeederInitialData::getOptions();
-
         $tags = Tag::factory(10)->create();
         for ($k = 1; $k <= 10; $k++) {
-            Property::factory(1)
+            Property::factory()
                 ->has(PropertyValue::factory(random_int(2, 4)))
                 ->create();
         }
-        foreach ($options as $option) {
+        foreach (SeederInitialData::getOptions() as $option) {
             Option::create($option);
             OptionValue::factory(random_int(3, 4))->create();
         }
 
-        foreach ($categories as $category) {
+        foreach (SeederInitialData::getCategories() as $category) {
             $properties = Property::query()
                 ->with(['propertyValues' => fn($q) => $q->select('id', 'property_id')->inRandomOrder()])
                 ->inRandomOrder()
@@ -49,29 +46,27 @@ class SeederFactoryService
                 ->get('id');
 
             Category::create($category)->properties()->attach($properties);
-            User::factory(1)->create();
+            User::factory()->create();
             for ($j = 1; $j <= 5; $j++) {
                 $propertyValues = $properties->pluck('propertyValues')->shuffle()->pluck(0);
                 $optionValues = $options->random(2)->pluck('optionValues')->random(2)
                     ->map(fn ($optionValue) => $optionValue->random(2))->flatten();
 
-                Product::factory(1)
+                Product::factory()
                     ->has(ProductType::factory(4)
                         ->has(ProductImage::factory(3)))
-                    ->has(RatingAndComment::factory(1)
-                        ->has(CommentImage::factory(3)))
+                    ->has(RatingAndComment::factory()
+                        ->has(CommentImage::factory()))
                     ->hasAttached($tags->random(random_int(3, 5)))
                     ->hasAttached($optionValues)
                     ->hasAttached($propertyValues)
                     ->create();
             }
         }
-        for ($m = 1; $m <= 10; $m++) {
-            Order::factory(1)->create();
-
-            for ($n = 0; $n < count(cache()->get('factoryOrders')); $n++) {
-                cache()->put('factoryCurrentOrderSaler', $n, 20);
-                OrderPerformer::factory(1)->create();
+        for ($m = 1; $m <= 5; $m++) {
+            Order::factory()->create();
+            for ($n = 0; $n < count(cache('saler_ids_for_factory_order_performers')); $n++) {
+                OrderPerformer::factory()->create();
             }
         }
     }

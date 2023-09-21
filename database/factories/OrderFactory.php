@@ -34,7 +34,8 @@ class OrderFactory extends Factory
                 ];
             });
 
-        cache()->put('factoryOrders', $productTypes->pluck('saler_id')->unique()->values(), 20);
+        cache()->put('saler_ids_for_factory_order_performers', $productTypes->pluck('saler_id')->unique()->values());
+        cache()->put('current_saler_id_for_factory_order_performers', 0);
 
         return [
             'user_id' => $user->id,

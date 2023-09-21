@@ -4,7 +4,7 @@ namespace App\Services\Admin\Product;
 
 use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
 use App\Dto\Admin\Product\ProductTypeDto;
-use App\Exceptions\ProductImageException;
+use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Admin\Product\Relations\RelationService;
@@ -26,7 +26,7 @@ class ProductTypeService
             $this->storeType($product, $productTypeDto);
             DB::commit();
         } catch (\Throwable $e) {
-            ProductImageException::failedStoreProduct($e);
+            ProductException::failedStoreProductOrType($e);
         }
     }
 
@@ -59,10 +59,10 @@ class ProductTypeService
             unset($productTypeDto->productTypeRelationDto);
             $productType->update(array_filter((array) $productTypeDto));
 
-            DB::commit();
             if (isset($old_image_paths)) $this->relationService->imageService->deleteImages($old_image_paths);
+            DB::commit();
         } catch (\Throwable $e) {
-            ProductImageException::failedStoreProduct($e);
+            ProductException::failedStoreProductOrType($e);
         }
     }
 

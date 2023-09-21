@@ -79,7 +79,7 @@
                                             </td>
                                             <td>@foreach($order->productTypes as $productType)
                                                     <a href="{{ route('admin.products.show', $productType['productType_id']) }}">
-                                                        <img src="{{asset('/storage/'.$productType['preview_image'])}}"
+                                                        <img src="{{\Illuminate\Support\Facades\Storage::url($productType['preview_image'])}}"
                                                              style="height: 50px"></a>
                                                     {{$productType['amount'].' шт.'}}
                                                 @endforeach

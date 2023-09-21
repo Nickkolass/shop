@@ -8,7 +8,7 @@
                 <!-- если это show то крупнее  -->
                 <img
                     style="{{empty($product_type['product']['description']) ? 'width:70px;' : 'width:150px;'}}; opacity:{{$type['is_published'] == 0 ? '0.3' : '1'}}; border:{{$product_type['id'] == $type['id'] ? 'solid' : ''}}"
-                    src="{{asset('/storage/'.$type['preview_image'])}}">
+                    src="{{ \Illuminate\Support\Facades\Storage::url($type['preview_image'])}}">
             </a>
         @endforeach
     </div>

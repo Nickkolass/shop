@@ -44,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'testing' => [
+            'driver' => 'local',
+            'root' => storage_path('app/testing'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -56,6 +64,15 @@ return [
             'throw' => false,
         ],
 
+        'yandexcloud' => [
+            'driver' => 's3',
+            'key' => env('YANDEX_CLOUD_KEY'),
+            'secret' => env('YANDEX_CLOUD_SECRET'),
+            'endpoint' => 'https://storage.yandexcloud.net/',
+            'region' => 'eu-central-1',
+            'bucket' => env('YANDEX_CLOUD_BUCKET'),
+            'url' => 'https://storage.yandexcloud.net/' . env('YANDEX_CLOUD_BUCKET'),
+        ],
     ],
 
     /*

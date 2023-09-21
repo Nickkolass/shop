@@ -26,7 +26,8 @@ class StoreFrontRequest extends FormRequest
         return [
             'rating' => 'required|integer',
             'message' => 'nullable|string',
-            'commentImages' => 'nullable|array',
+            'comment_images' => 'nullable|array',
+            'comment_images.*' => 'nullable|image',
             'product_id' => 'required|integer',
         ];
     }

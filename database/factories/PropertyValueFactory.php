@@ -19,7 +19,7 @@ class PropertyValueFactory extends Factory
     {
         return [
             'value' => $this->faker->unique()->word(),
-            'property_id' => Property::latest('id')->first()->id,
+            'property_id' => Property::latest('id')->toBase()->first()->id,
     ];
     }
 }

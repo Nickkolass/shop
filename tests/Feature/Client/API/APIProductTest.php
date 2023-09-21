@@ -5,21 +5,24 @@ namespace Client\API;
 use App\Models\Category;
 use App\Models\ProductType;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Tests\TestCase;
 
 class APIProductTest extends TestCase
 {
 
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        cache()->flush();
         $this->seed();
         View::share('categories', Category::all()->toArray());
+    }
+
+    protected function tearDown(): void
+    {
+        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        parent::tearDown();
     }
 
     /**@test */
@@ -62,12 +65,6 @@ class APIProductTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $res = $this->post('/api/products/' . Category::first()->title);
-        $res->assertOk();
-        $res->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category']);
-        $res->assertJsonCount(8, 'product_types.data');
-        $res->assertJsonCount(10, 'product_types.data.0');
-
 //        посещение страницы
         $res = $this->post('/api/products/' . Category::first()->title);
         $res->assertOk();
@@ -75,7 +72,7 @@ class APIProductTest extends TestCase
         $res->assertJsonCount(8, 'product_types.data');
         $res->assertJsonCount(10, 'product_types.data.0');
 
-//        переход на другую страницу
+//        пагинация
         $data = ['paginate' => ['page' => 3]];
         $res = $this->post('/api/products/' . Category::first()->title, $data);
         $res->assertOk();

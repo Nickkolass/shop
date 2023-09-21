@@ -3,14 +3,11 @@
 namespace Client\API;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-
-    use RefreshDatabase;
 
     /**@test */
     public function test_a_user_can_be_viewed_login_page_with_premissions()
@@ -110,7 +107,7 @@ class AuthTest extends TestCase
             $cookie_name = str_replace('login_web', 'remember_web', $cookie_name);
             $cookie = $res->getCookie($cookie_name);
 
-            $this->withCookie($cookie_name, $cookie)->get(route('home'))->assertRedirect($i == 3 ? '/products' : '/admin');
+            $this->withCookie($cookie_name, $cookie)->get(route('home'))->assertRedirect(route($i == 3 ? 'client.products.index' : 'admin.index'));
             $this->actingAs($user)->post(route('logout'));
             session()->flush();
         }

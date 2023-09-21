@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -19,18 +19,26 @@ class ProductImageFactory extends Factory
      */
     public function definition()
     {
+        $productType = ProductType::query()
+            ->latest('id')
+            ->select('id', 'product_id')
+            ->toBase()
+            ->first();
 
-        $filesPath = Storage::files('/public/fact/');
-        $filePath = $filesPath[random_int(0, count($filesPath)-1)];
-        $productImagePath = str_replace('public/fact/', 'product_images/' . Product::latest('id')->pluck('id')['0']. '/', $filePath);
+        $counter = cache('imageCounter');
+        cache()->increment('imageCounter');
+        $filePath = cache('factory')[$counter];
 
-        Storage::move($filePath, 'public/'.$productImagePath);
+        $productImagePath = Storage::putFile(
+            'product_images/' . $productType->product_id,
+            new File('storage/app/testing/' . $filePath),
+            'public'
+        );
 
         return [
             'file_path' => $productImagePath,
-            'size' => random_int(1, 10000),
-            'productType_id' => ProductType::take(1)->latest('id')->pluck('id')['0'],
+            'size' => Storage::size($productImagePath),
+            'productType_id' => $productType->id,
         ];
-
     }
 }

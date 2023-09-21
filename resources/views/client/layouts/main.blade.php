@@ -45,7 +45,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ route('client.products.index') }}">
                 <table>
-                    <th><img src="{{asset('/storage/view/wand.svg')}}" alt="" width="30"></th>
+                    <th><img src="{{\Illuminate\Support\Facades\Storage::url('view/wand.svg')}}" alt="" width="30"></th>
                     <th>
                         <h2>Lumos <em>Hand Made</em></h2>
                     </th>

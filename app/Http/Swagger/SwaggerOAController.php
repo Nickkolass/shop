@@ -612,7 +612,7 @@ use App\Http\Controllers\Controller;
  *                             @OA\Property(property="id", type="integer", example="1"),
  *                             @OA\Property(property="name", type="string", example="Petrov Petr"),
  *                         ),
- *                         @OA\Property(property="comment_images", type="object", example={"comments/1.jpg", "comments/2.jpg"}),
+ *                         @OA\Property(property="comment_images", type="object", example={"comment_images/1.jpg", "comment_images/2.jpg"}),
  *                         @OA\Property(property="created_at", type="string", example="2 hours ago"),
  *                     ),
  *                 ),

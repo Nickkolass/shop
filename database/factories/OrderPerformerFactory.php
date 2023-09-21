@@ -17,11 +17,11 @@ class OrderPerformerFactory extends Factory
      */
     public function definition()
     {
-        $current = cache()->get('factoryCurrentOrderSaler');
-        $currentSaler_id = cache()->get('factoryOrders')[$current];
-        $order = Order::take(1)->latest('id')->first();
-
+        $currentSaler_id = cache('saler_ids_for_factory_order_performers')[cache('current_saler_id_for_factory_order_performers')];
+        $order = Order::latest('id')->first();
         $productTypes = collect($order->productTypes)->groupBy('saler_id')[$currentSaler_id];
+
+        cache()->increment('current_saler_id_for_factory_order_performers');
 
         return [
             'order_id' => $order->id,
