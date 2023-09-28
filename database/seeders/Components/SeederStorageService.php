@@ -24,7 +24,7 @@ class SeederStorageService
         $categories = Category::query()
             ->select('id', 'title', 'title_rus')
             ->get()
-            ->each(fn (Category $category) => (new ProductFilterService)->getProductFilterAggregateDataCache([], $category));
+            ->each(fn(Category $category) => (new ProductFilterService)->getProductFilterAggregateDataCache([], $category));
         cache()->forever('categories', $categories->toArray());
     }
 

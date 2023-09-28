@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -25,8 +26,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="right-image">
-                        <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_613556581_kBWsPNma6uDmcF3XnWwsKf8LFMXvH8tD.jpg')}}"
-                             alt="">
+                        <img
+                            src="{{Storage::url('about/240_F_613556581_kBWsPNma6uDmcF3XnWwsKf8LFMXvH8tD.jpg')}}"
+                            alt="">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -57,8 +59,9 @@
                 <div class="col-md-4">
                     <div class="team-member">
                         <div class="thumb-container">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/medium-shot-woman-doing-artwork_23-2148966933.jpg')}}"
-                                 alt="">
+                            <img
+                                src="{{Storage::url('about/medium-shot-woman-doing-artwork_23-2148966933.jpg')}}"
+                                alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
                                     <ul class="social-icons">
@@ -81,7 +84,7 @@
                     <div class="team-member">
                         <div class="thumb-container">
                             <img
-                                src="{{\Illuminate\Support\Facades\Storage::url('about/woman-building-her-own-dried-flowers-arrangement_23-2149626632.jpg')}}"
+                                src="{{Storage::url('about/woman-building-her-own-dried-flowers-arrangement_23-2149626632.jpg')}}"
                                 alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
@@ -105,7 +108,7 @@
                     <div class="team-member">
                         <div class="thumb-container">
                             <img
-                                src="{{\Illuminate\Support\Facades\Storage::url('about/woman-building-her-own-dried-flowers-arrangement_23-2149626654.jpg')}}"
+                                src="{{Storage::url('about/woman-building-her-own-dried-flowers-arrangement_23-2149626654.jpg')}}"
                                 alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
@@ -128,8 +131,9 @@
                 <div class="col-md-4">
                     <div class="team-member">
                         <div class="thumb-container">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/woman-craftmaster-at-a-pottery-shop_1303-23729.jpg')}}"
-                                 alt="">
+                            <img
+                                src="{{Storage::url('about/woman-craftmaster-at-a-pottery-shop_1303-23729.jpg')}}"
+                                alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
                                     <ul class="social-icons">
@@ -152,7 +156,7 @@
                     <div class="team-member">
                         <div class="thumb-container">
                             <img
-                                src="{{\Illuminate\Support\Facades\Storage::url('about/woman-makes-handmade-diy-lamp-from-jute-rope_266247-3229.jpg')}}"
+                                src="{{Storage::url('about/woman-makes-handmade-diy-lamp-from-jute-rope_266247-3229.jpg')}}"
                                 alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
@@ -176,7 +180,7 @@
                     <div class="team-member">
                         <div class="thumb-container">
                             <img
-                                src="{{\Illuminate\Support\Facades\Storage::url('about/woman-working-in-her-pottery-workshop_23-2148846469.jpg')}}"
+                                src="{{Storage::url('about/woman-working-in-her-pottery-workshop_23-2148846469.jpg')}}"
                                 alt="">
                             <div class="hover-effect">
                                 <div class="hover-content">
@@ -212,29 +216,34 @@
                 <div class="col-md-12">
                     <div class="owl-clients owl-carousel">
                         <div class="client-item">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_106399721_iZxzNqWSdE9TegnVT1IlE7DsZgbCIOcq.jpg')}}"
-                                 alt="1">
+                            <img
+                                src="{{Storage::url('about/240_F_106399721_iZxzNqWSdE9TegnVT1IlE7DsZgbCIOcq.jpg')}}"
+                                alt="1">
 
                         </div>
 
                         <div class="client-item">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_309202280_CgsWoCAdLBe9INBvdwBKUkpaLEP4XNLa.jpg')}}"
-                                 alt="2">
+                            <img
+                                src="{{Storage::url('about/240_F_309202280_CgsWoCAdLBe9INBvdwBKUkpaLEP4XNLa.jpg')}}"
+                                alt="2">
                         </div>
 
                         <div class="client-item">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_616837236_kf8zpl8OzbkiMx86j3vpMSPTrQlAm9xe.jpg')}}"
-                                 alt="3">
+                            <img
+                                src="{{Storage::url('about/240_F_616837236_kf8zpl8OzbkiMx86j3vpMSPTrQlAm9xe.jpg')}}"
+                                alt="3">
                         </div>
 
                         <div class="client-item">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_613232986_z3fizRZx4LXlyxOGlC7fDGnkadZI4G6c.jpg')}}"
-                                 alt="4">
+                            <img
+                                src="{{Storage::url('about/240_F_613232986_z3fizRZx4LXlyxOGlC7fDGnkadZI4G6c.jpg')}}"
+                                alt="4">
                         </div>
 
                         <div class="client-item">
-                            <img src="{{\Illuminate\Support\Facades\Storage::url('about/240_F_597996928_YpHojBpjfIRMFqOVi7Qc9E5ehfq5ZYR5.jpg')}}"
-                                 alt="5">
+                            <img
+                                src="{{Storage::url('about/240_F_597996928_YpHojBpjfIRMFqOVi7Qc9E5ehfq5ZYR5.jpg')}}"
+                                alt="5">
                         </div>
 
                     </div>

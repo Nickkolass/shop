@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -79,8 +80,9 @@
                                             </td>
                                             <td>@foreach($order->productTypes as $productType)
                                                     <a href="{{ route('admin.products.show', $productType['productType_id']) }}">
-                                                        <img src="{{\Illuminate\Support\Facades\Storage::url($productType['preview_image'])}}"
-                                                             style="height: 50px"></a>
+                                                        <img
+                                                            src="{{Storage::url($productType['preview_image'])}}"
+                                                            style="height: 50px"></a>
                                                     {{$productType['amount'].' шт.'}}
                                                 @endforeach
                                             </td>

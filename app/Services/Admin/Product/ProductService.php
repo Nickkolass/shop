@@ -4,14 +4,17 @@ namespace App\Services\Admin\Product;
 
 use App\Dto\Admin\Product\ProductDto;
 use App\Dto\Admin\Product\ProductRelationDto;
+use App\Dto\Admin\Product\ProductTypeDto;
 use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Methods\Maper;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProductService
 {
@@ -35,31 +38,39 @@ class ProductService
                 'ratingAndComments'
             ])
             ->simplePaginate(4);
-        $products->getCollection()->map(fn(Product $product) => Maper::countingRatingAndComments($product));
+        /** @var Collection $products */
+        $products->map(fn(Product $product) => Maper::countingRatingAndComments($product));
+        /** @var Paginator $products */
         return $products;
     }
 
+    /**
+     * @param ProductDto $productDto
+     * @param ProductRelationDto $productRelationDto
+     * @param Collection<int, ProductTypeDto> $collectionProductTypeDto
+     * @return int|RedirectResponse
+     */
     public function store(
         ProductDto         $productDto,
         ProductRelationDto $productRelationDto,
         Collection         $collectionProductTypeDto,
-    ): int
+    ): int|RedirectResponse
     {
         DB::beginTransaction();
         try {
-            $product = Product::firstOrCreate(['title' => $productDto->title], (array)$productDto);
-            $this->productTypeService->relationService->createRelationsProduct($product, $productRelationDto);
+            $product = Product::query()->firstOrCreate(['title' => $productDto->title], (array)$productDto);
+            $this->productTypeService->relationService->createRelationsProduct($product, $productRelationDto, true);
 
-            $productTypeRelationsForInsertDto = collect();
+            $collectionProductTypeRelationsForInsertDto = collect();
             foreach ($collectionProductTypeDto as $productTypeDto) {
-                $productTypeRelationsForInsertDto->push($this->productTypeService->storeType($product, $productTypeDto, true));
+                $collectionProductTypeRelationsForInsertDto->push($this->productTypeService->storeType($product, $productTypeDto, true));
             }
-            $this->productTypeService->relationService->createRelationsProductTypes($productTypeRelationsForInsertDto);
+            $this->productTypeService->relationService->createRelationsProductTypes($collectionProductTypeRelationsForInsertDto);
             DB::commit();
-        } catch (\Throwable $e) {
-            ProductException::failedStoreProductOrType($e, $productDto, $productRelationDto, $product->id ?? null);
+            return $product->id;
+        } catch (Throwable $e) {
+            return ProductException::failedStoreProductOrType($e, $productDto, $productRelationDto, $product->id ?? null);
         }
-        return $product->id;
     }
 
     public function show(Product &$product): void
@@ -93,7 +104,7 @@ class ProductService
     public function update(Product $product, ProductDto $productDto, ProductRelationDto $productRelationDto): void
     {
         DB::beginTransaction();
-        $product->update((array) $productDto);
+        $product->update((array)$productDto);
         $this->productTypeService->relationService->createRelationsProduct($product, $productRelationDto, false);
         DB::commit();
     }
@@ -121,10 +132,8 @@ class ProductService
     {
         $product->load('optionValues:id')
             ->productTypes()
-            ->whereHas('optionValues', function ($q) use ($product) {
-                $q->whereIn('optionValues.id', $product->optionValues);
-            })
             ->where('count', '!=', 0)
+            ->whereHas('optionValues', fn($q) => $q->whereIn('optionValues.id', $product->optionValues))
             ->update(['is_published' => request()->has('publish')]);
     }
 }

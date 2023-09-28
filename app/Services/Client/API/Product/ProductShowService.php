@@ -12,13 +12,13 @@ class ProductShowService
     {
         $user_id = auth('api')->id() ?? null;
         $productType
-            ->loadExists(['liked' => fn ($q) => $q->where('user_id', $user_id)])
+            ->loadExists(['liked' => fn($q) => $q->where('user_id', $user_id)])
             ->load([
                 'productImages:productType_id,file_path',
                 'optionValues.option:id,title',
                 'product' => function ($product) use ($user_id) {
                     $product
-                        ->withExists(['ratingAndComments' => fn ($q) => $q->where('user_id', $user_id)])
+                        ->withExists(['ratingAndComments' => fn($q) => $q->where('user_id', $user_id)])
                         ->with([
                             'optionValues.option:id,title',
                             'category:id,title,title_rus',

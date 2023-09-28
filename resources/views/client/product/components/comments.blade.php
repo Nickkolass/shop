@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 <div class="down-content" id="comments">
     <h4 style="text-align: center; padding: 10px"> Комментарии </h4>
 
@@ -55,7 +56,7 @@
                 @if(!empty($comment['comment_images']))
                     <div class="card-body" style="margin-inline: 50px">
                         @foreach($comment['comment_images'] as $img)
-                            <img src="{{\Illuminate\Support\Facades\Storage::url( $img) }}" width='150'
+                            <img src="{{Storage::url( $img) }}" width='150'
                                  class="img img-responsive">
                         @endforeach
                     </div>

@@ -36,7 +36,8 @@
                         <div class="row" style="margin:5px">
                             <div class="col" style="padding: 5px;">
                                 <label>Наименование</label>
-                                <input type="text" name="title" value="{{ old('title') ?? $product->title }}" class="form-control"
+                                <input type="text" name="title" value="{{ old('title') ?? $product->title }}"
+                                       class="form-control"
                                        required>
                             </div>
                             <div class="w-100"></div>

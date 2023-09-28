@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\Product\ProductTypesRequest;
 use App\Http\Requests\Admin\Product\UpdateRelationsRequest;
 use App\Models\Product;
 use App\Services\Admin\Product\ProductService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -25,9 +26,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function index(): View
+    public function index(): View|Factory
     {
         $products = $this->service->index();
         return view('admin.product.index', compact('products'));
@@ -44,7 +45,7 @@ class ProductController extends Controller
         $productDto = new ProductDto(...session()->pull('create.product'));
         $productRelationDto = new ProductRelationDto(...session()->pull('create.relations'));
 
-        $collectionProductTypeDto = collect($request->validated()['types'])->map(function (array $productType) {
+        $collectionProductTypeDto = collect((array)$request->validated()['types'])->map(function (array $productType) {
             $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($productType));
             return new ProductTypeDto(...$productType);
         });
@@ -58,9 +59,9 @@ class ProductController extends Controller
      * Display the specified resource.
      *
      * @param Product $product
-     * @return View
+     * @return View|Factory
      */
-    public function show(Product $product): View
+    public function show(Product $product): View|Factory
     {
         $this->service->show($product);
         return view('admin.product.show', compact('product'));
@@ -87,9 +88,9 @@ class ProductController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Product $product
-     * @return View
+     * @return View|Factory
      */
-    public function destroy(Product $product): View
+    public function destroy(Product $product): View|Factory
     {
         $this->service->delete($product);
         return $this->index();

@@ -25,7 +25,7 @@
     <!-- rating -->
     <link rel="stylesheet" href="{{asset('assets/css/rating.css')}}">
 
-    <!-- @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js']) -->
+    @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js'])
 
 </head>
 

@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductType>
+ * @extends Factory<ProductType>
  */
 class ProductTypeFactory extends Factory
 {
@@ -17,7 +18,7 @@ class ProductTypeFactory extends Factory
      */
     public function definition()
     {
-        $product_id = Product::take(1)->latest('id')->pluck('id')['0'];
+        $product_id = Product::query()->take(1)->latest('id')->pluck('id')['0'];
         return [
             'price' => $this->faker->numberBetween(1, 10000),
             'count' => $this->faker->numberBetween(1, 10),

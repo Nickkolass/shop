@@ -7,15 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 /**
- * @property int id
- * @property int property_id
- * @property string value
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $property_id
+ * @property string $value
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Property $property
+ * @property ?Collection<int, Product> $products
  */
-
 class PropertyValue extends Model
 {
     use HasFactory;

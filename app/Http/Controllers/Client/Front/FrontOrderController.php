@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use Arhitector\Yandex\Disk;
 use GuzzleHttp\Client;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -21,10 +22,10 @@ class FrontOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View|Factory
      */
 
-    public function index(): View
+    public function index(): View|Factory
     {
         $data['page'] = request('page') ?? 1;
 
@@ -38,9 +39,9 @@ class FrontOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function create(): View
+    public function create(): View|Factory
     {
         $total_price = request('total_price');
         $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
@@ -50,7 +51,7 @@ class FrontOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreFrontRequest  $request
+     * @param StoreFrontRequest $request
      * @return RedirectResponse
      */
     public function store(StoreFrontRequest $request): RedirectResponse
@@ -65,10 +66,10 @@ class FrontOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $order_id
-     * @return View
+     * @param int $order_id
+     * @return View|Factory
      */
-    public function show(int $order_id): View
+    public function show(int $order_id): View|Factory
     {
         $order = $this->client->request('POST', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -79,7 +80,7 @@ class FrontOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $order_id
+     * @param int $order_id
      * @return RedirectResponse
      */
     public function update(int $order_id): RedirectResponse
@@ -92,7 +93,7 @@ class FrontOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $order_id
+     * @param int $order_id
      * @return RedirectResponse
      */
     public function destroy(int $order_id): RedirectResponse

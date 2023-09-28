@@ -3,8 +3,8 @@
 namespace App\Services\Admin\Product\Relations;
 
 use App\Dto\Admin\Product\ProductRelationDto;
-use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
 use App\Dto\Admin\Product\ProductTypeRelationDto;
+use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductType;
@@ -16,21 +16,22 @@ class RelationService
 {
 
     public function __construct(
-        public ImageService $imageService,
-        public OptionValueService $optionValueService,
+        public ImageService         $imageService,
+        public OptionValueService   $optionValueService,
         public PropertyValueService $propertyValueService,
     )
     {
     }
 
-    public function createRelationsProduct(Product $product, ProductRelationDto $productRelationDto, ?bool $isNewProduct = true): void
+    public function createRelationsProduct(Product $product, ProductRelationDto $productRelationDto, bool $isNewProduct): void
     {
         $this->propertyValueService->upsertPropertyValues($productRelationDto->propertyValues);
-
-        if ($isNewProduct) foreach ($productRelationDto as $relation => $keys) $product->$relation()->attach($keys);
-        else foreach ($productRelationDto as $relation => $keys) $detached[$relation] = $product->$relation()->sync($keys)['detached'];
-
-        if ($detached['optionValues'] ?? false) $this->optionValueService->unpublishTypesAfterUpdateProduct($product, $detached['optionValues']);
+        if ($isNewProduct) foreach ((array)$productRelationDto as $relation => $keys) $product->$relation()->attach($keys);
+        else {
+            $detached = [];
+            foreach ((array)$productRelationDto as $relation => $keys) $detached[$relation] = $product->$relation()->sync($keys)['detached'];
+            if (!empty($detached['optionValues'])) $this->optionValueService->unpublishTypesAfterUpdateProduct($product, $detached['optionValues']);
+        }
     }
 
     public function createRelationsProductType(Product $product, ProductType $productType, ProductTypeRelationDto $productTypeRelationDto, bool $isNewProduct): ProductTypeRelationForInsertDto
@@ -40,9 +41,13 @@ class RelationService
         return new ProductTypeRelationForInsertDto($optionValues, $productImages);
     }
 
-    public function createRelationsProductTypes(Collection|ProductTypeRelationForInsertDto $collectionProductTypeAttachDto): void
+    /**
+     * @param Collection<int, ProductTypeRelationForInsertDto> $collectionProductTypeRelationsForInsertDto
+     * @return void
+     */
+    public function createRelationsProductTypes(Collection $collectionProductTypeRelationsForInsertDto): void
     {
-        ProductTypeOptionValue::insert($collectionProductTypeAttachDto->pluck('optionValues')->flatten(1)->all());
-        ProductImage::insert($collectionProductTypeAttachDto->pluck('productImages')->flatten(1)->all());
+        ProductTypeOptionValue::query()->insert($collectionProductTypeRelationsForInsertDto->pluck('optionValues')->flatten(1)->all());
+        ProductImage::query()->insert($collectionProductTypeRelationsForInsertDto->pluck('productImages')->flatten(1)->all());
     }
 }

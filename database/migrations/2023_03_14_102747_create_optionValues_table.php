@@ -1,12 +1,10 @@
 <?php
 
-use App\Models\Option;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -18,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('option_id')->constrained('options')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('value');
-            $table->unique(['option_id','value']); 
+            $table->unique(['option_id', 'value']);
             $table->timestamps();
         });
     }

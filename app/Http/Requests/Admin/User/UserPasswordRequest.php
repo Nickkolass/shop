@@ -12,7 +12,7 @@ class UserPasswordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -30,7 +30,7 @@ class UserPasswordRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'password' => 'required|string|current_password',
@@ -38,7 +38,8 @@ class UserPasswordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    /** @return array<string, string> */
+    public function messages(): array
     {
         return [
             'password.current_password' => 'Веден неверный пароль',

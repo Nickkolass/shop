@@ -2,13 +2,15 @@
 
 namespace Database\Factories;
 
+use App\Models\ProductImage;
 use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductImage>
+ * @extends Factory<ProductImage>
  */
 class ProductImageFactory extends Factory
 {
@@ -22,12 +24,11 @@ class ProductImageFactory extends Factory
         $productType = ProductType::query()
             ->latest('id')
             ->select('id', 'product_id')
-            ->toBase()
             ->first();
 
-        $counter = cache('imageCounter');
-        cache()->increment('imageCounter');
-        $filePath = cache('factory')[$counter];
+        $counter = Cache::get('imageCounter');
+        Cache::increment('imageCounter');
+        $filePath = Cache::get('factory')[$counter];
 
         $productImagePath = Storage::putFile(
             'product_images/' . $productType->product_id,
@@ -35,6 +36,7 @@ class ProductImageFactory extends Factory
             'public'
         );
 
+        /** @var string $productImagePath */
         return [
             'file_path' => $productImagePath,
             'size' => Storage::size($productImagePath),

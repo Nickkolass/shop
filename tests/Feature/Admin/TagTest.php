@@ -12,9 +12,9 @@ class TagTest extends TestCase
 {
 
     /**@test */
-    public function test_a_tag_can_be_viewed_any_with_premissions()
+    public function test_a_tag_can_be_viewed_any_with_premissions(): void
     {
-        $tag = Tag::factory()->create();
+        Tag::factory()->create();
         $user = User::factory()->create();
 
         $this->get(route('admin.tags.index'))->assertNotFound();
@@ -33,7 +33,7 @@ class TagTest extends TestCase
     }
 
     /**@test */
-    public function test_a_tag_can_be_created_with_premissions()
+    public function test_a_tag_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
 
@@ -54,7 +54,7 @@ class TagTest extends TestCase
     }
 
     /**@test */
-    public function test_a_tag_can_be_stored_with_premissions()
+    public function test_a_tag_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
         $data = Tag::factory()->raw();
@@ -75,12 +75,12 @@ class TagTest extends TestCase
         $this->actingAs($user)->post(route('admin.tags.store'), $data);
         $this->assertDatabaseCount('tags', 1);
 
-        $tag = Tag::first();
+        $tag = Tag::query()->first();
         $this->assertEquals($data['title'], $tag['title']);
     }
 
     /**@test */
-    public function test_a_tag_can_be_viewed_with_premissions()
+    public function test_a_tag_can_be_viewed_with_premissions(): void
     {
         $tag = Tag::factory()->create();
         $user = User::factory()->create();
@@ -102,7 +102,7 @@ class TagTest extends TestCase
     }
 
     /**@test */
-    public function test_a_tag_can_be_edited_with_premissions()
+    public function test_a_tag_can_be_edited_with_premissions(): void
     {
         $tag = Tag::factory()->create();
         $user = User::factory()->create();
@@ -124,7 +124,7 @@ class TagTest extends TestCase
     }
 
     /**@test */
-    public function test_a_tag_can_be_updated_with_premissions()
+    public function test_a_tag_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
         $tag = Tag::factory()->create();
@@ -144,15 +144,15 @@ class TagTest extends TestCase
         $user->role = 1;
         $user->save();
         $this->actingAs($user)->patch(route('admin.tags.update', $tag->id), $data);
-        $this->assertEquals($data['title'], Tag::first()->title);
+        $this->assertEquals($data['title'], Tag::query()->first()->title);
     }
 
     /**@test */
-    public function test_a_tag_can_be_deleted_with_premissions()
+    public function test_a_tag_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
         $tag = Tag::factory()->create();
-        Category::create(['title' => 'assdg', 'title_rus' => 'asdasd']);
+        Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
         Product::factory()->create()->tags()->attach($tag);
 
         $this->delete('/admin/tags/' . $tag->id)->assertNotFound();

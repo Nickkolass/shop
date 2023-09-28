@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -40,7 +41,10 @@
 
                             <div class="mr-3">
                                 <h4 hidden> {{ $block = ($product->productTypes->count() == collect([1])->crossjoin(...$product->optionValues)->count() || $product->optionValues->count() == 0) ? 1 : 0}} </h4>
-                                <a href="{{ route('admin.productTypes.create', $product->id) }}" class="btn btn-primary {{$block ? 'disabled' : ''}}" title="{{$block ? 'Добавлено максимальное количество типов по выбранным классификаторам' : ''}}">Добавить тип</a>
+                                <a href="{{ route('admin.productTypes.create', $product->id) }}"
+                                   class="btn btn-primary {{$block ? 'disabled' : ''}}"
+                                   title="{{$block ? 'Добавлено максимальное количество типов по выбранным классификаторам' : ''}}">Добавить
+                                    тип</a>
                             </div>
 
                             <div class="mr-3">
@@ -161,12 +165,16 @@
                                                 {{$option . ': ' . $value}}<br>
                                             @endforeach
                                         </td>
-                                        <td><img src="{{\Illuminate\Support\Facades\Storage::url($productType->preview_image) }}" width='50'
-                                                 height='50' class="img img-responsive"></td>
+                                        <td><img
+                                                src="{{Storage::url($productType->preview_image) }}"
+                                                width='50'
+                                                height='50' class="img img-responsive"></td>
                                         <td>
                                             @foreach($productType->productImages as $img)
-                                                <img src="{{\Illuminate\Support\Facades\Storage::url($img->file_path) }}" width='50'
-                                                     height='50' class="img img-responsive">
+                                                <img
+                                                    src="{{Storage::url($img->file_path) }}"
+                                                    width='50'
+                                                    height='50' class="img img-responsive">
                                             @endforeach
                                         </td>
                                         <td>{{ $productType->price }}</td>
@@ -192,7 +200,7 @@
                                         </td>
                                         <td>
                                             <form action="{{ route('admin.productTypes.destroy', $productType->id) }}"
-                                                method="post">
+                                                  method="post">
                                                 @csrf
                                                 @method('delete')
                                                 <input type="submit" class="btn btn-danger" value="Удалить">
@@ -220,8 +228,10 @@
                                         @if(!empty($comment->commentImages))
                                             <div class="card-body" style="margin-inline: 50px">
                                                 @foreach($comment->commentImages as $img)
-                                                    <img src="{{\Illuminate\Support\Facades\Storage::url($img->file_path) }}" width='150'
-                                                         class="img img-responsive">
+                                                    <img
+                                                        src="{{Storage::url($img->file_path) }}"
+                                                        width='150'
+                                                        class="img img-responsive">
                                                 @endforeach
                                             </div>
                                         @endif

@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+@php use Illuminate\Support\Facades\Storage; @endphp
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -45,7 +46,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ route('client.products.index') }}">
                 <table>
-                    <th><img src="{{\Illuminate\Support\Facades\Storage::url('view/wand.svg')}}" alt="" width="30"></th>
+                    <th><img src="{{Storage::url('view/wand.svg')}}" alt="" width="30"></th>
                     <th>
                         <h2>Lumos <em>Hand Made</em></h2>
                     </th>

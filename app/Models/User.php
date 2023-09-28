@@ -11,27 +11,34 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
- * @property int id
- * @property int role
- * @property string name
- * @property string email
- * @property string password
- * @property string surname
- * @property string patronymic
- * @property int age
- * @property int gender
- * @property ?string address
- * @property ?int card
- * @property ?int postcode
- * @property ?int INN
- * @property ?string registredOffice
- * @property string remember_token
- * @property Carbon email_verified_at
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $role
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $surname
+ * @property string $patronymic
+ * @property int $age
+ * @property int $gender
+ * @property ?string $address
+ * @property ?int $card
+ * @property ?int $postcode
+ * @property ?int $INN
+ * @property ?string $registredOffice
+ * @property ?string $remember_token
+ * @property ?Carbon $email_verified_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Collection<int, Product> $products
+ * @property ?Collection<int, ProductType> $productTypes
+ * @property ?Collection<int, Order> $orders
+ * @property ?Collection<int, OrderPerformer> $orderPerformers
+ * @property ?Collection<int, ProductType> $liked
+ * @property ?Collection<int, RatingAndComment> $ratingAndComments
  */
 class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
@@ -57,6 +64,9 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     const ROLE_SALER = 2;
     const ROLE_CLIENT = 3;
 
+    /**
+     * @return array<int, string>
+     */
     public static function getRoles(): array
     {
         return [
@@ -86,7 +96,8 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return self::getRoles()[$this->role] == 'client';
     }
 
-    static function getGenders(): array
+    /** @return array<int, string> */
+    public static function getGenders(): array
     {
         return [
             self::GENDER_MALE => 'Мужской',
@@ -139,6 +150,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->getKey();
     }
 
+    /** @return array<empty> */
     public function getJWTCustomClaims(): array
     {
         return [];

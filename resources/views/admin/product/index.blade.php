@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -56,10 +57,11 @@
                                             </td>
                                         @endif
                                         <td>@foreach($product->productTypes as $productType)
-                                                <img src="{{\Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
-                                                     width='50'
-                                                     height='50'
-                                                     class="img img-responsive">
+                                                <img
+                                                    src="{{Storage::url($productType->preview_image) }}"
+                                                    width='50'
+                                                    height='50'
+                                                    class="img img-responsive">
                                             @endforeach
                                         </td>
                                         <td>

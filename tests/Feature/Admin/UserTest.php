@@ -14,7 +14,7 @@ class UserTest extends TestCase
 {
 
     /**@test */
-    public function test_a_user_can_be_viewed_any_with_premissions()
+    public function test_a_user_can_be_viewed_any_with_premissions(): void
     {
         $user = User::factory()->create();
 
@@ -36,7 +36,7 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_can_be_created_with_premissions()
+    public function test_a_user_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
 
@@ -57,7 +57,7 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_can_be_stored_with_premissions()
+    public function test_a_user_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
         $data = User::factory()->raw();
@@ -80,16 +80,16 @@ class UserTest extends TestCase
         $this->assertDatabaseCount('users', 2);
         $this->assertDatabaseCount('jobs', 2);
 
-        $user = User::first()->toArray();
+        $user = User::query()->first()->toArray();
         unset($user['id'], $user['email_verified_at'], $user['created_at'], $user['updated_at'], $data['email_verified_at'], $data['password']);
 
         $this->assertEquals(sort($data), sort($user));
     }
 
     /**@test */
-    public function test_a_user_can_be_viewed_with_premissions()
+    public function test_a_user_can_be_viewed_with_premissions(): void
     {
-        $categories[] = Category::create(['title' => 'asf', 'title_rus' => 'asff']);
+        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff']);
         View::share('categories', $categories);
 
         $users = User::factory(2)->create();
@@ -119,9 +119,9 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_can_be_edited_with_premissions()
+    public function test_a_user_can_be_edited_with_premissions(): void
     {
-        $categories[] = Category::create(['title' => 'asf', 'title_rus' => 'asff'])->toArray();
+        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff'])->toArray();
         View::share('categories', $categories);
 
         $users = User::factory(2)->create();
@@ -151,9 +151,9 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_can_be_updated_with_premissions()
+    public function test_a_user_can_be_updated_with_premissions(): void
     {
-        $categories[] = Category::create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
+        $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
         View::share('categories', $categories);
         $users = User::factory(2)->create();
         $user = $users->first();
@@ -181,7 +181,7 @@ class UserTest extends TestCase
 
             $this->actingAs($user)->patch(route('users.update', $user->id), $data_for_upd);
 
-            $updated_user = User::first()->toArray();
+            $updated_user = User::query()->first()->toArray();
             unset($updated_user['password'], $updated_user['email_verified_at'], $updated_user['gender'], $updated_user['card'], $updated_user['created_at'], $updated_user['updated_at'],
                 $data_for_upd['password'], $data_for_upd['email_verified_at'], $data_for_upd['gender'], $data_for_upd['card']);
             $this->assertEquals(sort($data_for_upd), sort($updated_user));
@@ -197,16 +197,16 @@ class UserTest extends TestCase
 
         $this->actingAs($user)->patch(route('users.update', $another_user->id), $data_for_upd)->assertOk();
 
-        $updated_user = User::latest()->first()->toArray();
+        $updated_user = User::query()->latest()->first()->toArray();
         unset($updated_user['password'], $updated_user['email_verified_at'], $updated_user['gender'], $updated_user['card'], $updated_user['created_at'], $updated_user['updated_at'],
             $data_for_upd['password'], $data_for_upd['email_verified_at'], $data_for_upd['gender'], $data_for_upd['card']);
         $this->assertEquals(sort($data_for_upd), sort($updated_user));
     }
 
     /**@test */
-    public function test_a_user_can_be_deleted_with_premissions()
+    public function test_a_user_can_be_deleted_with_premissions(): void
     {
-        Category::create(['title' => 'assdg', 'title_rus' => 'asdasd']);
+        Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
         $users = User::factory(5)->has(
             Product::factory()
         )->create();
@@ -225,7 +225,7 @@ class UserTest extends TestCase
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 3; $i++) {
-            $deleted_user = $users->pop();
+            $deleted_user = $users->pop(); /** @var User $deleted_user */
             $deleted_user->role = $i;
             $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirect(route('users.index'));
             session()->flush();
@@ -240,9 +240,9 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_password_can_be_edited_with_premissions()
+    public function test_a_user_password_can_be_edited_with_premissions(): void
     {
-        $categories[] = Category::create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
+        $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
         View::share('categories', $categories);
         $users = User::factory(2)->create();
         $user = $users->first();
@@ -268,12 +268,12 @@ class UserTest extends TestCase
     }
 
     /**@test */
-    public function test_a_user_password_can_be_updated_with_premissions()
+    public function test_a_user_password_can_be_updated_with_premissions(): void
     {
         $users = User::factory(2)->create();
-        $user = $users->first();
-        $another_user = $users->last();
-        $another_user->password = Hash::make(1);
+        $user = $users->first(); /** @var User $user */
+        $another_user = $users->last(); /** @var User $another_user */
+        $another_user->password = Hash::make('1');
         $another_user->save();
 
         $password = Hash::make(Str::random(5));
@@ -292,7 +292,7 @@ class UserTest extends TestCase
 
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
-            $user->password = Hash::make($i);
+            $user->password = Hash::make((string)$i);
             $user->save();
             $password = Hash::make(Str::random(5));
             $data = ['password' => (string)$i, 'new_password' => $password, 'new_password_confirmation' => $password];

@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -42,8 +43,9 @@
                             <td style="vertical-align: middle">{{ $product_type['title'] }}</td>
                             <td style="vertical-align: middle"><a
                                     href="{{ route('client.products.show', $product_type['id']) }}">
-                                    <img src="{{\Illuminate\Support\Facades\Storage::url($product_type['preview_image'])}}"
-                                         style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 || ($block[$product_type['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
+                                    <img
+                                        src="{{Storage::url($product_type['preview_image'])}}"
+                                        style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 || ($block[$product_type['id']] ?? false) ? '0.3' : '1'}}; height: 150px"></a>
                             </td>
                             <td style="vertical-align: middle">
                                 @foreach($product_type['option_values'] as $option => $value)
@@ -56,8 +58,9 @@
                             </td>
                             <td style="vertical-align: middle">{{$product_type['total_price']}} руб.</td>
                             <td style="vertical-align: middle">
-                                <form action="{{route('client.addToCart', ['addToCart' => [$product_type['id'] => '']]) }}"
-                                      method="post">
+                                <form
+                                    action="{{route('client.addToCart', ['addToCart' => [$product_type['id'] => '']]) }}"
+                                    method="post">
                                     @csrf
                                     <input type="submit" class="btn btn-danger" value="Удалить">
                                 </form>

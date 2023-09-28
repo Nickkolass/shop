@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Property>
+ * @extends Factory<Property>
  */
 class PropertyFactory extends Factory
 {
@@ -18,6 +19,6 @@ class PropertyFactory extends Factory
     {
         return [
             'title' => $this->faker->unique()->word(),
-    ];
+        ];
     }
 }

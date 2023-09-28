@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @if(count($product_type['product']['product_types']) > 1)
     <div class="col" style="text-align:center">
         @isset($product_type['product']['description'])
@@ -8,7 +9,7 @@
                 <!-- если это show то крупнее  -->
                 <img
                     style="{{empty($product_type['product']['description']) ? 'width:70px;' : 'width:150px;'}}; opacity:{{$type['is_published'] == 0 ? '0.3' : '1'}}; border:{{$product_type['id'] == $type['id'] ? 'solid' : ''}}"
-                    src="{{ \Illuminate\Support\Facades\Storage::url($type['preview_image'])}}">
+                    src="{{ Storage::url($type['preview_image'])}}">
             </a>
         @endforeach
     </div>

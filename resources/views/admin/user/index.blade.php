@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -51,7 +52,7 @@
                                 @foreach($users as $user)
                                     <tr>
                                         <td>{{ $user->id }}</td>
-                                        <td>{{ \App\Models\User::getRoles()[$user->role] }}</td>
+                                        <td>{{ User::getRoles()[$user->role] }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->surname }}</td>
                                         <td><a href="{{ route('users.show', $user->id) }}">{{ $user->name }}</a></td>

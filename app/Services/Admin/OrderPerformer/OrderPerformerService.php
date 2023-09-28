@@ -4,7 +4,7 @@ namespace App\Services\Admin\OrderPerformer;
 
 use App\Mail\MailOrderPerformerDestroy;
 use App\Models\OrderPerformer;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,15 +18,12 @@ class OrderPerformerService
     public function index(): Paginator
     {
         $user = session('user');
-        $orders = OrderPerformer::query()
+        $orders = OrderPerformer::withTrashed()
             ->when($user['role'] == 'admin',
                 fn($q) => $q->with('user:id,name'),
-                fn($q) => $q->whereHas('saler', function ($b) use ($user) {
-                    $b->where('id', $user['id']);
-                }))
-            ->withTrashed()
-            ->latest('created_at')
+                fn($q) => $q->whereHas('saler', fn($b) => $b->where('id', $user['id'])))
             ->with('saler:id,name')
+            ->latest('created_at')
             ->simplePaginate(5);
 
         $this->service->getProductsForIndex($orders);

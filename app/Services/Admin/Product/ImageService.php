@@ -9,8 +9,15 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
-    public function prepareOrCreateProductImages(ProductType $productType, array $images, ?bool $isNewProduct = true): array
+    /**
+     * @param ProductType $productType
+     * @param array<int, UploadedFile> $images
+     * @param bool $isNewProduct
+     * @return array<int, array<string, mixed>>
+     */
+    public function prepareOrCreateProductImages(ProductType $productType, array $images, bool $isNewProduct): array
     {
+        $productImagesForInsert = [];
         foreach ($images as $image) $productImagesForInsert[] = [
             'productType_id' => $productType->id,
             'file_path' => $image->storePublicly('product_images/' . $productType->product_id),
@@ -20,7 +27,7 @@ class ImageService
 
         if (!$isNewProduct) {
             $productType->productImages()->delete();
-            ProductImage::insert($productImagesForInsert);
+            ProductImage::query()->insert($productImagesForInsert);
         }
         return $productImagesForInsert;
     }
@@ -31,6 +38,10 @@ class ImageService
         session()->push('image_paths_for_failed_create_product.preview_images', $preview_image);
     }
 
+    /**
+     * @param string|array<int, string> $image_paths
+     * @return void
+     */
     public static function deleteImages(array|string $image_paths): void
     {
         Storage::delete($image_paths);

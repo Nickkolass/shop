@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Product;
+use App\Models\RatingAndComment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RatingAndComment>
+ * @extends Factory<RatingAndComment>
  */
 class RatingAndCommentFactory extends Factory
 {
@@ -21,8 +22,8 @@ class RatingAndCommentFactory extends Factory
         return [
             'rating' => $this->faker->numberBetween(1, 5),
             'message' => $this->faker->realText(),
-            'user_id' => User::take(1)->latest('id')->pluck('id')['0'],
-            'product_id' => Product::take(1)->latest('id')->pluck('id')['0'],
+            'user_id' => User::query()->take(1)->latest('id')->pluck('id')['0'],
+            'product_id' => Product::query()->take(1)->latest('id')->pluck('id')['0'],
         ];
     }
 }

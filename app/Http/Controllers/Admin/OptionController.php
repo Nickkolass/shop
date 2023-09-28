@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\OptionRequest;
 use App\Models\Option;
 use App\Services\Admin\OptionService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -24,20 +25,20 @@ class OptionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function index(): View
+    public function index(): View|Factory
     {
-        $options = Option::pluck('title', 'id');
+        $options = Option::query()->pluck('title', 'id');
         return view('admin.option.index', compact('options'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function create(): View
+    public function create(): View|Factory
     {
         return view('admin.option.create');
     }
@@ -45,10 +46,10 @@ class OptionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  OptionRequest  $request
-     * @return View
+     * @param OptionRequest $request
+     * @return View|Factory
      */
-    public function store(OptionRequest $request): View
+    public function store(OptionRequest $request): View|Factory
     {
         $data = $request->validated();
         $this->service->store(new OptionDto(...$data));
@@ -58,10 +59,10 @@ class OptionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Option $option
-     * @return View
+     * @param Option $option
+     * @return View|Factory
      */
-    public function show(Option $option): View
+    public function show(Option $option): View|Factory
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.show', compact('option'));
@@ -70,10 +71,10 @@ class OptionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Option $option
-     * @return View
+     * @param Option $option
+     * @return View|Factory
      */
-    public function edit(Option $option): View
+    public function edit(Option $option): View|Factory
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.edit', compact('option'));
@@ -82,11 +83,11 @@ class OptionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  OptionRequest  $request
-     * @param  Option $option
-     * @return View
+     * @param OptionRequest $request
+     * @param Option $option
+     * @return View|Factory
      */
-    public function update(OptionRequest $request, Option $option): View
+    public function update(OptionRequest $request, Option $option): View|Factory
     {
         $data = $request->validated();
         $this->service->update($option, new OptionDto(...$data));
@@ -96,7 +97,7 @@ class OptionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Option $option
+     * @param Option $option
      * @return RedirectResponse
      */
     public function destroy(Option $option): RedirectResponse

@@ -9,7 +9,7 @@ class HomeTest extends TestCase
 {
 
     /**@test */
-    public function test_base_url()
+    public function test_base_url(): void
     {
         $this->withoutExceptionHandling();
 

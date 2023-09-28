@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OrderPerformer;
 use App\Services\Admin\OrderPerformer\OrderPerformerService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -19,9 +20,9 @@ class OrderPerformerController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function index(): View
+    public function index(): View|Factory
     {
         $orders = $this->service->index();
         return view('admin.order.index', compact('orders'));
@@ -31,9 +32,9 @@ class OrderPerformerController extends Controller
      * Display the specified resource.
      *
      * @param OrderPerformer $order
-     * @return View
+     * @return View|Factory
      */
-    public function show(OrderPerformer $order): View
+    public function show(OrderPerformer $order): View|Factory
     {
         $this->service->show($order);
         return view('admin.order.show', compact('order'));

@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -50,8 +51,9 @@
                             @foreach($order['product_types'] as $product_type)
                                 <tr>
                                     <td><a href="{{ route('client.products.show', $product_type['id']) }}">
-                                            <img src="{{\Illuminate\Support\Facades\Storage::url($product_type['preview_image'])}}"
-                                                 style="height: 90px"></a></td>
+                                            <img
+                                                src="{{Storage::url($product_type['preview_image'])}}"
+                                                style="height: 90px"></a></td>
                                     <td>Название: {{ $product_type['title'] }}<br>
                                         Количество: {{ $product_type['amount'] }}<br>
                                         Стоимость: {{ $product_type['price'] }}<br>

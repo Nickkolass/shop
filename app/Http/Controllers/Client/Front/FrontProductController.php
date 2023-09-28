@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Product\ProductsRequest;
 use App\Services\Client\Front\FrontService;
 use GuzzleHttp\Client;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 
 class FrontProductController extends Controller
@@ -17,7 +18,7 @@ class FrontProductController extends Controller
         $this->client = new Client(config('guzzle'));
     }
 
-    public function index(): View
+    public function index(): View|Factory
     {
         $data['viewed'] = array_slice(array_keys(session('viewed') ?? []), 0, 12);
 
@@ -30,7 +31,7 @@ class FrontProductController extends Controller
         return view('client.index', compact('data'));
     }
 
-    public function filter(string $category_title, ProductsRequest $request)
+    public function filter(string $category_title, ProductsRequest $request): Factory|View
     {
         $query_params = $request->validated();
         FrontService::scenarioGetProducts($query_params);
@@ -43,7 +44,7 @@ class FrontProductController extends Controller
         return view('client.product.index', compact('data', 'product_types'));
     }
 
-    public function show(int $product_type_id): View
+    public function show(int $product_type_id): View|Factory
     {
         $product_type = $this->client->request('POST', 'api/products/show/' . $product_type_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -56,7 +57,7 @@ class FrontProductController extends Controller
         return view('client.product.show', compact('data', 'product_type'));
     }
 
-    public function cart(): View
+    public function cart(): View|Factory
     {
         $product_types = $total_price = null;
         if ($cart = session('cart')) {
@@ -67,7 +68,7 @@ class FrontProductController extends Controller
         return view('client.cart', compact('product_types', 'total_price'));
     }
 
-    public function liked(): View
+    public function liked(): View|Factory
     {
         $product_types = $this->client->request('POST', 'api/products/liked',
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();

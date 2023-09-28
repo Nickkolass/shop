@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -59,8 +60,9 @@
                                     @foreach($order->productTypes as $productType)
                                         <tr>
                                             <td><a href="{{ route('admin.products.show', $productType['id']) }}">
-                                                    <img src="{{\Illuminate\Support\Facades\Storage::url($productType['preview_image'])}}"
-                                                         style="height: 140px"></a></td>
+                                                    <img
+                                                        src="{{Storage::url($productType['preview_image'])}}"
+                                                        style="height: 140px"></a></td>
                                             <td>Название: {{ $productType['product']['title'] }}<br>
                                                 Категория: {{ $productType['category']['title_rus'] }}<br>
                                                 Количество: {{ $productType['amount'] }}<br>
@@ -70,7 +72,8 @@
                                                     <a class="linkclass disabled"
                                                        href="{{ route('users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a>
                                                     <br>
-                                                    <a href="{{ route('client.orders.show', $order->order_id) }}">Перейти к
+                                                    <a href="{{ route('client.orders.show', $order->order_id) }}">Перейти
+                                                        к
                                                         заказу</a>
                                                 @else
                                                     {{ $order->saler->name }}

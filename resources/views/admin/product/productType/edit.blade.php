@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
 
@@ -80,7 +81,7 @@
                                                                 <input name="preview_image" type="file"
                                                                        class="form-control">
                                                                 <img
-                                                                    src="{{ \Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
+                                                                    src="{{ Storage::url($productType->preview_image) }}"
                                                                     width='70' height='70' class="img img-responsive"
                                                                     style="margin-left: 10px">
                                                             </div>
@@ -104,10 +105,11 @@
                                                                        name="relations[productImages][]"
                                                                        type="file" multiple>
                                                                 @foreach($productType->productImages as $img)
-                                                                    <img src="{{\Illuminate\Support\Facades\Storage::url( $img->file_path) }}"
-                                                                         width='70' height='70'
-                                                                         class="img img-responsive"
-                                                                         style="margin-left: 10px">
+                                                                    <img
+                                                                        src="{{Storage::url( $img->file_path) }}"
+                                                                        width='70' height='70'
+                                                                        class="img img-responsive"
+                                                                        style="margin-left: 10px">
                                                                 @endforeach
                                                             </div>
                                                         </div>

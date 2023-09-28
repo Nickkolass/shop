@@ -12,7 +12,7 @@ class UpdateRelationsRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,8 +23,8 @@ class UpdateRelationsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'propertyValues' => array_filter($this->propertyValues),
-            'optionValues' => Arr::flatten($this->optionValues),
+            'propertyValues' => array_filter($this->input('propertyValues')),
+            'optionValues' => Arr::flatten($this->input('optionValues')),
         ]);
     }
 
@@ -33,7 +33,7 @@ class UpdateRelationsRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'tags' => 'required|array',

@@ -4,6 +4,7 @@ namespace Database\Seeders\Components;
 
 class SeederInitialData
 {
+    /** @return  array<array<string>> */
     public static function getCategories(): array
     {
         $res = [
@@ -16,6 +17,7 @@ class SeederInitialData
         return app()->environment() === 'testing' ? array_slice($res, 2) : $res;
     }
 
+    /** @return array<array<string>> */
     public static function getOptions(): array
     {
         return [

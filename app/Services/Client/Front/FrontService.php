@@ -2,8 +2,14 @@
 
 namespace App\Services\Client\Front;
 
+use Illuminate\Http\UploadedFile;
+
 class FrontService
 {
+    /**
+     * @param null|array<string, mixed> &$query_params
+     * @return void
+     */
     public static function scenarioGetProducts(?array &$query_params): void
     {
         if (!empty($query_params['page']) || session()->pull('backFilter')) {
@@ -20,6 +26,10 @@ class FrontService
         $query_params['cart'] = session('cart');
     }
 
+    /**
+     * @param array<string, mixed> &$data
+     * @return null|array<array<string, mixed>>
+     */
     public static function afterGetProducts(array &$data): ?array
     {
         $data['cart'] = session('cart');
@@ -29,6 +39,10 @@ class FrontService
         return $product_types;
     }
 
+    /**
+     * @param array<int, UploadedFile> &$images
+     * @return void
+     */
     public static function imgEncode(array &$images): void
     {
         foreach ($images as &$img) {

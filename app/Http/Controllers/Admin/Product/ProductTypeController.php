@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\Product\ProductType\ProductTypeUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Admin\Product\ProductTypeService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -24,9 +25,9 @@ class ProductTypeController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Product $product
-     * @return View
+     * @return View|Factory
      */
-    public function create(Product $product): View|RedirectResponse
+    public function create(Product $product): View|Factory|RedirectResponse
     {
         $this->authorize('update', $product);
         $optionValues = $this->productTypeService->relationService->optionValueService->getOptionValues($product);
@@ -58,9 +59,9 @@ class ProductTypeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param ProductType $productType
-     * @return View
+     * @return View|Factory
      */
-    public function edit(ProductType $productType): View
+    public function edit(ProductType $productType): View|Factory
     {
         $this->authorize('update', $productType);
         $productType->load(['productImages:productType_id,file_path', 'optionValues:id', 'product:id']);
@@ -94,7 +95,7 @@ class ProductTypeController extends Controller
      */
     public function publish(ProductType $productType): RedirectResponse
     {
-        if ($productType->product()->pluck('saler_id')->first() != auth()->id() & session('user.role') != 'admin') abort(403);
+        if ($productType->product()->pluck('saler_id')[0] != auth()->id() & session('user.role') != 'admin') abort(403);
         $productType->update(['is_published' => !$productType->is_published]);
         return back();
     }

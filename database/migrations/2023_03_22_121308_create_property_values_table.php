@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('property_id')->constrained('properties')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('value');
-            $table->unique(['property_id','value']); 
+            $table->unique(['property_id', 'value']);
             $table->timestamps();
         });
     }

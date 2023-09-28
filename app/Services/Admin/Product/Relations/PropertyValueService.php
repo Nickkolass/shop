@@ -7,6 +7,10 @@ use App\Models\PropertyValue;
 class PropertyValueService
 {
 
+    /**
+     * @param array<int, string> &$propertyValues
+     * @return void
+     */
     public function upsertPropertyValues(array &$propertyValues): void
     {
         $query = PropertyValue::query();
@@ -14,7 +18,7 @@ class PropertyValueService
             $value = ['property_id' => $property_id, 'value' => $value];
             $query->orWhere(fn($b) => $b->where($value));
         }
-        PropertyValue::upsert($propertyValues, ['property_id', 'value']);
+        PropertyValue::query()->upsert($propertyValues, ['property_id', 'value']);
         $propertyValues = $query->pluck('id')->all();
     }
 }

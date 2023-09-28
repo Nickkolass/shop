@@ -2,12 +2,12 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class MailRegistered extends Mailable implements ShouldQueue
 {
@@ -28,7 +28,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     /**
      * Get the message envelope.
      *
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * @return Envelope
      */
     public function envelope()
     {
@@ -40,7 +40,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     /**
      * Get the message content definition.
      *
-     * @return \Illuminate\Mail\Mailables\Content
+     * @return Content
      */
     public function content()
     {
@@ -52,7 +52,7 @@ class MailRegistered extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array
+     * @return array<empty>
      */
     public function attachments()
     {

@@ -14,6 +14,7 @@ class ProductFilter extends AbstractFilter
     const SALERS = 'salers';
     const PROPERTYVALUES = 'propertyValues';
 
+    /** @return array<string, array<int, mixed>> */
     protected function getCallbacks(): array
     {
         return [
@@ -25,29 +26,54 @@ class ProductFilter extends AbstractFilter
         ];
     }
 
-    public function search(Builder $builder, $value): void
+    /**
+     * @param Builder $builder
+     * @param string $value
+     * @return void
+     */
+    public function search(Builder $builder, string $value): void
     {
         $builder->whereIn('id', Product::search($value)->keys()->all());
     }
 
-    public function category(Builder $builder, $value): void
+    /**
+     * @param Builder $builder
+     * @param string $value
+     * @return void
+     */
+    public function category(Builder $builder, string $value): void
     {
         $builder->where('category_id', $value);
     }
 
-    public function tags(Builder $builder, $value): void
+    /**
+     * @param Builder $builder
+     * @param array<int, int> $value
+     * @return void
+     */
+    public function tags(Builder $builder, array $value): void
     {
         $builder->whereHas('tags', function ($b) use ($value) {
             $b->whereIn('tag_id', $value);
         });
     }
 
-    public function salers(Builder $builder, $value): void
+    /**
+     * @param Builder $builder
+     * @param array<int, int> $value
+     * @return void
+     */
+    public function salers(Builder $builder, array $value): void
     {
         $builder->whereIn('saler_id', $value);
     }
 
-    public function propertyValues(Builder $builder, $value): void
+    /**
+     * @param Builder $builder
+     * @param array<int, array<int, int>> $value
+     * @return void
+     */
+    public function propertyValues(Builder $builder, array $value): void
     {
         foreach ($value as $property_id => $propertyValue_ids) {
             $builder->whereHas('propertyValues', function ($q) use ($propertyValue_ids) {

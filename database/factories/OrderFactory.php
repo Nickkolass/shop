@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Order;
 use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
+ * @extends Factory<Order>
  */
 class OrderFactory extends Factory
 {
@@ -18,17 +19,17 @@ class OrderFactory extends Factory
      */
     public function definition()
     {
-        $user = User::inRandomOrder()->select('id', 'address', 'card')->first();
+        $user = User::query()->inRandomOrder()->select('id', 'address', 'card')->first();
         $productTypes = ProductType::query()
-            ->inRandomOrder()
-            ->take(4)
             ->with('product:id,saler_id')
             ->select('id', 'product_id', 'price')
+            ->take(4)
+            ->inRandomOrder()
             ->get()
             ->map(function (ProductType $productType) {
                 return [
                     'productType_id' => $productType->id,
-                    'amount' => $amount = random_int(1, 3),
+                    'amount' => $amount = rand(1, 3),
                     'price' => $productType->price * $amount,
                     'saler_id' => $productType->product->saler_id,
                 ];
@@ -42,7 +43,7 @@ class OrderFactory extends Factory
             'productTypes' => $productTypes->all(),
             'delivery' => $user->address,
             'total_price' => $productTypes->pluck('price')->sum(),
-            'payment' => (string) $user->card,
+            'payment' => (string)$user->card,
             'payment_status' => true,
         ];
     }

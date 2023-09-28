@@ -12,22 +12,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Query\Builder as DBBuilder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @property int id
- * @property int product_id
- * @property int price
- * @property int count
- * @property bool is_published
- * @property string preview_image
- * @property Carbon created_at
- * @property Carbon updated_at
- * @method static self|Builder query()
- * @method self|Builder sort(string $orderBy)
- * @method self|Builder filter(FilterInterface $filter)
+ * @property int $id
+ * @property int $product_id
+ * @property int $price
+ * @property int $count
+ * @property bool $is_published
+ * @property string $preview_image
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Product $product
+ * @property ?Category $category
+ * @property ?User $saler
+ * @property ?Collection<int, OptionValue> $optionValues
+ * @property ?Collection<int, ProductImage> $productImages
+ * @property ?Collection<int, ProductType> $liked
+ * @method static static|Builder query()
+ * @method static static|Builder sort(string $orderBy)
+ * @method static static|Builder filter(FilterInterface $filter)
  */
-
 class ProductType extends Model
 {
     use HasFactory, Filterable;
@@ -65,7 +72,7 @@ class ProductType extends Model
         return $this->beLongsToMany(User::class, 'productType_user_likes', 'productType_id', 'user_id');
     }
 
-    public function scopeSort(Builder $query, $orderBy): void
+    public function scopeSort(Builder|DBBuilder $query, string $orderBy): void
     {
         if ($orderBy == 'rating') {
             $query->leftJoin('products', 'products.id', '=', 'productTypes.product_id')

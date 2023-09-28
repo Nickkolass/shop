@@ -11,7 +11,7 @@ class ProductsRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,12 +21,12 @@ class ProductsRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-                'page' => 'nullable|integer',
-                'filter' => 'nullable|array',
-                'paginate' => 'nullable|array',
+            'page' => 'nullable|integer',
+            'filter' => 'nullable|array',
+            'paginate' => 'nullable|array',
         ];
     }
 }

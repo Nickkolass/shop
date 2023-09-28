@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\Components;
 
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\User;
 use App\Models\Product;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class SeederProductService
@@ -17,7 +17,7 @@ class SeederProductService
             ->each(function (Product $product) {
                 $optionValues = $product
                     ->optionValues()
-                    ->select('optionValues.id', 'option_id')
+                    ->select(['optionValues.id', 'option_id'])
                     ->get()
                     ->groupBy('option_id')
                     ->map(fn(Collection $optionValues) => $optionValues->pluck('id'));
@@ -27,7 +27,10 @@ class SeederProductService
                 foreach ($product->productTypes as $key => $productType) {
                     $productType->optionValues()->attach($optionValues[$key]);
 
-                    if (rand(1, 100) < 30) $productType->liked()->attach(User::inRandomOrder()->limit(random_int(1, 3))->pluck('id'));
+                    if (rand(1, 100) < 30) {
+                        $liked_ids = User::query()->inRandomOrder()->limit(rand(1, 3))->pluck('id');
+                        $productType->liked()->attach($liked_ids);
+                    }
 
                     $productImage = $productType->productImages->first()->file_path;
                     $previewImage = str_replace('product_images', 'preview_images', $productImage);

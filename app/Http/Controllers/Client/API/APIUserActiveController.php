@@ -18,7 +18,7 @@ class APIUserActiveController extends Controller
     public function likedToggle(ProductType $productType): void
     {
         $this->authorize('product', User::class);
-        $this->service->likedToggle($productType, auth('api')->id());
+        $this->service->likedToggle($productType, (int)auth('api')->id());
     }
 
     public function commentStore(StoreRequest $request): void

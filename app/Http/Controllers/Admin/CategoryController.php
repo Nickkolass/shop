@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CategoryRequest;
 use App\Models\Category;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -18,19 +19,19 @@ class CategoryController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @return View
+     * @return View|Factory
      */
-    public function index(): View
+    public function index(): View|Factory
     {
-        $categories = Category::toBase()->get();
+        $categories = Category::query()->toBase()->get();
         return view('admin.category.index', compact('categories'));
     }
 
     /**
      * Show the form for creating a new resource.
-     * @return View
+     * @return View|Factory
      */
-    public function create(): View
+    public function create(): View|Factory
     {
         return view('admin.category.create');
     }
@@ -39,12 +40,12 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      *
      * @param CategoryRequest $request
-     * @return View
+     * @return View|Factory
      */
-    public function store(CategoryRequest $request): View
+    public function store(CategoryRequest $request): View|Factory
     {
         $data = $request->validated();
-        Category::firstOrCreate($data);
+        Category::query()->firstOrCreate($data);
         return $this->index();
     }
 
@@ -52,9 +53,9 @@ class CategoryController extends Controller
      * Display the specified resource.
      *
      * @param Category $category
-     * @return View
+     * @return View|Factory
      */
-    public function show(Category $category): View
+    public function show(Category $category): View|Factory
     {
         return view('admin.category.show', compact('category'));
     }
@@ -63,9 +64,9 @@ class CategoryController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Category $category
-     * @return View
+     * @return View|Factory
      */
-    public function edit(Category $category): View
+    public function edit(Category $category): View|Factory
     {
         return view('admin.category.edit', compact('category'));
     }
@@ -75,9 +76,9 @@ class CategoryController extends Controller
      *
      * @param CategoryRequest $request
      * @param Category $category
-     * @return View
+     * @return View|Factory
      */
-    public function update(CategoryRequest $request, Category $category): View
+    public function update(CategoryRequest $request, Category $category): View|Factory
     {
         $data = $request->validated();
         $category->update($data);

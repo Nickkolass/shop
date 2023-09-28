@@ -6,27 +6,30 @@ use App\Models\OrderPerformer;
 use App\Models\ProductType;
 use App\Services\Methods\Maper;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Collection;
 
 class OrderPerformerProductService
 {
-    public function getProductsForIndex(Paginator &$orders): void
+    public function getProductsForIndex(Paginator $orders): void
     {
-        $productType_ids = $orders->getCollection()->pluck('productTypes.*.productType_id')->flatten();
+        /** @var Collection $orders */
+        $productType_ids = $orders->pluck('productTypes.*.productType_id')->flatten();
         $preview_images = ProductType::query()
             ->whereIn('id', $productType_ids)
             ->pluck('preview_image', 'id');
 
-        foreach ($orders as &$order) {
+        $orders->map(function (OrderPerformer $order) use ($preview_images) {
+            $productTypes = [];
             foreach ($order->productTypes as $productType) {
                 $productType['preview_image'] = $preview_images[$productType['productType_id']];
                 $productTypes[] = $productType;
             }
             $order->productTypes = $productTypes;
             unset($productTypes);
-        }
+        });
     }
 
-    public function getProductsForShow(OrderPerformer &$order): void
+    public function getProductsForShow(OrderPerformer $order): void
     {
         $productTypesFromOrder = collect($order->productTypes);
         $order->productTypes = ProductType::query()
@@ -40,7 +43,7 @@ class OrderPerformerProductService
             ->get()
             ->each(function (ProductType $productType) use ($productTypesFromOrder) {
                 $productTypeFromOrder = $productTypesFromOrder->where('productType_id', $productType->id)->first();
-                $productType->amount = $productTypeFromOrder['amount'];
+                $productType->setAttribute('amount', $productTypeFromOrder['amount']);
                 $productType->price = $productTypeFromOrder['price'];
                 Maper::valuesToKeys($productType, 'optionValues');
             });

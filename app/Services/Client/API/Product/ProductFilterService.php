@@ -16,6 +16,11 @@ use Illuminate\Database\Eloquent\Builder;
 class ProductFilterService
 {
 
+    /**
+     * @param array<string, mixed> $data
+     * @param Category $category
+     * @return array<string, mixed>
+     */
     public function getProductFilterAggregateDataCache(array $data, Category $category): array
     {
         if (!empty($data)) $result = $this->getProductFilterAggregateData($data, $category);
@@ -24,6 +29,11 @@ class ProductFilterService
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param Category $category
+     * @return array<string, mixed>
+     */
     private function getProductFilterAggregateData(array $data, Category $category): array
     {
         $data['filter'] = $data['filter'] ?? [];
@@ -32,14 +42,25 @@ class ProductFilterService
         return $data;
     }
 
+    /**
+     * @param array<string, array|mixed> &$data
+     * @return ProductFilterService
+     */
     private function fillDataPaginate(array &$data): ProductFilterService
     {
-        $data['paginate']['orderBy'] = $data['paginate']['orderBy'] ?? 'rating';
-        $data['paginate']['perPage'] = $data['paginate']['perPage'] ?? 8;
-        $data['paginate']['page'] = $data['paginate']['page'] ?? 1;
+        $default = [
+            'orderBy' => 'rating',
+            'perPage' => 8,
+            'page' => 1,
+        ];
+        $data['paginate'] = array_merge($default, $data['paginate'] ?? []);
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> &$data
+     * @return ProductFilterService
+     */
     private function fillDataFilterable(array &$data): ProductFilterService
     {
         $data['filterable'] = cache()->rememberForever('filterable_by_category_id:' . $data['category']->id, function () use ($data) {
@@ -48,14 +69,14 @@ class ProductFilterService
 
             $filterable['salers'] = User::query()
                 ->whereHas('products', $whereHasProducts)
-                ->select('id', 'name')
                 ->toBase()
+                ->select('id', 'name')
                 ->get();
 
             $filterable['tags'] = Tag::query()
                 ->whereHas('products', $whereHasProducts)
-                ->select('id', 'title')
                 ->toBase()
+                ->select('id', 'title')
                 ->get();
 
             $filterable['optionValues'] = OptionValue::query()
@@ -81,11 +102,17 @@ class ProductFilterService
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> &$data
+     * @return ProductFilterService
+     */
     private function fillDataFilteredProductTypes(array &$data): ProductFilterService
     {
         $data['productTypes'] = ProductType::query()
+            ->filter(new ProductTypeFilter($data['filter']))
+            ->sort($data['paginate']['orderBy'])
             ->select('productTypes.id', 'productTypes.product_id', 'is_published', 'preview_image', 'price', 'count')
-            ->withExists(['liked' => fn($q) => $q->where('user_id', auth('api')->id())])
+            ->withExists(['liked' => fn(Builder $q) => $q->where('user_id', auth('api')->id())])
             ->with([
                 'productImages:productType_id,file_path',
                 'optionValues.option:id,title',
@@ -100,8 +127,6 @@ class ProductFilterService
             ->whereHas('product', function ($q) use ($data) {
                 $q->filter(new ProductFilter($data['filter'] + ['category' => $data['category']->id]));
             })
-            ->filter(new ProductTypeFilter($data['filter']))
-            ->sort($data['paginate']['orderBy'])
             ->simplePaginate($data['paginate']['perPage'], ['*'], 'page', $data['paginate']['page'])
             ->withPath('');
 

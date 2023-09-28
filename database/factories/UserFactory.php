@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -23,17 +24,17 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make($this->faker->password(5)),
             'name' => $this->faker->name(),
-            'surname'=> $this->faker->lastName(),
-            'patronymic'=> $this->faker->name(),
-            'gender'=> $this->faker->numberBetween(1, 2),
-            'age'=> $this->faker->numberBetween(20, 70),
+            'surname' => $this->faker->lastName(),
+            'patronymic' => $this->faker->name(),
+            'gender' => $this->faker->numberBetween(1, 2),
+            'age' => $this->faker->numberBetween(20, 70),
 
-            'card'=> $this->faker->numerify('################'),
-            'postcode'=> (int) $this->faker->postcode(),
-            'address'=> $this->faker->address(),
+            'card' => $this->faker->numerify('################'),
+            'postcode' => (int)$this->faker->postcode(),
+            'address' => $this->faker->address(),
 
-            'INN'=> (int) $this->faker->unique()->numerify('#########'),
-            'registredOffice'=> $this->faker->address(),
+            'INN' => (int)$this->faker->unique()->numerify('#########'),
+            'registredOffice' => $this->faker->address(),
         ];
     }
 
@@ -44,7 +45,7 @@ class UserFactory extends Factory
      */
     public function unverified()
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

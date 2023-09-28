@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Property;
+use App\Models\PropertyValue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PropertyValue>
+ * @extends Factory<PropertyValue>
  */
 class PropertyValueFactory extends Factory
 {
@@ -19,7 +20,7 @@ class PropertyValueFactory extends Factory
     {
         return [
             'value' => $this->faker->unique()->word(),
-            'property_id' => Property::latest('id')->toBase()->first()->id,
-    ];
+            'property_id' => Property::query()->latest('id')->first()->id,
+        ];
     }
 }

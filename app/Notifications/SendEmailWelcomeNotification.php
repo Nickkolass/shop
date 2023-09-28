@@ -12,11 +12,13 @@ class SendEmailWelcomeNotification
     /**
      * Handle the event.
      *
-     * @param  Registered  $event
+     * @param Registered $event
      * @return void
      */
     public function handle(Registered $event)
     {
-        Mail::to($event->user->email)->send(new MailRegistered($event->user->password_generated ?? null));
+        if (isset($event->user->email)) {
+            Mail::to($event->user->email)->send(new MailRegistered($event->user->password_generated ?? null));
+        }
     }
 }

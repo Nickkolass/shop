@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Option;
+use App\Models\OptionValue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OptionValue>
+ * @extends Factory<OptionValue>
  */
 class OptionValueFactory extends Factory
 {
@@ -19,7 +20,7 @@ class OptionValueFactory extends Factory
     {
         return [
             'value' => $this->faker->unique()->word(),
-            'option_id' => Option::take(1)->latest('id')->pluck('id')[0],
+            'option_id' => Option::query()->take(1)->latest('id')->pluck('id')[0],
         ];
     }
 }

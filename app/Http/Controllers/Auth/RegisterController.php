@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Arhitector\Yandex\Disk;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -32,7 +33,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected string $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -47,9 +48,9 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): View|Factory
     {
         $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
         return view('auth.register', compact('policy'));
@@ -58,23 +59,22 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return User
      */
-
-    protected function create(array $data)
+    protected function create(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
-        return User::firstOrCreate(['email' => $data['email']], $data);
+        return User::query()->firstOrCreate(['email' => $data['email']], $data);
     }
 
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param array $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @param array<string, mixed> $data
+     * @return \Illuminate\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data): \Illuminate\Validation\Validator
     {
         return Validator::make($data, (new UserStoreRequest)->rules());
     }

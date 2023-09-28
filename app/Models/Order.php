@@ -8,21 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
- * @property int id
- * @property int user_id
- * @property array productTypes
- * @property string delivery
- * @property int total_price
- * @property string payment
- * @property bool payment_status
- * @property string status
- * @property ?Carbon deleted_at
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $user_id
+ * @property array|Collection<int, ProductType> $productTypes
+ * @property string $delivery
+ * @property int $total_price
+ * @property string $payment
+ * @property bool $payment_status
+ * @property string $status
+ * @property ?Carbon $deleted_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?User $user
+ * @property ?Collection<int, OrderPerformer> $orderPerformers
  */
-
 class Order extends Model
 {
 
@@ -41,4 +43,4 @@ class Order extends Model
     {
         return $this->hasMany(OrderPerformer::class, 'order_id', 'id');
     }
- }
+}

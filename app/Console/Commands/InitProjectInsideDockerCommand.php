@@ -26,7 +26,7 @@ class InitProjectInsideDockerCommand extends Command
      * Execute the console command.
      *
      */
-    public function handle()
+    public function handle(): void
     {
         shell_exec('curl https://disk.yandex.ru/d/UXUnbmQv4Zndug/factory.zip -o storage/app/testing/factory.zip');
         shell_exec('unzip storage/app/testing/factory -d storage/app/testing');

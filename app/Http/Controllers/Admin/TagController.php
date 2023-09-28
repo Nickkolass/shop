@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -18,20 +19,20 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function index(): View
+    public function index(): View|Factory
     {
-        $tags = Tag::toBase()->get();
+        $tags = Tag::query()->toBase()->get();
         return view('admin.tag.index', compact('tags'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function create(): View
+    public function create(): View|Factory
     {
         return view('admin.tag.create');
     }
@@ -39,21 +40,21 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return View
+     * @return View|Factory
      */
-    public function store(): View
+    public function store(): View|Factory
     {
-        Tag::firstOrCreate(['title' => request('title')]);
+        Tag::query()->firstOrCreate(['title' => request('title')]);
         return $this->index();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  Tag $tag
-     * @return View
+     * @param Tag $tag
+     * @return View|Factory
      */
-    public function show(Tag $tag): View
+    public function show(Tag $tag): View|Factory
     {
         return view('admin.tag.show', compact('tag'));
     }
@@ -61,10 +62,10 @@ class TagController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Tag $tag
-     * @return View
+     * @param Tag $tag
+     * @return View|Factory
      */
-    public function edit(Tag $tag): View
+    public function edit(Tag $tag): View|Factory
     {
         return view('admin.tag.edit', compact('tag'));
     }
@@ -72,10 +73,10 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Tag $tag
-     * @return View
+     * @param Tag $tag
+     * @return View|Factory
      */
-    public function update(Tag $tag): View
+    public function update(Tag $tag): View|Factory
     {
         $tag->update(['title' => request('title')]);
         return $this->show($tag);
@@ -84,7 +85,7 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Tag $tag
+     * @param Tag $tag
      * @return RedirectResponse
      */
     public function destroy(Tag $tag): RedirectResponse

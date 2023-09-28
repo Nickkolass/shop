@@ -6,10 +6,12 @@ use App\Models\User;
 
 trait HasVerify
 {
-    public function verify(&$role)
+    public function verify(?string &$role): void
     {
         if (!$role && $user = auth()->user()) {
+            /** @var User $user */
             session([
+                /** @phpstan-ignore-next-line */
                 'jwt' => 'bearer ' . auth('api')->fromUser($user),
                 'user' => [
                     'id' => $user->id,

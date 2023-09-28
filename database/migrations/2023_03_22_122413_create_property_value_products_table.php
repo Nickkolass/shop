@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('property_value_id')->constrained('property_values')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->unique(['product_id','property_value_id']); 
+            $table->unique(['product_id', 'property_value_id']);
             $table->timestamps();
         });
     }

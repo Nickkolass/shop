@@ -29,7 +29,7 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
     /**
      * Get the message envelope.
      *
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * @return Envelope
      */
     public function envelope()
     {
@@ -41,7 +41,7 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
     /**
      * Get the message content definition.
      *
-     * @return \Illuminate\Mail\Mailables\Content
+     * @return Content
      */
     public function content()
     {
@@ -53,7 +53,7 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array
+     * @return array<empty>
      */
     public function attachments()
     {

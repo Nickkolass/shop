@@ -17,14 +17,14 @@ class IndexTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
         parent::tearDown();
     }
 
     /**@test */
-    public function test_admin_index_url()
+    public function test_admin_index_url(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
 
         $this->get(route('home'))->assertRedirect(route('login'));
 

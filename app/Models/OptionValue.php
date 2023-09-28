@@ -7,18 +7,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 /**
- * @property int id
- * @property int option_id
- * @property string value
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $option_id
+ * @property string $value
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Option $option
+ * @property ?Collection<int, Product> $products
+ * @property ?Collection<int, ProductType> $productTypes
  */
-
 class OptionValue extends Model
 {
     use HasFactory;
+
     protected $table = 'optionValues';
     protected $guarded = false;
     protected $hidden = ['created_at', 'updated_at', 'pivot'];

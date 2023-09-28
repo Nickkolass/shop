@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class JWTAuthController extends Controller
 {
@@ -19,25 +20,24 @@ class JWTAuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function login()
+    public function login(): JsonResponse
     {
         $credentials = request(['email', 'password']);
-
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+        /** @phpstan-ignore-next-line */
         return $this->respondWithToken($token);
     }
 
     /**
      * Get the authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function me()
+    public function me(): JsonResponse
     {
         return response()->json(auth('api')->user());
     }
@@ -45,37 +45,38 @@ class JWTAuthController extends Controller
     /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth('api')->logout();
-
         return response()->json(['message' => 'Successfully logged out']);
     }
 
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function refresh()
+    public function refresh(): JsonResponse
     {
+        /** @phpstan-ignore-next-line */
         return $this->respondWithToken(auth('api')->refresh());
     }
 
     /**
      * Get the token array structure.
      *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @param string $token
+     * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken(string $token): JsonResponse
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            /** @phpstan-ignore-next-line */
             'expires_in' => auth('api')->factory()->getTTL() * 60
         ]);
-    }}
+    }
+}

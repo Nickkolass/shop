@@ -12,7 +12,7 @@ class UserStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,13 +22,13 @@ class UserStoreRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
-        $password = url()->previousPath() == '/users/create' ? 'nullable' : 'required';
+        $password_rule = url()->previousPath() == '/users/create' ? 'nullable' : 'required';
         return [
             'role' => 'required|integer',
-            'email'=> 'required|string|email|unique:users',
-            'password'=> [$password, 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
+            'email' => 'required|string|email|unique:users',
+            'password' => [$password_rule, 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
             'name' => 'required|string',
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
@@ -44,7 +44,8 @@ class UserStoreRequest extends FormRequest
 
     }
 
-    public function messages()
+    /** @return array<string, string> */
+    public function messages(): array
     {
         return [
             'email.unique' => 'Пользователь с таким email уже зарегистрирован',

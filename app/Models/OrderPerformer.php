@@ -7,22 +7,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 /**
- * @property int id
- * @property int user_id
- * @property int saler_id
- * @property int order_id
- * @property Carbon dispatch_time
- * @property string status
- * @property array productTypes
- * @property string delivery
- * @property int total_price
- * @property ?Carbon deleted_at
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $user_id
+ * @property int $saler_id
+ * @property int $order_id
+ * @property Carbon $dispatch_time
+ * @property string $status
+ * @property array|Collection<int, ProductType> $productTypes
+ * @property string $delivery
+ * @property int $total_price
+ * @property ?Carbon $deleted_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?User $saler
+ * @property ?User $user
+ * @property ?Order $order
  */
-
 class OrderPerformer extends Model
 {
     use HasFactory, SoftDeletes;

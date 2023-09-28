@@ -1,13 +1,10 @@
 <?php
 
-use App\Models\OptionValue;
-use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -19,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('optionValue_id')->constrained('optionValues')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->unique(['optionValue_id','product_id']); 
+            $table->unique(['optionValue_id', 'product_id']);
             $table->timestamps();
         });
     }

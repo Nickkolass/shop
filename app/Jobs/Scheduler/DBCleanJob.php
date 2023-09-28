@@ -18,7 +18,7 @@ class DBCleanJob implements ShouldQueue
     public function handle(): void
     {
         Artisan::call('telescope:prune', ['--env' => 'local']);
-        PropertyValue::doesntHave('products')->delete();
+        PropertyValue::query()->doesntHave('products')->delete();
         (new SeederStorageService)->caching();
     }
 }
