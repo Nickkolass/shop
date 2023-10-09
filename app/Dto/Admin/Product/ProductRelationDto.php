@@ -5,9 +5,9 @@ namespace App\Dto\Admin\Product;
 class ProductRelationDto
 {
     /**
-     * @param array<int, string> $propertyValues rewritable
-     * @param array<int, int> $optionValues
-     * @param array<int, int> $tags
+     * @param array<string> $propertyValues rewritable
+     * @param array<int> $optionValues
+     * @param array<int> $tags
      */
     public function __construct(
         public array          $propertyValues,

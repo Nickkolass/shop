@@ -14,6 +14,7 @@ class HomeTest extends TestCase
         $this->withoutExceptionHandling();
 
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('home'))->assertRedirect(route('login'));
 

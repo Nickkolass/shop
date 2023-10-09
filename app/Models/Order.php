@@ -23,7 +23,7 @@ use Illuminate\Support\Collection;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property ?User $user
- * @property ?Collection<int, OrderPerformer> $orderPerformers
+ * @property ?Collection<OrderPerformer> $orderPerformers
  */
 class Order extends Model
 {

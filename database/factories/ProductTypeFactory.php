@@ -3,20 +3,16 @@
 namespace Database\Factories;
 
 use App\Models\Product;
-use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<ProductType>
- */
 class ProductTypeFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $product_id = Product::query()->take(1)->latest('id')->pluck('id')['0'];
         return [

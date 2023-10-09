@@ -1,6 +1,6 @@
 <div class="down-content">
     <div class="row" style="padding:10px">
-        <div class="col-sm">
+        <div class="col-sm" style="padding-right:5px; padding-left:5px">
             <ul>
                 @for($i=1; $i<=5; $i++)
                     <li>
@@ -11,7 +11,7 @@
             </ul>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm" style="padding-right:5px; padding-left:5px">
             <form action="{{ route('client.liked.toggle', $product_type['id']) }}" method="post">
                 @csrf
                 <button type="submit" class="border-0 bg-transparent"
@@ -22,7 +22,7 @@
             </form>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm" style="padding-right:5px; padding-left:5px">
             <li style="list-style-type: none;"><a href="#comments"
                                                   style="{{isset($product_type['product']['description']) ?: 'pointer-events:none; color:black'}}">
                     Отзывы ({{ $product_type['product']['count_comments'] }})</a></li>

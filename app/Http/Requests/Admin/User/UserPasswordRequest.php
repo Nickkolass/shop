@@ -18,6 +18,11 @@ class UserPasswordRequest extends FormRequest
     }
 
     /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<mixed>
+     */
+    /**
      * Handle a passed validation attempt.
      */
     protected function prepareForValidation(): void
@@ -28,7 +33,7 @@ class UserPasswordRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {

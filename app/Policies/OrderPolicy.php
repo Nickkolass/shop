@@ -6,7 +6,6 @@ use App\Models\Order;
 use App\Models\User;
 use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class OrderPolicy
 {
@@ -16,9 +15,9 @@ class OrderPolicy
      * Determine whether the user can view any models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return true
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -28,9 +27,9 @@ class OrderPolicy
      *
      * @param User $user
      * @param Order $order
-     * @return Response|bool
+     * @return bool
      */
-    public function view(User $user, Order $order)
+    public function view(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -39,9 +38,9 @@ class OrderPolicy
      * Determine whether the user can create models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return true
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return true;
     }
@@ -51,9 +50,9 @@ class OrderPolicy
      *
      * @param User $user
      * @param Order $order
-     * @return Response|bool
+     * @return bool
      */
-    public function update(User $user, Order $order)
+    public function update(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -63,9 +62,9 @@ class OrderPolicy
      *
      * @param User $user
      * @param Order $order
-     * @return Response|bool
+     * @return bool
      */
-    public function delete(User $user, Order $order)
+    public function delete(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -75,9 +74,9 @@ class OrderPolicy
      *
      * @param User $user
      * @param Order $order
-     * @return Response|bool
+     * @return false
      */
-    public function restore(User $user, Order $order)
+    public function restore(User $user, Order $order): bool
     {
         return false;
     }
@@ -87,9 +86,9 @@ class OrderPolicy
      *
      * @param User $user
      * @param Order $order
-     * @return Response|bool
+     * @return false
      */
-    public function forceDelete(User $user, Order $order)
+    public function forceDelete(User $user, Order $order): bool
     {
         return false;
     }

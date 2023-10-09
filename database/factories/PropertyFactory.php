@@ -2,20 +2,16 @@
 
 namespace Database\Factories;
 
-use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Property>
- */
 class PropertyFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'title' => $this->faker->unique()->word(),

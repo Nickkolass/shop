@@ -5,8 +5,9 @@ namespace App\Dto\Admin;
 class PropertyDto
 {
     /**
-     * @param array<int, int> $category_ids
-     * @param array<int, string> $propertyValues
+     * @param string $title
+     * @param array<int> $category_ids
+     * @param array<string> $propertyValues
      */
     public function __construct(
         public readonly string $title,

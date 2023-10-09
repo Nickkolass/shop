@@ -13,6 +13,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_viewed_login_page_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->withoutExceptionHandling();
 
@@ -31,6 +32,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_logged(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $user->password = Hash::make('1');
         $user->save();
 
@@ -43,6 +45,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_logout(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->withoutExceptionHandling();
 
@@ -53,6 +56,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_viewed_register_page_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->withoutExceptionHandling();
 
@@ -70,6 +74,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_registered_page_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = User::factory()->raw();
         $data['password_confirmation'] = $data['password'];
 
@@ -92,6 +97,7 @@ class AuthTest extends TestCase
     public function test_a_user_can_be_logged_using_remember_token(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $user->password = Hash::make('1');
 
         $this->withoutExceptionHandling();

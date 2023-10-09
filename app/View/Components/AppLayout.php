@@ -12,7 +12,7 @@ class AppLayout extends Component
      *
      * @return View
      */
-    public function render()
+    public function render(): View
     {
         return view('auth.layouts.app');
     }

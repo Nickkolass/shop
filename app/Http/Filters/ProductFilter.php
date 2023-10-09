@@ -4,24 +4,25 @@ namespace App\Http\Filters;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 
 class ProductFilter extends AbstractFilter
 {
 
     const SEARCH = 'search';
     const CATEGORY = 'category';
-    const TAGS = 'tags';
     const SALERS = 'salers';
+    const TAGS = 'tags';
     const PROPERTYVALUES = 'propertyValues';
 
-    /** @return array<string, array<int, mixed>> */
+    /** @return array<mixed> */
     protected function getCallbacks(): array
     {
         return [
             self::SEARCH => [$this, 'search'],
             self::CATEGORY => [$this, 'category'],
-            self::TAGS => [$this, 'tags'],
             self::SALERS => [$this, 'salers'],
+            self::TAGS => [$this, 'tags'],
             self::PROPERTYVALUES => [$this, 'propertyValues'],
         ];
     }
@@ -48,19 +49,7 @@ class ProductFilter extends AbstractFilter
 
     /**
      * @param Builder $builder
-     * @param array<int, int> $value
-     * @return void
-     */
-    public function tags(Builder $builder, array $value): void
-    {
-        $builder->whereHas('tags', function ($b) use ($value) {
-            $b->whereIn('tag_id', $value);
-        });
-    }
-
-    /**
-     * @param Builder $builder
-     * @param array<int, int> $value
+     * @param array<int> $value
      * @return void
      */
     public function salers(Builder $builder, array $value): void
@@ -70,15 +59,27 @@ class ProductFilter extends AbstractFilter
 
     /**
      * @param Builder $builder
-     * @param array<int, array<int, int>> $value
+     * @param array<int> $value
+     * @return void
+     */
+    public function tags(Builder $builder, array $value): void
+    {
+        $builder->whereHas('tags', function (Builder $b) use ($value) {
+            $b->whereIn('tag_id', $value);
+        });
+    }
+
+    /**
+     * @param Builder $builder
+     * @param array<array<int>> $value
      * @return void
      */
     public function propertyValues(Builder $builder, array $value): void
     {
-        foreach ($value as $property_id => $propertyValue_ids) {
-            $builder->whereHas('propertyValues', function ($q) use ($propertyValue_ids) {
-                $q->whereIn('property_value_id', $propertyValue_ids);
-            });
-        }
+        $builder->whereHas('propertyValues', function (Builder $b) use ($value) {
+            $b->selectRaw('COUNT(DISTINCT(`property_id`)) as `counter`')
+                ->whereIn('propertyValue_id', Arr::flatten($value))
+                ->having('counter', count($value));
+        });
     }
 }

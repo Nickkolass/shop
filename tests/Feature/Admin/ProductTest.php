@@ -10,6 +10,7 @@ use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -75,7 +76,8 @@ class ProductTest extends TestCase
         }
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.show', $another_product->id))->assertViewIs('admin.product.show');
+        $this->actingAs($user)->get(route('admin.products.show',
+            $another_product->id))->assertViewIs('admin.product.show');
         session()->flush();
     }
 
@@ -135,9 +137,10 @@ class ProductTest extends TestCase
     {
         $user = User::query()->first();
         $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value', 'property_id')->all();
-        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->get()
-            ->groupBy('option_id')->map(fn($optionValue) => $optionValue->pluck('id'))->toArray();
+        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+            'property_id')->all();
+        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+            ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
         $data = http_build_query($data);
 
         $this->get(route('admin.products.create.types') . '?' . $data)->assertNotFound();
@@ -164,37 +167,43 @@ class ProductTest extends TestCase
     {
         $user = User::query()->first();
 
-        $session = ['create' => [
-            'product' => [
-                'title' => '1',
-                'description' => '1',
-                'category_id' => Category::query()->first()->id,
-                'saler_id' => $user->id,
-            ],
-            'relations' => [
-                'tags' => Tag::query()->take(3)->pluck('id')->all(),
-                'propertyValues' => PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value', 'property_id')->all(),
-                'optionValues' => OptionValue::query()->take(2)->pluck('id')->all(),
-            ],
-        ]];
+        $session = [
+            'create' => [
+                'product' => [
+                    'title' => '1',
+                    'description' => '1',
+                    'category_id' => Category::query()->first()->id,
+                    'saler_id' => $user->id,
+                ],
+                'relations' => [
+                    'tags' => Tag::query()->take(3)->pluck('id')->all(),
+                    'propertyValues' => PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+                        'property_id')->all(),
+                    'optionValues' => OptionValue::query()->take(2)->pluck('id')->all(),
+                ],
+            ]
+        ];
 
-        $data['types'] = [[
-            'price' => 1,
-            'count' => 1,
-            'is_published' => false,
-            'preview_image' => File::create('preview_image.jpeg'),
-            'relations' => [
-                'productImages' => [File::create('productImage.jpeg')],
-                'optionValues' => [OptionValue::query()->first()->id],
-            ]], [
-            'price' => 2,
-            'count' => 2,
-            'is_published' => false,
-            'preview_image' => File::create('preview_image.jpeg'),
-            'relations' => [
-                'productImages' => [File::create('productImage.jpeg')],
-                'optionValues' => [OptionValue::query()->inRandomOrder()->first()->id],
-            ]],
+        $data['types'] = [
+            [
+                'price' => 1,
+                'count' => 1,
+                'is_published' => false,
+                'preview_image' => File::create('preview_image.jpeg'),
+                'relations' => [
+                    'productImages' => [File::create('productImage.jpeg')],
+                    'optionValues' => [OptionValue::query()->first()->id],
+                ]
+            ], [
+                'price' => 2,
+                'count' => 2,
+                'is_published' => false,
+                'preview_image' => File::create('preview_image.jpeg'),
+                'relations' => [
+                    'productImages' => [File::create('productImage.jpeg')],
+                    'optionValues' => [OptionValue::query()->inRandomOrder()->first()->id],
+                ]
+            ],
         ];
 
         session($session);
@@ -306,16 +315,19 @@ class ProductTest extends TestCase
         $product = $user->products()->first();
         $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
 
-        $session = ['edit' => [
-            'title' => '1',
-            'description' => '1',
-            'category_id' => Category::query()->first()->id,
-            'saler_id' => $user->id,
-        ]];
+        $session = [
+            'edit' => [
+                'title' => '1',
+                'description' => '1',
+                'category_id' => Category::query()->first()->id,
+                'saler_id' => $user->id,
+            ]
+        ];
         $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value', 'property_id')->all();
-        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->get()
-            ->groupBy('option_id')->map(fn($optionValue) => $optionValue->pluck('id'))->toArray();
+        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+            'property_id')->all();
+        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+            ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
 
         session($session);
         $this->patch(route('admin.products.update', $another_product->id), $data)->assertNotFound();
@@ -339,32 +351,36 @@ class ProductTest extends TestCase
             $user->role = $i;
             $user->save();
             $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-            $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value', 'property_id')->all();
-            $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->get()
-                ->groupBy('option_id')->map(fn($optionValue) => $optionValue->pluck('id'))->toArray();
+            $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+                'property_id')->all();
+            $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+                ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
             $session['edit']['title'] = Str::random(5);
             session($session);
             $this->actingAs($user)->patch(route('admin.products.update', $product->id), $data)
                 ->assertRedirect(route('admin.products.show', $product->id));
             $product->refresh();
             $this->assertEquals($session['edit']['title'], $product->title);
-            $this->assertEquals($product->propertyValues()->pluck('value', 'property_id')->all(), $data['propertyValues']);
+            $this->assertEquals($product->propertyValues()->pluck('value', 'property_id')->all(),
+                $data['propertyValues']);
             $this->assertTrue($product->optionValues()->pluck('optionValues.id') == collect($data['optionValues'])->flatten());
             session()->flush();
         }
         $user->role = 1;
         $user->save();
         $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value', 'property_id')->all();
-        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->get()
-            ->groupBy('option_id')->map(fn($optionValue) => $optionValue->pluck('id'))->toArray();
+        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+            'property_id')->all();
+        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+            ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->all();
         $session['edit']['title'] = Str::random(5);
         session($session);
         $this->actingAs($user)->patch(route('admin.products.update', $another_product->id), $data)
             ->assertRedirect(route('admin.products.show', $another_product->id));
         $another_product->refresh();
         $this->assertEquals($session['edit']['title'], $another_product->title);
-        $this->assertEquals($another_product->propertyValues()->pluck('value', 'property_id')->all(), $data['propertyValues']);
+        $this->assertEquals($another_product->propertyValues()->pluck('value', 'property_id')->all(),
+            $data['propertyValues']);
         $this->assertTrue($another_product->optionValues()->pluck('optionValues.id') == collect($data['optionValues'])->flatten());
         session()->flush();
     }
@@ -373,7 +389,8 @@ class ProductTest extends TestCase
     public function test_a_product_can_be_deleted_with_premissions(): void
     {
         $user = User::query()->first();
-        $another_product = Product::query()->where('saler_id', '!=', $user->id)->with('productTypes.productImages')->first();
+        $another_product = Product::query()->where('saler_id', '!=',
+            $user->id)->with('productTypes.productImages')->first();
 
         $this->delete(route('admin.products.destroy', $another_product->id))->assertNotFound();
 
@@ -393,7 +410,8 @@ class ProductTest extends TestCase
             $user->role = $i;
             $user->save();
             $product = $user->products()->with('productTypes.productImages')->first();
-            $this->actingAs($user)->delete(route('admin.products.destroy', $product->id))->assertViewIs('admin.product.index');
+            $this->actingAs($user)->delete(route('admin.products.destroy',
+                $product->id))->assertViewIs('admin.product.index');
             session()->flush();
             $this->assertEmpty($product->optionValues()->count());
             $this->assertEmpty($product->propertyValues()->count());
@@ -409,7 +427,8 @@ class ProductTest extends TestCase
         }
         $user->role = 1;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.products.destroy', $another_product->id))->assertViewIs('admin.product.index');
+        $this->actingAs($user)->delete(route('admin.products.destroy',
+            $another_product->id))->assertViewIs('admin.product.index');
         session()->flush();
         $this->assertEquals($another_product->optionValues()->count(), 0);
         $this->assertEquals($another_product->propertyValues()->count(), 0);
@@ -452,7 +471,8 @@ class ProductTest extends TestCase
             $this->actingAs($user)->patch(route('admin.products.publish', $product->id))->assertRedirect();
             $this->assertEmpty($product->productTypes()->where('is_published', 1)->count());
             session()->flush();
-            $this->actingAs($user)->patch(route('admin.products.publish', $product->id), ['publish' => 'on'])->assertRedirect();
+            $this->actingAs($user)->patch(route('admin.products.publish', $product->id),
+                ['publish' => 'on'])->assertRedirect();
             $this->assertEmpty($product->productTypes()->where('is_published', 0)->count());
             session()->flush();
         }
@@ -462,7 +482,8 @@ class ProductTest extends TestCase
         $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id))->assertRedirect();
         $this->assertEmpty($another_product->productTypes()->where('is_published', 1)->count());
         session()->flush();
-        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id), ['publish' => 'on'])->assertRedirect();
+        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id),
+            ['publish' => 'on'])->assertRedirect();
         $this->assertEmpty($another_product->productTypes()->where('is_published', 0)->count());
         session()->flush();
     }

@@ -30,7 +30,7 @@ class ProductTypeUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {
@@ -46,4 +46,5 @@ class ProductTypeUpdateRequest extends FormRequest
             'relations.optionValues.*' => 'required|int|filled',
         ];
     }
+
 }

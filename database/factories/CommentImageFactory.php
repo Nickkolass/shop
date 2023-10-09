@@ -2,23 +2,19 @@
 
 namespace Database\Factories;
 
-use App\Models\CommentImage;
 use App\Models\ProductImage;
 use App\Models\RatingAndComment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * @extends Factory<CommentImage>
- */
 class CommentImageFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $image = ProductImage::query()
             ->latest('productType_id')

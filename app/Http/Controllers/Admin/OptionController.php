@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\OptionRequest;
 use App\Models\Option;
 use App\Services\Admin\OptionService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -25,9 +24,9 @@ class OptionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function index(): View|Factory
+    public function index(): View
     {
         $options = Option::query()->pluck('title', 'id');
         return view('admin.option.index', compact('options'));
@@ -36,9 +35,9 @@ class OptionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function create(): View|Factory
+    public function create(): View
     {
         return view('admin.option.create');
     }
@@ -47,9 +46,9 @@ class OptionController extends Controller
      * Store a newly created resource in storage.
      *
      * @param OptionRequest $request
-     * @return View|Factory
+     * @return View
      */
-    public function store(OptionRequest $request): View|Factory
+    public function store(OptionRequest $request): View
     {
         $data = $request->validated();
         $this->service->store(new OptionDto(...$data));
@@ -60,9 +59,9 @@ class OptionController extends Controller
      * Display the specified resource.
      *
      * @param Option $option
-     * @return View|Factory
+     * @return View
      */
-    public function show(Option $option): View|Factory
+    public function show(Option $option): View
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.show', compact('option'));
@@ -72,9 +71,9 @@ class OptionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Option $option
-     * @return View|Factory
+     * @return View
      */
-    public function edit(Option $option): View|Factory
+    public function edit(Option $option): View
     {
         $option->load('optionValues:option_id,value');
         return view('admin.option.edit', compact('option'));
@@ -85,9 +84,9 @@ class OptionController extends Controller
      *
      * @param OptionRequest $request
      * @param Option $option
-     * @return View|Factory
+     * @return View
      */
-    public function update(OptionRequest $request, Option $option): View|Factory
+    public function update(OptionRequest $request, Option $option): View
     {
         $data = $request->validated();
         $this->service->update($option, new OptionDto(...$data));

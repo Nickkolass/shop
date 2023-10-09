@@ -49,7 +49,7 @@
                                     style="width: 100%;" required>
                                 @foreach($categories as $category_id => $category_title_rus)
                                     <option
-                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids') ?? []))>{{ $category_title_rus }}
+                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids', [])))>{{ $category_title_rus }}
                                     </option>
                                 @endforeach
                             </select>

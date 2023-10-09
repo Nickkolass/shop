@@ -27,8 +27,8 @@ class PhpStanCommand extends Command
     public function handle(): void
     {
         $directories = empty($this->argument('directories')) ? '' : implode(' ', $this->argument('directories'));
-        $level = $this->option('level') ?? '';
-        if (!empty($level)) $level = '-l ' . $level;
+        $level = $this->option('level');
+        if ($level) $level = '-l ' . $level;
         echo(shell_exec("vendor/bin/phpstan analyse $directories $level"));
     }
 }

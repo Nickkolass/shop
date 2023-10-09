@@ -6,7 +6,6 @@ use App\Models\Property;
 use App\Models\User;
 use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class PropertyPolicy
 {
@@ -16,9 +15,9 @@ class PropertyPolicy
      * Determine whether the user can view any models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return false
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return false;
     }
@@ -28,9 +27,9 @@ class PropertyPolicy
      *
      * @param User $user
      * @param Property $property
-     * @return Response|bool
+     * @return false
      */
-    public function view(User $user, Property $property)
+    public function view(User $user, Property $property): bool
     {
         return false;
     }
@@ -39,9 +38,9 @@ class PropertyPolicy
      * Determine whether the user can create models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return false
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return false;
     }
@@ -51,9 +50,9 @@ class PropertyPolicy
      *
      * @param User $user
      * @param Property $property
-     * @return Response|bool
+     * @return false
      */
-    public function update(User $user, Property $property)
+    public function update(User $user, Property $property): bool
     {
         return false;
     }
@@ -63,9 +62,9 @@ class PropertyPolicy
      *
      * @param User $user
      * @param Property $property
-     * @return Response|bool
+     * @return false
      */
-    public function delete(User $user, Property $property)
+    public function delete(User $user, Property $property): bool
     {
         return false;
     }
@@ -75,9 +74,9 @@ class PropertyPolicy
      *
      * @param User $user
      * @param Property $property
-     * @return Response|bool
+     * @return false
      */
-    public function restore(User $user, Property $property)
+    public function restore(User $user, Property $property): bool
     {
         return false;
     }
@@ -87,9 +86,9 @@ class PropertyPolicy
      *
      * @param User $user
      * @param Property $property
-     * @return Response|bool
+     * @return false
      */
-    public function forceDelete(User $user, Property $property)
+    public function forceDelete(User $user, Property $property): bool
     {
         return false;
     }

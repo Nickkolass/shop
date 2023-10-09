@@ -21,15 +21,15 @@ class ProductTypesRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-
-        foreach ($this->input('types') as $k => $type) $this->merge(["types.$k.relations.optionValues" => array_filter($type['relations']['optionValues'])]);
+        foreach ($this->input('types') as $k => $type) {
+            $this->merge(["types.$k.relations.optionValues" => array_filter($type['relations']['optionValues'])]);
+        }
     }
-
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {

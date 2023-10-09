@@ -9,7 +9,6 @@ use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
 use App\Models\User;
 use App\Services\Admin\UserService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -29,9 +28,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function index(): View|Factory
+    public function index(): View
     {
         $users = User::query()->toBase()->simplePaginate(5);
         return view('admin.user.index', compact('users'));
@@ -40,9 +39,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function create(): View|Factory
+    public function create(): View
     {
         return view('admin.user.create');
     }
@@ -51,9 +50,9 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param UserStoreRequest $request
-     * @return View|Factory
+     * @return View
      */
-    public function store(UserStoreRequest $request): View|Factory
+    public function store(UserStoreRequest $request): View
     {
         $data = $request->validated();
         $this->service->store(new UserDto(...$data));
@@ -61,23 +60,12 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param User $user
-     * @return View|Factory
-     */
-    public function show(User $user): View|Factory
-    {
-        return view('admin.user.show', compact('user'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param User $user
-     * @return View|Factory
+     * @return View
      */
-    public function edit(User $user): View|Factory
+    public function edit(User $user): View
     {
         return view('admin.user.edit', compact('user'));
     }
@@ -87,13 +75,24 @@ class UserController extends Controller
      *
      * @param UserUpdateRequest $request
      * @param User $user
-     * @return View|Factory
+     * @return View
      */
-    public function update(UserUpdateRequest $request, User $user): View|Factory
+    public function update(UserUpdateRequest $request, User $user): View
     {
         $data = $request->validated();
         $this->service->update($user, new UserDto(...$data));
         return $this->show($user);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param User $user
+     * @return View
+     */
+    public function show(User $user): View
+    {
+        return view('admin.user.show', compact('user'));
     }
 
     /**
@@ -112,9 +111,9 @@ class UserController extends Controller
      * Edit the specified resource in storage.
      *
      * @param int $user_id
-     * @return View|Factory
+     * @return View
      */
-    public function passwordEdit(int $user_id): View|Factory
+    public function passwordEdit(int $user_id): View
     {
         if ($user_id != auth()->id()) abort(401);
         return view('admin.user.password');

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PropertyValueProduct extends Model
 {
-    use HasFactory;
 
     protected $table = 'property_value_products';
     protected $guarded = false;

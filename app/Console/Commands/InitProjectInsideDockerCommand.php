@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\MountManager;
 
 class InitProjectInsideDockerCommand extends Command
 {
@@ -24,23 +25,24 @@ class InitProjectInsideDockerCommand extends Command
 
     /**
      * Execute the console command.
-     *
+     * @expectedException FilesystemException
+     * @return void
      */
     public function handle(): void
     {
-        shell_exec('curl https://disk.yandex.ru/d/UXUnbmQv4Zndug/factory.zip -o storage/app/testing/factory.zip');
-        shell_exec('unzip storage/app/testing/factory -d storage/app/testing');
-        shell_exec('rm storage/app/testing/factory.zip');
+        shell_exec('curl https://disk.yandex.ru/d/UXUnbmQv4Zndug/factory.zip -o storage/app/testing/factory.zip
+        && unzip storage/app/testing/factory -d storage/app/testing
+        && rm storage/app/testing/factory.zip');
 
+        $mountManager = new MountManager([
+            'testing' => Storage::disk('testing')->getDriver(),
+            'default' => Storage::getDriver(),
+        ]);
         foreach (Storage::disk('testing')->directories() as $dir) {
             if ($dir != 'factory') {
                 foreach (Storage::disk('testing')->files($dir) as $file) {
-                    $path = explode('/', $file);
-                    array_pop($path);
-                    $path = implode('/', $path);
-                    Storage::putFile($path, new File('storage/app/testing/' . $file), 'public');
+                    $mountManager->move('testing://' . $file, 'default://' . $file);
                 }
-                Storage::disk('testing')->deleteDirectory($dir);
             }
         }
         $this->call('storage:link', ['--force' => true]);
@@ -48,7 +50,7 @@ class InitProjectInsideDockerCommand extends Command
         $this->call('jwt:secret', ['--force' => true]);
         $this->call('migrate', ['--seed' => true, '--force' => true]);
         $this->call('optimize');
-        if (config('filesystems.default') == 'public') shell_exec('chmod 777 -R ./storage/app/public');
+        if (Storage::getDefaultDriver() == 'public') shell_exec('chmod 777 -R ./storage/app/public');
         shell_exec('npm run dev');
     }
 }

@@ -15,7 +15,7 @@ class SendEmailWelcomeNotification
      * @param Registered $event
      * @return void
      */
-    public function handle(Registered $event)
+    public function handle(Registered $event): void
     {
         if (isset($event->user->email)) {
             Mail::to($event->user->email)->send(new MailRegistered($event->user->password_generated ?? null));

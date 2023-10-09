@@ -3,37 +3,40 @@
 namespace App\Services\Client\API\Product;
 
 use App\Models\ProductType;
-use App\Services\Methods\Maper;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class ProductShowService
 {
 
-    public function loadRelationsProductType(ProductType &$productType): void
+    public function loadRelationsProductType(ProductType $productType): void
     {
-        $user_id = auth('api')->id() ?? null;
         $productType
-            ->loadExists(['liked' => fn($q) => $q->where('user_id', $user_id)])
+            ->loadExists(['liked' => fn(Builder $q) => $q->where('user_id', auth('api')->id())])
             ->load([
                 'productImages:productType_id,file_path',
-                'optionValues.option:id,title',
-                'product' => function ($product) use ($user_id) {
+                'optionValues' => function (Builder $q) {
+                    /** @phpstan-ignore-next-line */
+                    $q->select('value')->selectParentTitle();
+                },
+                'product' => function ($product) {
                     $product
-                        ->withExists(['ratingAndComments' => fn($q) => $q->where('user_id', $user_id)])
                         ->with([
-                            'optionValues.option:id,title',
                             'category:id,title,title_rus',
-                            'propertyValues.property:id,title',
                             'productTypes:id,product_id,is_published,preview_image',
-                            'ratingAndComments' => function ($q) {
-                                $q->with([
-                                    'user:id,name',
-                                    'commentImages:comment_id,file_path'
-                                ]);
+                            'propertyValues' => function (Builder $q) {
+                                /** @phpstan-ignore-next-line */
+                                $q->select('value')->selectParentTitle();
+                            },
+                            'ratingAndComments' => function (Builder $q) {
+                                $q->select('id', 'product_id', 'message', 'rating', 'user_id', 'created_at')
+                                    ->with([
+                                        'user:id,name',
+                                        'commentImages:comment_id,file_path'
+                                    ]);
                             }
                         ]);
                 }]);
-        Maper::valuesToKeys($productType->product, 'propertyValues');
-        Maper::valuesToKeys($productType, 'optionValues');
-        Maper::countingRatingAndComments($productType->product);
+        $productType->setRelation('optionValues', $productType->optionValues->pluck('value', 'option_title'));
+        $productType->product->setRelation('propertyValues', $productType->product->propertyValues->pluck('value', 'property_title'));
     }
 }

@@ -10,9 +10,9 @@ use App\Http\Requests\Admin\Product\ProductType\ProductTypeUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Admin\Product\ProductTypeService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 class ProductTypeController extends Controller
 {
@@ -25,9 +25,9 @@ class ProductTypeController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Product $product
-     * @return View|Factory
+     * @return View|RedirectResponse
      */
-    public function create(Product $product): View|Factory|RedirectResponse
+    public function create(Product $product): View|RedirectResponse
     {
         $this->authorize('update', $product);
         $optionValues = $this->productTypeService->relationService->optionValueService->getOptionValues($product);
@@ -49,7 +49,7 @@ class ProductTypeController extends Controller
         $this->authorize('update', $product);
 
         $data = $request->validated();
-        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($data, 'relations'));
 
         $this->productTypeService->store($product, new ProductTypeDto(...$data));
         return redirect()->route('admin.products.show', $product->id);
@@ -59,9 +59,9 @@ class ProductTypeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param ProductType $productType
-     * @return View|Factory
+     * @return View
      */
-    public function edit(ProductType $productType): View|Factory
+    public function edit(ProductType $productType): View
     {
         $this->authorize('update', $productType);
         $productType->load(['productImages:productType_id,file_path', 'optionValues:id', 'product:id']);
@@ -81,9 +81,22 @@ class ProductTypeController extends Controller
         $this->authorize('update', $productType);
 
         $data = $request->validated();
-        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($data, 'relations'));
 
         $this->productTypeService->update($productType, new ProductTypeDto(...$data));
+        return redirect()->route('admin.products.show', $productType->product_id);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param ProductType $productType
+     * @return RedirectResponse
+     */
+    public function destroy(ProductType $productType): RedirectResponse
+    {
+        $this->authorize('delete', $productType);
+        $this->productTypeService->delete($productType);
         return redirect()->route('admin.products.show', $productType->product_id);
     }
 
@@ -98,18 +111,5 @@ class ProductTypeController extends Controller
         if ($productType->product()->pluck('saler_id')[0] != auth()->id() & session('user.role') != 'admin') abort(403);
         $productType->update(['is_published' => !$productType->is_published]);
         return back();
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param ProductType $productType
-     * @return RedirectResponse
-     */
-    public function destroy(ProductType $productType): RedirectResponse
-    {
-        $this->authorize('delete', $productType);
-        $this->productTypeService->delete($productType);
-        return redirect()->route('admin.products.show', $productType->product_id);
     }
 }

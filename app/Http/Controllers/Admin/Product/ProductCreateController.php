@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\Product\ProductRelationsRequest;
 use App\Http\Requests\Admin\Product\ProductRequest;
 use App\Models\Product;
 use App\Services\Admin\Product\ProductCreateEditService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 
 class ProductCreateController extends Controller
@@ -17,14 +16,14 @@ class ProductCreateController extends Controller
     {
     }
 
-    public function index(): View|Factory
+    public function index(): View
     {
         $this->authorize('create', Product::class);
         $data = $this->service->index();
         return view('admin.product.create.index', compact('data'));
     }
 
-    public function relations(ProductRequest $request): View|Factory
+    public function relations(ProductRequest $request): View
     {
         $data = $request->validated();
         session(['create.product' => $data]);
@@ -32,7 +31,7 @@ class ProductCreateController extends Controller
         return view('admin.product.create.relations', compact('data'));
     }
 
-    public function types(ProductRelationsRequest $request): View|Factory
+    public function types(ProductRelationsRequest $request): View
     {
         $data = $request->validated();
         session(['create.relations' => $data]);

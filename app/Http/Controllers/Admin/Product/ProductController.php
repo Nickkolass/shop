@@ -11,9 +11,9 @@ use App\Http\Requests\Admin\Product\ProductTypesRequest;
 use App\Http\Requests\Admin\Product\UpdateRelationsRequest;
 use App\Models\Product;
 use App\Services\Admin\Product\ProductService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
@@ -26,9 +26,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function index(): View|Factory
+    public function index(): View
     {
         $products = $this->service->index();
         return view('admin.product.index', compact('products'));
@@ -45,8 +45,8 @@ class ProductController extends Controller
         $productDto = new ProductDto(...session()->pull('create.product'));
         $productRelationDto = new ProductRelationDto(...session()->pull('create.relations'));
 
-        $collectionProductTypeDto = collect((array)$request->validated()['types'])->map(function (array $productType) {
-            $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($productType));
+        $collectionProductTypeDto = collect((array)$request->validated()['types'])->transform(function (array $productType) {
+            $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($productType, 'relations'));
             return new ProductTypeDto(...$productType);
         });
 
@@ -59,9 +59,9 @@ class ProductController extends Controller
      * Display the specified resource.
      *
      * @param Product $product
-     * @return View|Factory
+     * @return View
      */
-    public function show(Product $product): View|Factory
+    public function show(Product $product): View
     {
         $this->service->show($product);
         return view('admin.product.show', compact('product'));
@@ -88,9 +88,9 @@ class ProductController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Product $product
-     * @return View|Factory
+     * @return View
      */
-    public function destroy(Product $product): View|Factory
+    public function destroy(Product $product): View
     {
         $this->service->delete($product);
         return $this->index();

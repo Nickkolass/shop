@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -19,9 +18,9 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function index(): View|Factory
+    public function index(): View
     {
         $tags = Tag::query()->toBase()->get();
         return view('admin.tag.index', compact('tags'));
@@ -30,9 +29,9 @@ class TagController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function create(): View|Factory
+    public function create(): View
     {
         return view('admin.tag.create');
     }
@@ -40,32 +39,21 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function store(): View|Factory
+    public function store(): View
     {
         Tag::query()->firstOrCreate(['title' => request('title')]);
         return $this->index();
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param Tag $tag
-     * @return View|Factory
-     */
-    public function show(Tag $tag): View|Factory
-    {
-        return view('admin.tag.show', compact('tag'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param Tag $tag
-     * @return View|Factory
+     * @return View
      */
-    public function edit(Tag $tag): View|Factory
+    public function edit(Tag $tag): View
     {
         return view('admin.tag.edit', compact('tag'));
     }
@@ -74,12 +62,23 @@ class TagController extends Controller
      * Update the specified resource in storage.
      *
      * @param Tag $tag
-     * @return View|Factory
+     * @return View
      */
-    public function update(Tag $tag): View|Factory
+    public function update(Tag $tag): View
     {
         $tag->update(['title' => request('title')]);
         return $this->show($tag);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Tag $tag
+     * @return View
+     */
+    public function show(Tag $tag): View
+    {
+        return view('admin.tag.show', compact('tag'));
     }
 
     /**

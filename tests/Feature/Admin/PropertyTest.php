@@ -15,6 +15,7 @@ class PropertyTest extends TestCase
     public function test_a_property_can_be_viewed_any_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.index'))->assertNotFound();
 
@@ -37,6 +38,7 @@ class PropertyTest extends TestCase
     {
         Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.create'))->assertNotFound();
 
@@ -58,6 +60,7 @@ class PropertyTest extends TestCase
     public function test_a_property_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
 
@@ -86,6 +89,7 @@ class PropertyTest extends TestCase
         Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.show', $property->id))->assertNotFound();
 
@@ -110,6 +114,7 @@ class PropertyTest extends TestCase
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.edit', $property->id))->assertNotFound();
 
@@ -131,6 +136,7 @@ class PropertyTest extends TestCase
     public function test_a_property_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
@@ -163,6 +169,7 @@ class PropertyTest extends TestCase
     public function test_a_property_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);

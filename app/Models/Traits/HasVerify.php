@@ -10,6 +10,7 @@ trait HasVerify
     {
         if (!$role && $user = auth()->user()) {
             /** @var User $user */
+            /** @noinspection PhpUndefinedMethodInspection */
             session([
                 /** @phpstan-ignore-next-line */
                 'jwt' => 'bearer ' . auth('api')->fromUser($user),

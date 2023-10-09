@@ -29,7 +29,7 @@ class APIProductController extends Controller
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function index(): array
     {
@@ -39,7 +39,9 @@ class APIProductController extends Controller
     }
 
     /**
-     * @return array<string, mixed>
+     * @param Category $category
+     * @param FilterRequest $request
+     * @return array<mixed>
      */
     public function filter(Category $category, FilterRequest $request): array
     {
@@ -49,7 +51,8 @@ class APIProductController extends Controller
     }
 
     /**
-     * @return array<string, mixed>
+     * @param ProductType $productType
+     * @return array<mixed>
      */
     public function show(ProductType $productType): array
     {
@@ -58,7 +61,7 @@ class APIProductController extends Controller
     }
 
     /**
-     * @return array<empty>|array<string, mixed>
+     * @return array{}|array<mixed>
      */
     public function cart(): array
     {
@@ -67,7 +70,7 @@ class APIProductController extends Controller
     }
 
     /**
-     * @return array<empty>|array<string, mixed>
+     * @return array{}|array<mixed>
      */
     public function liked(): array
     {

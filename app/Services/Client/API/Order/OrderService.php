@@ -4,6 +4,7 @@ namespace App\Services\Client\API\Order;
 
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 
 class OrderService
@@ -18,9 +19,11 @@ class OrderService
         $user = auth('api')->user();
         /** @var User $user */
 
-        $orders = Order::withTrashed()
-            ->when(!$user->isAdmin(), fn($q) => $q->where('user_id', $user->id))
-            ->with(['orderPerformers' => function ($q) {
+        $orders = Order::query()
+            ->withTrashed()
+            ->when(!$user->isAdmin(), fn(Builder $q) => $q->where('user_id', $user->id))
+            ->with(['orderPerformers' => function (Builder $q) {
+                /** @phpstan-ignore-next-line */
                 $q->withTrashed()->select('order_id', 'dispatch_time');
             }])
             ->latest()
@@ -35,8 +38,9 @@ class OrderService
 
     public function show(Order $order): Order
     {
-        $order->load(['orderPerformers' => function ($q) {
-            $q->withTrashed()->select(['id', 'saler_id', 'order_id', 'status', 'dispatch_time']);
+        $order->load(['orderPerformers' => function (Builder $q) {
+            /** @phpstan-ignore-next-line */
+            $q->withTrashed()->select('id', 'saler_id', 'order_id', 'status', 'dispatch_time');
         }]);
         $this->service->getProductsForShow($order);
         return $order;

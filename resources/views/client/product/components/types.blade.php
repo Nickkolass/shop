@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 @if(count($product_type['product']['product_types']) > 1)
     <div class="col" style="text-align:center">
         @isset($product_type['product']['description'])

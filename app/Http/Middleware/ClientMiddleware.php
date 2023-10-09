@@ -20,7 +20,7 @@ class ClientMiddleware
      * @param Closure(Request): (Response|RedirectResponse) $next
      * @return Response|RedirectResponse
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response|RedirectResponse
     {
         $role = session('user.role');
         $this->verify($role);

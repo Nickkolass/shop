@@ -3,21 +3,17 @@
 namespace Database\Factories;
 
 use App\Models\Product;
-use App\Models\RatingAndComment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<RatingAndComment>
- */
 class RatingAndCommentFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'rating' => $this->faker->numberBetween(1, 5),

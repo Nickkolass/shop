@@ -15,6 +15,7 @@ class OptionTest extends TestCase
     {
         Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.index'))->assertNotFound();
 
@@ -36,6 +37,7 @@ class OptionTest extends TestCase
     public function test_a_option_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.create'))->assertNotFound();
 
@@ -57,6 +59,7 @@ class OptionTest extends TestCase
     public function test_a_option_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
 
         $this->post(route('admin.options.store'), $data)->assertNotFound();
@@ -83,6 +86,7 @@ class OptionTest extends TestCase
     {
         $option = Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.show', $option->id))->assertNotFound();
 
@@ -105,6 +109,7 @@ class OptionTest extends TestCase
     {
         $option = Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.edit', $option->id))->assertNotFound();
 
@@ -126,6 +131,7 @@ class OptionTest extends TestCase
     public function test_a_option_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory(4)->create();
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
@@ -156,6 +162,7 @@ class OptionTest extends TestCase
     public function test_a_option_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory()->create();
 

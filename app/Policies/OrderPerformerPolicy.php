@@ -6,7 +6,6 @@ use App\Models\OrderPerformer;
 use App\Models\User;
 use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class OrderPerformerPolicy
 {
@@ -16,9 +15,9 @@ class OrderPerformerPolicy
      * Determine whether the user can view any models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->isSaler();
     }
@@ -28,9 +27,9 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return Response|bool
+     * @return bool
      */
-    public function view(User $user, OrderPerformer $orderPerformer)
+    public function view(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -40,9 +39,9 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return Response|bool
+     * @return bool
      */
-    public function update(User $user, OrderPerformer $orderPerformer)
+    public function update(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -52,9 +51,9 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return Response|bool
+     * @return bool
      */
-    public function delete(User $user, OrderPerformer $orderPerformer)
+    public function delete(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -64,9 +63,9 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return Response|bool
+     * @return false
      */
-    public function restore(User $user, OrderPerformer $orderPerformer)
+    public function restore(User $user, OrderPerformer $orderPerformer): bool
     {
         return false;
     }
@@ -76,9 +75,9 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return Response|bool
+     * @return false
      */
-    public function forceDelete(User $user, OrderPerformer $orderPerformer)
+    public function forceDelete(User $user, OrderPerformer $orderPerformer): bool
     {
         return false;
     }

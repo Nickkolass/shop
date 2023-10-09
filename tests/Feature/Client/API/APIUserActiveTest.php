@@ -35,7 +35,7 @@ class APIUserActiveTest extends TestCase
         $user = User::query()->first();
         $user->liked()->where('productType_id', $productType_id)->delete();
         $user->liked()->detach($productType_id);
-        $liked_count = $user->liked()->count();
+        $count_likes = $user->liked()->count();
 
         $this->post('/api/products/liked/' . $productType_id)->assertUnauthorized();
 
@@ -43,10 +43,10 @@ class APIUserActiveTest extends TestCase
 
         $this->actingAs($user)->get('/');
         $this->withHeader('Authorization', session('jwt'))->post('/api/products/liked/' . $productType_id)->assertOk();
-        $this->assertTrue($user->liked()->count() == ($liked_count + 1));
+        $this->assertTrue($user->liked()->count() == ($count_likes + 1));
 
         $this->withHeader('Authorization', session('jwt'))->post('/api/products/liked/' . $productType_id)->assertOk();
-        $this->assertTrue($user->liked()->count() == $liked_count);
+        $this->assertTrue($user->liked()->count() == $count_likes);
     }
 
     /**@test */

@@ -42,7 +42,7 @@ class RelationService
     }
 
     /**
-     * @param Collection<int, ProductTypeRelationForInsertDto> $collectionProductTypeRelationsForInsertDto
+     * @param Collection<ProductTypeRelationForInsertDto> $collectionProductTypeRelationsForInsertDto
      * @return void
      */
     public function createRelationsProductTypes(Collection $collectionProductTypeRelationsForInsertDto): void

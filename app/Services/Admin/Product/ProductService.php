@@ -7,8 +7,7 @@ use App\Dto\Admin\Product\ProductRelationDto;
 use App\Dto\Admin\Product\ProductTypeDto;
 use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
-use App\Models\ProductType;
-use App\Services\Methods\Maper;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
@@ -26,28 +25,23 @@ class ProductService
     public function index(): Paginator
     {
         $user = session('user');
-        $products = Product::query()
-            ->when($user['role'] != 'admin', function ($q) use ($user) {
-                $q->whereHas('saler', fn($q) => $q->where('id', $user['id']));
+        return Product::query()
+            ->when($user['role'] != 'admin', function (Builder $q) use ($user) {
+                $q->whereHas('saler', fn(Builder $q) => $q->where('id', $user['id']));
             })
-            ->select('id', 'title', 'saler_id', 'category_id')
+            ->select('id', 'title', 'saler_id', 'category_id', 'rating', 'count_rating', 'count_comments')
             ->latest()
             ->with([
                 'category:id,title_rus',
                 'productTypes:id,product_id,preview_image',
-                'ratingAndComments'
             ])
             ->simplePaginate(4);
-        /** @var Collection $products */
-        $products->map(fn(Product $product) => Maper::countingRatingAndComments($product));
-        /** @var Paginator $products */
-        return $products;
     }
 
     /**
      * @param ProductDto $productDto
      * @param ProductRelationDto $productRelationDto
-     * @param Collection<int, ProductTypeDto> $collectionProductTypeDto
+     * @param Collection<ProductTypeDto> $collectionProductTypeDto
      * @return int|RedirectResponse
      */
     public function store(
@@ -73,32 +67,33 @@ class ProductService
         }
     }
 
-    public function show(Product &$product): void
+    public function show(Product $product): void
     {
         $product->load([
             'category:id,title,title_rus',
-            'propertyValues.property:id,title',
-            'optionValues.option:id,title',
             'tags:id,title',
-            'ratingAndComments' => function ($q) {
+            'propertyValues' => function (Builder $q) {
+                /** @phpstan-ignore-next-line */
+                $q->select('value')->selectParentTitle();
+            },
+            'optionValues' => function (Builder $q) {
+                /** @phpstan-ignore-next-line */
+                $q->select('value', 'option_id')->selectParentTitle();
+            },
+            'ratingAndComments' => function (Builder $q) {
                 $q->with([
                     'user:id,name',
                     'commentImages:comment_id,file_path'
                 ]);
             },
-            'productTypes' => function ($q) {
-                $q->select('id', 'product_id', 'count', 'price', 'is_published', 'preview_image')
+            'productTypes' => function (Builder $q) {
+                $q->select('id', 'product_id', 'count', 'price', 'is_published', 'preview_image', 'count_likes')
                     ->with([
                         'productImages:productType_id,file_path',
-                        'optionValues.option:id,title'
-                    ])
-                    ->withCount('liked');
-            }
-        ]);
-
-        Maper::countingRatingAndComments($product);
-        Maper::optionsAndProperties($product);
-        $product->productTypes->map(fn(ProductType $productType) => Maper::valuesToKeys($productType, 'optionValues'));
+                        'optionValues:option_id,value'
+                    ]);
+            }])
+            ->setRelation('optionValues', $product->optionValues->groupBy('option_id'));
     }
 
     public function update(Product $product, ProductDto $productDto, ProductRelationDto $productRelationDto): void
@@ -133,7 +128,7 @@ class ProductService
         $product->load('optionValues:id')
             ->productTypes()
             ->where('count', '!=', 0)
-            ->whereHas('optionValues', fn($q) => $q->whereIn('optionValues.id', $product->optionValues))
+            ->whereHas('optionValues', fn(Builder $q) => $q->whereIn('optionValues.id', $product->optionValues))
             ->update(['is_published' => request()->has('publish')]);
     }
 }

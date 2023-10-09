@@ -13,7 +13,6 @@ class MailOrderPerformerStore extends Mailable
 {
     use SerializesModels;
 
-
     /**
      * Create a new message instance.
      * @param Collection<string, int|string|Carbon> $order
@@ -28,7 +27,7 @@ class MailOrderPerformerStore extends Mailable
      *
      * @return Envelope
      */
-    public function envelope()
+    public function envelope(): Envelope
     {
         return new Envelope(
             subject: 'New order',
@@ -40,7 +39,7 @@ class MailOrderPerformerStore extends Mailable
      *
      * @return Content
      */
-    public function content()
+    public function content(): Content
     {
         return new Content(
             view: 'mail.orderPerformerStore',
@@ -50,9 +49,9 @@ class MailOrderPerformerStore extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<empty>
+     * @return array<mixed>
      */
-    public function attachments()
+    public function attachments(): array
     {
         return [];
     }

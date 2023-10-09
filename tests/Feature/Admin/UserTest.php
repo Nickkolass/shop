@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class UserTest extends TestCase
     public function test_a_user_can_be_viewed_any_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('users.index'))->assertNotFound();
 
@@ -39,6 +41,7 @@ class UserTest extends TestCase
     public function test_a_user_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('users.create'))->assertNotFound();
 
@@ -60,6 +63,7 @@ class UserTest extends TestCase
     public function test_a_user_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = User::factory()->raw();
         unset($data['card'], $data['postcode'], $data['address'], $data['password']);
 
@@ -93,6 +97,7 @@ class UserTest extends TestCase
         View::share('categories', $categories);
 
         $users = User::factory(2)->create();
+        /** @var Collection<User> $users */
         $user = $users->first();
         $another_user = $users->last();
 
@@ -125,6 +130,7 @@ class UserTest extends TestCase
         View::share('categories', $categories);
 
         $users = User::factory(2)->create();
+        /** @var Collection<User> $users */
         $user = $users->first();
         $another_user = $users->last();
 
@@ -156,6 +162,7 @@ class UserTest extends TestCase
         $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
         View::share('categories', $categories);
         $users = User::factory(2)->create();
+        /** @var Collection<User> $users */
         $user = $users->first();
         $another_user = $users->last();
 
@@ -207,9 +214,8 @@ class UserTest extends TestCase
     public function test_a_user_can_be_deleted_with_premissions(): void
     {
         Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
-        $users = User::factory(5)->has(
-            Product::factory()
-        )->create();
+        $users = User::factory(5)->has(Product::factory())->create();
+        /** @var Collection<User> $users */
         $user = $users->first();
         $another_user = $users->last();
 
@@ -225,7 +231,7 @@ class UserTest extends TestCase
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 3; $i++) {
-            $deleted_user = $users->pop(); /** @var User $deleted_user */
+            $deleted_user = $users->pop();
             $deleted_user->role = $i;
             $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirect(route('users.index'));
             session()->flush();
@@ -245,6 +251,7 @@ class UserTest extends TestCase
         $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
         View::share('categories', $categories);
         $users = User::factory(2)->create();
+        /** @var Collection<User> $users */
         $user = $users->first();
         $another_user = $users->last();
 
@@ -271,8 +278,9 @@ class UserTest extends TestCase
     public function test_a_user_password_can_be_updated_with_premissions(): void
     {
         $users = User::factory(2)->create();
-        $user = $users->first(); /** @var User $user */
-        $another_user = $users->last(); /** @var User $another_user */
+        /** @var Collection<User> $users */
+        $user = $users->first();
+        $another_user = $users->last();
         $another_user->password = Hash::make('1');
         $another_user->save();
 

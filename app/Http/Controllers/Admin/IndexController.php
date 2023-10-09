@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 
 class IndexController extends Controller
 {
 
-    public function __invoke(): View|Factory
+    public function __invoke(): View
     {
         $user = auth()->user();
         /** @var User $user */
@@ -20,7 +21,7 @@ class IndexController extends Controller
             ->limit(3)
             ->where('status', 'В работе')
             ->select('id', 'total_price')
-            ->orderBy('total_price', 'DESC')
+            ->orderByDesc('total_price')
             ->get();
 
         $query = $user->orderPerformers()->where('status', 'like', 'Получен' . '%');
@@ -43,36 +44,30 @@ class IndexController extends Controller
         $data['products_rating'] = $user->products()
             ->toBase()
             ->limit(3)
-            ->select('products.id', 'title')
-            ->leftJoin('rating_and_comments', 'products.id', '=', 'rating_and_comments.product_id')
-            ->selectRaw('COUNT(rating) AS rating_count, AVG(rating) AS rating')
-            ->groupBy('id')
-            ->orderBy('rating', 'DESC')
+            ->select('products.id', 'title', 'count_rating', 'rating')
+            ->orderByDesc('rating')
             ->get();
 
         $data['productTypes_liked'] = $user->productTypes()
             ->toBase()
             ->limit(3)
-            ->select('productTypes.id', 'product_id', 'title')
-            ->leftJoin('users', 'productTypes.id', '=', 'users.id')
-            ->selectRaw('COUNT(users.id) AS liked_count')
-            ->groupBy('id')
-            ->orderBy('liked_count', 'DESC')
+            ->select('productTypes.id', 'product_id', 'title', 'count_likes')
+            ->orderByDesc('count_likes')
             ->get();
 
         $data['productTypes_ordered'] = $user->orderPerformers()
             ->pluck('productTypes')
             ->flatten(1)
-            ->groupBy('productType_id')
-            ->map(fn($productType) => [
+            ->groupBy('productType_id')/** @phpstan-ignore-next-line */
+            ->transform(fn(Collection $productType) => [
                 'amount' => $productType->sum('amount'),
                 'price' => $productType->sum('price')
             ])
-            ->sortDesc()
-            ->take(3)
-            ->map(function ($data, $productType_id) {
+            ->sortByDesc('amount')
+            ->take(3)/** @phpstan-ignore-next-line */
+            ->transform(function ($data, $productType_id) {
                 $product = Product::query()
-                    ->whereHas('productTypes', fn($q) => $q->limit(1)->where('productTypes.id', $productType_id))
+                    ->whereHas('productTypes', fn(Builder $q) => $q->limit(1)->where('productTypes.id', $productType_id))
                     ->select('id', 'title')
                     ->first();
                 return [

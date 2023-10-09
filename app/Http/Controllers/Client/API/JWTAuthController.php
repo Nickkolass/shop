@@ -28,7 +28,7 @@ class JWTAuthController extends Controller
         if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        /** @phpstan-ignore-next-line */
+        /** @var string $token */
         return $this->respondWithToken($token);
     }
 
@@ -57,6 +57,7 @@ class JWTAuthController extends Controller
      * Refresh a token.
      *
      * @return JsonResponse
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     public function refresh(): JsonResponse
     {
@@ -69,13 +70,14 @@ class JWTAuthController extends Controller
      *
      * @param string $token
      * @return JsonResponse
+     * @noinspection PhpParamsInspection
+     * @noinspection PhpUndefinedMethodInspection
      */
     protected function respondWithToken(string $token): JsonResponse
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
-            /** @phpstan-ignore-next-line */
+            'token_type' => 'bearer', /** @phpstan-ignore-next-line */
             'expires_in' => auth('api')->factory()->getTTL() * 60
         ]);
     }

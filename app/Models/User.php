@@ -33,17 +33,22 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property ?Carbon $email_verified_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property ?Collection<int, Product> $products
- * @property ?Collection<int, ProductType> $productTypes
- * @property ?Collection<int, Order> $orders
- * @property ?Collection<int, OrderPerformer> $orderPerformers
- * @property ?Collection<int, ProductType> $liked
- * @property ?Collection<int, RatingAndComment> $ratingAndComments
+ * @property ?Collection<Product> $products
+ * @property ?Collection<ProductType> $productTypes
+ * @property ?Collection<Order> $orders
+ * @property ?Collection<OrderPerformer> $orderPerformers
+ * @property ?Collection<ProductType> $liked
+ * @property ?Collection<RatingAndComment> $ratingAndComments
  */
 class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
     use HasFactory, Notifiable;
 
+    const GENDER_MALE = 1;
+    const GENDER_FEMALE = 2;
+    const ROLE_ADMIN = 1;
+    const ROLE_SALER = 2;
+    const ROLE_CLIENT = 3;
     protected $table = 'users';
     protected $guarded = false;
     protected $hidden = ['password', 'remember_token'];
@@ -58,14 +63,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'INN', 'registredOffice',
     ];
 
-    const GENDER_MALE = 1;
-    const GENDER_FEMALE = 2;
-    const ROLE_ADMIN = 1;
-    const ROLE_SALER = 2;
-    const ROLE_CLIENT = 3;
+    public function getRoleTitleAttribute(): string
+    {
+        return self::getRoles()[$this->role];
+    }
 
     /**
-     * @return array<int, string>
+     * @return array<string>
      */
     public static function getRoles(): array
     {
@@ -74,11 +78,6 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
             self::ROLE_SALER => 'saler',
             self::ROLE_CLIENT => 'client',
         ];
-    }
-
-    public function getRoleTitleAttribute(): string
-    {
-        return self::getRoles()[$this->role];
     }
 
     public function isAdmin(): bool
@@ -96,23 +95,18 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return self::getRoles()[$this->role] == 'client';
     }
 
-    /** @return array<int, string> */
+    public function getGenderTitleAttribute(): string
+    {
+        return self::getGenders()[$this->gender];
+    }
+
+    /** @return array<string> */
     public static function getGenders(): array
     {
         return [
             self::GENDER_MALE => 'Мужской',
             self::GENDER_FEMALE => 'Женский',
         ];
-    }
-
-    public function getGenderTitleAttribute(): string
-    {
-        return self::getGenders()[$this->gender];
-    }
-
-    public function hasVerifiedEmail(): bool
-    {
-        return !is_null($this->email_verified_at);
     }
 
     public function products(): HasMany
@@ -150,10 +144,15 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->getKey();
     }
 
-    /** @return array<empty> */
+    /** @return array{} */
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function hasVerifiedEmail(): bool
+    {
+        return !is_null($this->email_verified_at);
     }
 
     public function sendPasswordResetNotification($token): void

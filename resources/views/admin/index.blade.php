@@ -63,7 +63,7 @@
                                     * <a style="color: inherit"
                                          href="{{ route('admin.products.show', $product->product_id) }}"
                                          class="small-box-footer">{{$product->title}}</a>
-                                    <i class="fa fa-heart"></i> ( {{$product->liked_count}} ) <br>
+                                    <i class="fa fa-heart"></i> ( {{$product->count_likes}} ) <br>
                                 @endforeach</h5>
                         </div>
                         <div class="icon">
@@ -83,7 +83,7 @@
                                     @for($i=1; $i<=5; $i++)
                                         <i class="fa fa-star{{$i-1<$product->rating & $product->rating<$i ? '-half' : ''}}{{$product->rating<$i ? '-o' : ''}}"></i>
                                     @endfor
-                                    ( {{$product->rating_count}} )<br>
+                                    ( {{$product->count_rating}} )<br>
                                 @endforeach</h5>
                         </div>
                         <div class="icon">

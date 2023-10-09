@@ -20,6 +20,7 @@ class UserService
                 ['email' => $dto->email, 'INN' => $dto->INN],
                 (array)$dto + ['password' => Hash::make($password_generated)])
             ->setAttribute('password_generated', $password_generated);
+        /** @var User $user */
         event(new Registered($user));
         DB::commit();
     }

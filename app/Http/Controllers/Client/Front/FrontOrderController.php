@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use Arhitector\Yandex\Disk;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\View\Factory;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -22,12 +22,13 @@ class FrontOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View|Factory
+     * @return View
+     * @throws GuzzleException
      */
 
-    public function index(): View|Factory
+    public function index(): View
     {
-        $data['page'] = request('page') ?? 1;
+        $data['page'] = request('page', 1);
 
         $orders = $this->client->request('POST', 'api/orders',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -39,9 +40,9 @@ class FrontOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function create(): View|Factory
+    public function create(): View
     {
         $total_price = request('total_price');
         $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
@@ -53,6 +54,7 @@ class FrontOrderController extends Controller
      *
      * @param StoreFrontRequest $request
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function store(StoreFrontRequest $request): RedirectResponse
     {
@@ -67,9 +69,10 @@ class FrontOrderController extends Controller
      * Display the specified resource.
      *
      * @param int $order_id
-     * @return View|Factory
+     * @return View
+     * @throws GuzzleException
      */
-    public function show(int $order_id): View|Factory
+    public function show(int $order_id): View
     {
         $order = $this->client->request('POST', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -82,6 +85,7 @@ class FrontOrderController extends Controller
      *
      * @param int $order_id
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function update(int $order_id): RedirectResponse
     {
@@ -95,6 +99,7 @@ class FrontOrderController extends Controller
      *
      * @param int $order_id
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function destroy(int $order_id): RedirectResponse
     {

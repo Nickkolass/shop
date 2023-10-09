@@ -3,29 +3,31 @@
 namespace App\Services\Client\API\Product;
 
 use App\Models\ProductType;
-use App\Services\Methods\Maper;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class ProductCartService
 {
 
     /**
-     * @param array<int, int> $cart
-     * @return Collection<int, ProductType>
+     * @param array<int> $cart
+     * @return Collection<ProductType>
      */
     public function getProductTypes(array $cart): Collection
     {
         return ProductType::query()
             ->with([
-                'optionValues.option:id,title',
-                'product:id,title'
-            ])
-            ->select('id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
+                'product:id,title',
+                'optionValues' => function (Builder $q) {
+                    /** @phpstan-ignore-next-line */
+                    $q->select('value')->selectParentTitle();
+                }])
+            ->select('productTypes.id', 'product_id', 'price', 'count', 'preview_image', 'is_published')
             ->find(array_keys($cart))
             ->each(function (ProductType $productType) use ($cart) {
                 $productType->setAttribute('amount', $cart[$productType->id]);
                 $productType->setAttribute('totalPrice', $cart[$productType->id] * $productType->price);
-                Maper::valuesToKeys($productType, 'optionValues');
+                $productType->setRelation('optionValues', $productType->optionValues->pluck('value', 'option_title'));
             });
     }
 }

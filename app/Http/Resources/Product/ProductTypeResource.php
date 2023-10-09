@@ -13,7 +13,7 @@ class ProductTypeResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array<string, mixed>|Arrayable|JsonSerializable
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
     public function toArray($request): array|Arrayable|JsonSerializable
     {
@@ -25,7 +25,7 @@ class ProductTypeResource extends JsonResource
             'is_published' => (bool)$this->resource->is_published,
             'preview_image' => $this->resource->preview_image,
             'product_images' => $this->resource->productImages->pluck('file_path'),
-            'option_values' => $this->resource->optionValues,
+            'option_values' => $this->resource->relationLoaded('optionValues') ? $this->resource->optionValues : null,
             'likeable' => !$this->resource->liked_exists,
             'product' => $request->route()->getName() == 'back.api.products.filter'
                 ? ProductResource::make($this->resource->product)->resolve()

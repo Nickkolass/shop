@@ -13,7 +13,7 @@ class ShowOrderProductsResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array<string, mixed>|Arrayable|JsonSerializable
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
     public function toArray($request): array|Arrayable|JsonSerializable
     {

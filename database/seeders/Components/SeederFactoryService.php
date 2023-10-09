@@ -16,6 +16,7 @@ use App\Models\PropertyValue;
 use App\Models\RatingAndComment;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,6 +25,7 @@ class SeederFactoryService
     public function factory(): void
     {
         $tags = Tag::factory(10)->create();
+        /** @var Collection<Tag> $tags */
         for ($k = 1; $k <= 10; $k++) {
             Property::factory()
                 ->has(PropertyValue::factory(rand(2, 4)))
@@ -36,13 +38,13 @@ class SeederFactoryService
 
         foreach (SeederInitialData::getCategories() as $category) {
             $properties = Property::query()
-                ->with(['propertyValues' => fn($q) => $q->select('id', 'property_id')->inRandomOrder()])
+                ->with(['propertyValues' => fn(Builder $q) => $q->select('id', 'property_id')->inRandomOrder()])
                 ->inRandomOrder()
                 ->take(5)
                 ->get('id');
 
             $options = Option::query()
-                ->with(['optionValues' => fn($q) => $q->select('id', 'option_id')->inRandomOrder()])
+                ->with(['optionValues' => fn(Builder $q) => $q->select('id', 'option_id')->inRandomOrder()])
                 ->inRandomOrder()
                 ->take(4)
                 ->get('id');
@@ -52,7 +54,7 @@ class SeederFactoryService
             for ($j = 1; $j <= 5; $j++) {
                 $propertyValues = $properties->pluck('propertyValues')->shuffle()->pluck(0);
                 $optionValues = $options->random(2)->pluck('optionValues')->random(2)
-                    ->map(fn(Collection $optionValue) => $optionValue->random(2))->flatten();
+                    ->transform(fn(Collection $optionValue) => $optionValue->random(2))->flatten();
 
                 Product::factory()
                     ->has(ProductType::factory(4)

@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Arhitector\Yandex\Disk;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -48,9 +47,9 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return View|Factory
+     * @return View
      */
-    public function showRegistrationForm(): View|Factory
+    public function showRegistrationForm(): View
     {
         $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
         return view('auth.register', compact('policy'));
@@ -59,7 +58,7 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      * @return User
      */
     protected function create(array $data): User
@@ -71,7 +70,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      * @return \Illuminate\Validation\Validator
      */
     protected function validator(array $data): \Illuminate\Validation\Validator

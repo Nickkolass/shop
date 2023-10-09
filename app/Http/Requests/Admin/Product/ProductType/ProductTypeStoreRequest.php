@@ -30,7 +30,7 @@ class ProductTypeStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {

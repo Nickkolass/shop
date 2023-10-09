@@ -3,13 +3,14 @@
 namespace App\Http\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 
 class ProductTypeFilter extends AbstractFilter
 {
     const PRICES = 'prices';
     const OPTIONVALUES = 'optionValues';
 
-    /** @return array<string, array<int, mixed>> */
+    /** @return array<mixed> */
     public function getCallbacks(): array
     {
         return [
@@ -20,7 +21,7 @@ class ProductTypeFilter extends AbstractFilter
 
     /**
      * @param Builder $builder
-     * @param array<string, int> $value
+     * @param array<int> $value
      * @return void
      */
     public function prices(Builder $builder, array $value): void
@@ -30,15 +31,15 @@ class ProductTypeFilter extends AbstractFilter
 
     /**
      * @param Builder $builder
-     * @param array<int, array<int, int>> $value
+     * @param array<array<int>> $value
      * @return void
      */
     public function optionValues(Builder $builder, array $value): void
     {
-        foreach ($value as $option_id => $optionValue_ids) {
-            $builder->whereHas('optionValues', function ($b) use ($optionValue_ids) {
-                $b->whereIn('optionValue_id', $optionValue_ids);
-            });
-        }
+        $builder->whereHas('optionValues', function (Builder $b) use ($value) {
+            $b->selectRaw('COUNT(DISTINCT(`option_id`)) as `counter`')
+                ->whereIn('optionValue_id', Arr::flatten($value))
+                ->having('counter', count($value));
+        });
     }
 }

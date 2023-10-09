@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('client.layouts.main')
 @section('content')
 

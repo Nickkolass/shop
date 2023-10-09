@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class OrderDBService
 {
     /**
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      * @return void
      */
     public function store(array $data): void
@@ -22,26 +22,51 @@ class OrderDBService
         DB::commit();
     }
 
-    public function update(Order $order): void
+    /**
+     * @param array<mixed> &$data
+     * @return void
+     */
+    private function orderPerformerStore(array &$data): void
     {
-        DB::beginTransaction();
-        $order->update(['status' => 'Получен ' . now()]);
-        $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
-        DB::commit();
-    }
+        $data['cart'] = collect((array)$data['cart'])
+            ->groupBy('saler_id')/** @phpstan-ignore-next-line */
+            ->transform(function (Collection $order, int $saler_id) use ($data) {
+                return [
+                    'order_id' => $data['order']->id,
+                    'saler_id' => $saler_id,
+                    'user_id' => $data['user_id'],
+                    'productTypes' => $order,
+                    'dispatch_time' => now()->addDays(25),
+                    'delivery' => $data['delivery'],
+                    'total_price' => $order->sum('price'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            });
+        OrderPerformer::query()->insert($data['cart']->all());
 
-    public function delete(Order $order): void
-    {
-        DB::beginTransaction();
-        $order->orderPerformers()->update(['status' => 'Отменен ' . now()]);
-        $order->orderPerformers()->delete();
-        $order->update(['status' => 'Отменен ' . now()]);
-        $order->delete();
-        DB::commit();
+        event(new OrderStored($data['cart']));
     }
 
     /**
-     * @param array<int, int> &$cart
+     * @param array<mixed> &$data
+     * @return OrderDBService
+     */
+    private function orderStore(array &$data): OrderDBService
+    {
+        $data['order'] = Order::query()->create([
+            'user_id' => $data['user_id'],
+            'productTypes' => $data['cart'],
+            'delivery' => $data['delivery'],
+            'total_price' => $data['total_price'],
+            'payment' => $data['payment'],
+            'payment_status' => $data['payment_status'],
+        ]);
+        return $this;
+    }
+
+    /**
+     * @param array<int> &$cart
      * @return OrderDBService
      */
     private function productCountUpdate(array &$cart): OrderDBService
@@ -65,52 +90,25 @@ class OrderDBService
                 'saler_id' => $productType->product->saler_id,
             ];
         }
-        if (!empty($update)) ProductType::query()->upsert($update, ['id'], ['count', 'is_published']);
+        if (!empty($update)) ProductType::query()->upsert($update, 'id');
         return $this;
     }
 
-    /**
-     * @param array<string, mixed> &$data
-     * @return OrderDBService
-     */
-    private function orderStore(array &$data): OrderDBService
+    public function delete(Order $order): void
     {
-        $data['order'] = Order::query()->create([
-            'user_id' => $data['user_id'],
-            'productTypes' => $data['cart'],
-            'delivery' => $data['delivery'],
-            'total_price' => $data['total_price'],
-            'payment' => $data['payment'],
-            'payment_status' => $data['payment_status'],
-        ]);
-        return $this;
+        DB::beginTransaction();
+        $order->orderPerformers()->update(['status' => 'Отменен ' . now()]);
+        $order->orderPerformers()->delete();
+        $order->update(['status' => 'Отменен ' . now()]);
+        $order->delete();
+        DB::commit();
     }
 
-    /**
-     * @param array<string, mixed> &$data
-     * @return OrderDBService
-     */
-    private function orderPerformerStore(array &$data): OrderDBService
+    public function update(Order $order): void
     {
-        $data['cart'] = collect((array)$data['cart'])
-            ->groupBy('saler_id')
-            ->map(function (Collection $order, int $saler_id) use ($data) {
-                return [
-                    'order_id' => $data['order']->id,
-                    'saler_id' => $saler_id,
-                    'user_id' => $data['user_id'],
-                    'productTypes' => $order,
-                    'dispatch_time' => now()->addDays(25),
-                    'delivery' => $data['delivery'],
-                    'total_price' => $order->sum('price'),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            });
-        OrderPerformer::query()->insert($data['cart']->all());
-
-        event(new OrderStored($data['cart']));
-
-        return $this;
+        DB::beginTransaction();
+        $order->update(['status' => 'Получен ' . now()]);
+        $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
+        DB::commit();
     }
 }

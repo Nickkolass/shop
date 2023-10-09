@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -106,16 +105,16 @@
                                 <tr>
                                     <td>Характеристики</td>
                                     <td>
-                                        @foreach ($product->propertyValues as $property => $value)
-                                            {{$property . ': ' . $value}}<br>
+                                        @foreach ($product->propertyValues as $value)
+                                            {{$value->property_title . ': ' . $value->value}}<br>
                                         @endforeach
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Классификаторы</td>
                                     <td>
-                                        @foreach ($product->optionValues as $option => $values)
-                                            {{$option . ': '}}
+                                        @foreach ($product->optionValues as $values)
+                                            {{$values->first()->option_title . ': '}}
                                             @foreach ($values as $value)
                                                 {{$value->value . ', '}}
                                             @endforeach
@@ -131,7 +130,7 @@
                                         @for($i=1; $i<=5; $i++)
                                             <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
                                         @endfor
-                                    ({{ $product['countRating'] }})
+                                    ({{ $product['count_rating'] }})
                                     </td>
                                 </tr>
                                 </tbody>
@@ -161,8 +160,9 @@
                                     <tr style="text-align:center">
                                         <td>{{$productType->id}}</td>
                                         <td>
-                                            @foreach ($productType->optionValues as $option => $value)
-                                                {{$option . ': ' . $value}}<br>
+                                            @foreach ($productType->optionValues as $value)
+                                                {{$product->optionValues[$value->option_id]->firstWhere('option_id', $value->option_id)->option_title . ': ' . $value->value}}
+                                                <br>
                                             @endforeach
                                         </td>
                                         <td><img
@@ -179,14 +179,14 @@
                                         </td>
                                         <td>{{ $productType->price }}</td>
                                         <td>{{ $productType->count }}</td>
-                                        <td>{{ $productType->liked_count }}</td>
+                                        <td>{{ $productType->count_likes }}</td>
                                         <td>
                                             <form
                                                 action="{{route('admin.productTypes.publish', $productType->id) }}"
                                                 method="post">
                                                 @csrf
                                                 @method('patch')
-                                                <h4 hidden> {{$blockOV = $productType->optionValues->diff($product->optionValues->pluck('*.value')->flatten())->count() != 0}} </h4>
+                                                <h4 hidden> {{$blockOV = $productType->optionValues->pluck('value')->diff($product->optionValues->pluck('*.value')->flatten())->count() != 0}} </h4>
                                                 <h4 hidden> {{$blockCount = $productType->count <= 0}} </h4>
                                                 <input type="submit" class="btn btn-primary"
                                                        value="{{ $productType->is_published == 0 ? 'Опубликовать' : 'Снять с публикации' }}"
@@ -213,7 +213,7 @@
                         </div>
 
                         <div class="down-content" id="comments" style="margin-inline: 50px">
-                            <h4 style="text-align: center"> Оценки ({{$product->countComments}})</h4>
+                            <h4 style="text-align: center"> Оценки ({{$product->count_rating}})</h4>
                             @if(!empty($product->ratingAndComments))
                                 @foreach( $product->ratingAndComments as $comment)
                                     <br>
@@ -223,7 +223,6 @@
                                             @for($i=1; $i<=5; $i++)
                                                 <i class="fa fa-star{{$i-1<$comment['rating'] & $comment['rating']<$i ? '-half' : ''}}{{$comment['rating']<$i ? '-o' : ''}}"></i>
                                             @endfor
-                                        ({{ $product['countRating'] }})
                                         </div>
                                         @if(!empty($comment->commentImages))
                                             <div class="card-body" style="margin-inline: 50px">

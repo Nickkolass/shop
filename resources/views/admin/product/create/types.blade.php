@@ -36,7 +36,7 @@
                                             <option value="">{{ $option_title }}</option>
                                             @foreach($values as $value)
                                                 <option
-                                                    value="{{ $value->id }}" @selected(in_array($value->id, old('types.0.relations.optionValues') ?? []))>
+                                                    value="{{ $value->id }}" @selected(in_array($value->id, old('types.0.relations.optionValues', [])))>
                                                     {{ $value->value }}</option>
                                             @endforeach
                                         </select>

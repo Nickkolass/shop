@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Product\ProductsRequest;
 use App\Services\Client\Front\FrontService;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 
 class FrontProductController extends Controller
@@ -18,20 +17,20 @@ class FrontProductController extends Controller
         $this->client = new Client(config('guzzle'));
     }
 
-    public function index(): View|Factory
+    public function index(): View
     {
-        $data['viewed'] = array_slice(array_keys(session('viewed') ?? []), 0, 12);
+        $data['viewed'] = array_slice(array_keys(session('viewed', [])), 0, 12);
 
         $data = $this->client->request('POST', 'api/products',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
 
         $data = json_decode($data, true);
-        $data['cart'] = session('cart') ?? [];
+        $data['cart'] = session('cart', []);
 
         return view('client.index', compact('data'));
     }
 
-    public function filter(string $category_title, ProductsRequest $request): Factory|View
+    public function filter(string $category_title, ProductsRequest $request): View
     {
         $query_params = $request->validated();
         FrontService::scenarioGetProducts($query_params);
@@ -44,7 +43,7 @@ class FrontProductController extends Controller
         return view('client.product.index', compact('data', 'product_types'));
     }
 
-    public function show(int $product_type_id): View|Factory
+    public function show(int $product_type_id): View
     {
         $product_type = $this->client->request('POST', 'api/products/show/' . $product_type_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -57,7 +56,7 @@ class FrontProductController extends Controller
         return view('client.product.show', compact('data', 'product_type'));
     }
 
-    public function cart(): View|Factory
+    public function cart(): View
     {
         $product_types = $total_price = null;
         if ($cart = session('cart')) {
@@ -68,7 +67,7 @@ class FrontProductController extends Controller
         return view('client.cart', compact('product_types', 'total_price'));
     }
 
-    public function liked(): View|Factory
+    public function liked(): View
     {
         $product_types = $this->client->request('POST', 'api/products/liked',
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();

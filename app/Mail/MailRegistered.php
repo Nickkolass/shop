@@ -13,16 +13,8 @@ class MailRegistered extends Mailable implements ShouldQueue
 {
     use SerializesModels, Queueable;
 
-    public ?string $password;
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct(?string $password = null)
+    public function __construct(public ?string $password = null)
     {
-        $this->password = $password;
     }
 
     /**
@@ -30,7 +22,7 @@ class MailRegistered extends Mailable implements ShouldQueue
      *
      * @return Envelope
      */
-    public function envelope()
+    public function envelope(): Envelope
     {
         return new Envelope(
             subject: 'Mail Registered',
@@ -42,7 +34,7 @@ class MailRegistered extends Mailable implements ShouldQueue
      *
      * @return Content
      */
-    public function content()
+    public function content(): Content
     {
         return new Content(
             view: 'mail.registered',
@@ -52,9 +44,9 @@ class MailRegistered extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array<empty>
+     * @return array<mixed>
      */
-    public function attachments()
+    public function attachments(): array
     {
         return [];
     }

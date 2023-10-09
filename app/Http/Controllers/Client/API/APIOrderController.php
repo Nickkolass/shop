@@ -21,7 +21,7 @@ class APIOrderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return null|array<string, mixed>
+     * @return null|array<mixed>
      */
     public function index(): ?array
     {
@@ -45,7 +45,7 @@ class APIOrderController extends Controller
      * Display the specified resource.
      *
      * @param Order $order
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function show(Order $order): array
     {

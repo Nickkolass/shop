@@ -14,7 +14,6 @@ use Throwable;
 class ProductTypeService
 {
 
-
     public function __construct(public RelationService $relationService)
     {
     }

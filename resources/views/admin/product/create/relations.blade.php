@@ -33,7 +33,7 @@
                         <select name="tags[]" class="tags" multiple="multiple" style="width: 82%;" required>
                             @foreach($data['tags'] as $tag_id =>$tag_title)
                                 <option
-                                    value="{{ $tag_id }}" @selected(in_array($tag_id, old('tags') ?? []))>{{ $tag_title }}</option>
+                                    value="{{ $tag_id }}" @selected(in_array($tag_id, old('tags', [])))>{{ $tag_title }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -42,15 +42,15 @@
                 <div class="row" style="margin-left:10px">
                     <div class="col col-sm">
                         <h3 class="m-2"><br>Характеристики<br><br></h3>
-                        @foreach($data['properties'] as $property)
+                        @foreach($data['propertyValues'] as $property => $values)
                             <div class="col" style="padding: 5px;">
-                                <label>{{$property->title}}</label>
-                                <input class="form-control" name="propertyValues[{{$property->id}}]"
-                                       value="{{ old("propertyValues[$property->id]") }}"
-                                       list="datalistOptions[{{$property->id}}]" id="exampleDataList"
+                                <label>{{$property}}</label>
+                                <input class="form-control" name="propertyValues[{{$values->first()->property_id}}]"
+                                       value="{{ old('propertyValues.' . $values->first()->property_id) }}"
+                                       list="datalistOptions[{{$property}}]" id="exampleDataList"
                                        style="width:500px">
-                                <datalist id="datalistOptions[{{$property->id}}]">
-                                    @foreach($property->propertyValues as $propertyValue)
+                                <datalist id="datalistOptions[{{$property}}]">
+                                    @foreach($values as $propertyValue)
                                         <option value={{$propertyValue->value}}>
                                     @endforeach
                                 </datalist>
@@ -65,9 +65,9 @@
                                 <label>{{$option_title}}</label><br>
                                 <select name="optionValues[{{$option_title}}][]" class="tags" multiple="multiple"
                                         style="width:500px">
-                                    @foreach($values as $id => $value)
+                                    @foreach($values as $value)
                                         <option
-                                            value="{{ $id }}" @selected(in_array($id, old("optionValues[$option_title]") ?? []))>{{ $value }}</option>
+                                            value="{{ $value->id }}" @selected(in_array($value->id, old('optionValues.' . $option_title, [])))>{{ $value->value }}</option>
                                     @endforeach
                                 </select>
                             </div>

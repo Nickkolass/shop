@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  * @property string $title
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property ?Collection<int, Product> $products
+ * @property ?Collection<Product> $products
  */
 class Tag extends Model
 {

@@ -2,32 +2,27 @@
 
 namespace Database\Factories;
 
-use App\Models\ProductImage;
 use App\Models\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * @extends Factory<ProductImage>
- */
 class ProductImageFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $productType = ProductType::query()
             ->latest('id')
             ->select('id', 'product_id')
             ->first();
 
-        $counter = Cache::get('imageCounter');
-        Cache::increment('imageCounter');
+        $counter = Cache::increment('imageCounter') - 1;
         $filePath = Cache::get('factory')[$counter];
 
         $productImagePath = Storage::putFile(

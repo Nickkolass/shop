@@ -19,7 +19,7 @@ class SendEmailToSallersAboutStoredOrderNotificationQueue implements ShouldQueue
      * @param OrderStored $event
      * @return void
      */
-    public function handle(OrderStored $event)
+    public function handle(OrderStored $event): void
     {
         User::query()
             ->whereIn('id', $event->orderPerformers->keys())

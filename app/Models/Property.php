@@ -14,8 +14,8 @@ use Illuminate\Support\Collection;
  * @property string $title
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property ?Collection<int, PropertyValue> $propertyValues
- * @property ?Collection<int, Category> $categories
+ * @property ?Collection<PropertyValue> $propertyValues
+ * @property ?Collection<Category> $categories
  */
 class Property extends Model
 {

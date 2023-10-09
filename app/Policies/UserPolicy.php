@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\User;
 use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -15,9 +14,9 @@ class UserPolicy
      * Determine whether the user can view any models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return false
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return false;
     }
@@ -27,9 +26,9 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return Response|bool
+     * @return bool
      */
-    public function view(User $user, User $model)
+    public function view(User $user, User $model): bool
     {
         return $user->id == $model->id;
     }
@@ -38,9 +37,9 @@ class UserPolicy
      * Determine whether the user can create models.
      *
      * @param User $user
-     * @return Response|bool
+     * @return false
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return false;
     }
@@ -50,9 +49,9 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return Response|bool
+     * @return bool
      */
-    public function update(User $user, User $model)
+    public function update(User $user, User $model): bool
     {
         return $user->id == $model->id;
     }
@@ -62,9 +61,9 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return Response|bool
+     * @return bool
      */
-    public function delete(User $user, User $model)
+    public function delete(User $user, User $model): bool
     {
         return $user->id == $model->id;
     }
@@ -74,9 +73,9 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return Response|bool
+     * @return false
      */
-    public function restore(User $user, User $model)
+    public function restore(User $user, User $model): bool
     {
         return false;
     }
@@ -86,9 +85,9 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return Response|bool
+     * @return false
      */
-    public function forceDelete(User $user, User $model)
+    public function forceDelete(User $user, User $model): bool
     {
         return false;
     }
@@ -97,9 +96,9 @@ class UserPolicy
      * Determine whether the user can like productTypes.
      *
      * @param User $user
-     * @return Response|bool
+     * @return true
      */
-    public function product(User $user)
+    public function product(User $user): bool
     {
         return true;
     }

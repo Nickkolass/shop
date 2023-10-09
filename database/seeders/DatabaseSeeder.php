@@ -34,17 +34,17 @@ class DatabaseSeeder extends Seeder
 
         $users = User::query()
             ->take(3)
-            ->get('id')
-            ->map(function (User $user, int $i) {
+            ->pluck('id')
+            ->transform(function (int $id, int $i) {
                 $i++;
                 return [
-                    'id' => $user->id,
+                    'id' => $id,
                     'email' => $i . '@mail.ru',
                     'password' => Hash::make((string)$i),
                     'role' => $i,
                 ];
             })
-            ->toArray();
+            ->all();
         User::query()->upsert($users, 'id');
     }
 }

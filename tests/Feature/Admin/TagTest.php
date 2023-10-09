@@ -16,6 +16,7 @@ class TagTest extends TestCase
     {
         Tag::factory()->create();
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.tags.index'))->assertNotFound();
 
@@ -36,6 +37,7 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.tags.create'))->assertNotFound();
 
@@ -57,6 +59,7 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = Tag::factory()->raw();
 
         $this->post(route('admin.tags.store'), $data)->assertNotFound();
@@ -83,7 +86,9 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_viewed_with_premissions(): void
     {
         $tag = Tag::factory()->create();
+        /** @var Tag $tag */
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.tags.show', $tag->id))->assertNotFound();
 
@@ -105,7 +110,9 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_edited_with_premissions(): void
     {
         $tag = Tag::factory()->create();
+        /** @var Tag $tag */
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.tags.edit', $tag->id))->assertNotFound();
 
@@ -127,7 +134,9 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $tag = Tag::factory()->create();
+        /** @var Tag $tag */
         $data = Tag::factory()->raw();
 
         $this->patch(route('admin.tags.update', $tag->id), $data)->assertNotFound();
@@ -151,8 +160,11 @@ class TagTest extends TestCase
     public function test_a_tag_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $tag = Tag::factory()->create();
+        /** @var Tag $tag */
         Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
+        /** @phpstan-ignore-next-line */
         Product::factory()->create()->tags()->attach($tag);
 
         $this->delete('/admin/tags/' . $tag->id)->assertNotFound();

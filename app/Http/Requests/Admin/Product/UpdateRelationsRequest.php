@@ -8,6 +8,17 @@ use Illuminate\Support\Arr;
 class UpdateRelationsRequest extends FormRequest
 {
     /**
+     * Handle a passed validation attempt.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'propertyValues' => array_filter($this->input('propertyValues', [])),
+            'optionValues' => Arr::flatten($this->input('optionValues', [])),
+        ]);
+    }
+
+    /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -18,20 +29,9 @@ class UpdateRelationsRequest extends FormRequest
     }
 
     /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'propertyValues' => array_filter($this->input('propertyValues')),
-            'optionValues' => Arr::flatten($this->input('optionValues')),
-        ]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {

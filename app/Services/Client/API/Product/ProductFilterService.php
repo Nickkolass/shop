@@ -10,16 +10,15 @@ use App\Models\ProductType;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
-use App\Services\Methods\Maper;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 
 class ProductFilterService
 {
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      * @param Category $category
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function getProductFilterAggregateDataCache(array $data, Category $category): array
     {
@@ -30,9 +29,9 @@ class ProductFilterService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      * @param Category $category
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     private function getProductFilterAggregateData(array $data, Category $category): array
     {
@@ -43,22 +42,31 @@ class ProductFilterService
     }
 
     /**
-     * @param array<string, array|mixed> &$data
-     * @return ProductFilterService
+     * @param array<mixed> &$data
+     * @return void
      */
-    private function fillDataPaginate(array &$data): ProductFilterService
+    private function fillDataFilteredProductTypes(array &$data): void
     {
-        $default = [
-            'orderBy' => 'rating',
-            'perPage' => 8,
-            'page' => 1,
-        ];
-        $data['paginate'] = array_merge($default, $data['paginate'] ?? []);
-        return $this;
+        $data['productTypes'] = ProductType::query()
+            ->filter(new ProductTypeFilter($data['filter']))
+            ->sort($data['paginate']['orderBy'])
+            ->withWhereHas('product', function ($q) use ($data) {
+                $q->filter(new ProductFilter($data['filter'] + ['category' => $data['category']->id]))
+                    ->select('products.id', 'title', 'rating', 'count_comments', 'count_rating')
+                    ->with('productTypes:id,product_id,is_published,preview_image');
+            })
+            ->select('productTypes.id', 'productTypes.product_id', 'is_published', 'preview_image', 'price', 'count')
+            ->withExists(['liked' => fn(Builder $q) => $q->where('user_id', auth('api')->id())])
+            ->with([
+                'productImages:productType_id,file_path',
+                'optionValues.option:id,title',
+            ])
+            ->simplePaginate($data['paginate']['perPage'], ['*'], 'page', $data['paginate']['page'])
+            ->withPath('');
     }
 
     /**
-     * @param array<string, mixed> &$data
+     * @param array<mixed> &$data
      * @return ProductFilterService
      */
     private function fillDataFilterable(array &$data): ProductFilterService
@@ -80,22 +88,14 @@ class ProductFilterService
                 ->get();
 
             $filterable['optionValues'] = OptionValue::query()
-                ->with('option:id,title')
                 ->whereHas('products', $whereHasProducts)
-                ->select('id', 'option_id', 'value')
-                ->get();
+                ->getAndGroupWithParentTitle();
 
             $filterable['propertyValues'] = PropertyValue::query()
-                ->with('property:id,title')
                 ->whereHas('products', $whereHasProducts)
-                ->select('id', 'property_id', 'value')
-                ->get();
+                ->getAndGroupWithParentTitle();
 
-            $filterable['optionValues'] = Maper::toGroups($filterable['optionValues']);
-            $filterable['propertyValues'] = Maper::toGroups($filterable['propertyValues']);
-
-            $prices = $data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->first();
-            $filterable['prices'] = ['min' => $prices->min, 'max' => $prices->max];
+            $filterable['prices'] = (array)$data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->toBase()->first();
 
             return $filterable;
         });
@@ -103,34 +103,17 @@ class ProductFilterService
     }
 
     /**
-     * @param array<string, mixed> &$data
+     * @param array<mixed> &$data
      * @return ProductFilterService
      */
-    private function fillDataFilteredProductTypes(array &$data): ProductFilterService
+    private function fillDataPaginate(array &$data): ProductFilterService
     {
-        $data['productTypes'] = ProductType::query()
-            ->filter(new ProductTypeFilter($data['filter']))
-            ->sort($data['paginate']['orderBy'])
-            ->select('productTypes.id', 'productTypes.product_id', 'is_published', 'preview_image', 'price', 'count')
-            ->withExists(['liked' => fn(Builder $q) => $q->where('user_id', auth('api')->id())])
-            ->with([
-                'productImages:productType_id,file_path',
-                'optionValues.option:id,title',
-                'product' => function ($q) {
-                    $q->select('id', 'title')
-                        ->with([
-                            'productTypes:id,product_id,is_published,preview_image',
-                            'ratingAndComments',
-                        ]);
-                }
-            ])
-            ->whereHas('product', function ($q) use ($data) {
-                $q->filter(new ProductFilter($data['filter'] + ['category' => $data['category']->id]));
-            })
-            ->simplePaginate($data['paginate']['perPage'], ['*'], 'page', $data['paginate']['page'])
-            ->withPath('');
-
-        Maper::mapAfterGettingProducts($data['productTypes']);
+        $default = [
+            'orderBy' => 'rating',
+            'perPage' => 8,
+            'page' => 1,
+        ];
+        $data['paginate'] = array_merge($default, $data['paginate'] ?? []);
         return $this;
     }
 }

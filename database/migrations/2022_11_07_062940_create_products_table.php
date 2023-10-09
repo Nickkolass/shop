@@ -10,12 +10,15 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('title')->unique();
             $table->text('description');
+            $table->unsignedTinyInteger('rating')->default(0);
+            $table->unsignedSmallInteger('count_rating')->default(0);
+            $table->unsignedSmallInteger('count_comments')->default(0);
             $table->foreignId('saler_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
@@ -29,7 +32,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('products');
     }

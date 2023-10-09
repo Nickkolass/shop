@@ -20,6 +20,7 @@ class SeederStorageService
 
     public function caching(): void
     {
+        if (Storage::getDefaultDriver() == 'public') shell_exec('chmod 777 -R ./storage/app/public');
         cache()->flush();
         $categories = Category::query()
             ->select('id', 'title', 'title_rus')

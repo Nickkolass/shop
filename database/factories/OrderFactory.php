@@ -2,22 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\Order;
 use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Order>
- */
 class OrderFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $user = User::query()->inRandomOrder()->select('id', 'address', 'card')->first();
         $productTypes = ProductType::query()
@@ -25,8 +21,8 @@ class OrderFactory extends Factory
             ->select('id', 'product_id', 'price')
             ->take(4)
             ->inRandomOrder()
-            ->get()
-            ->map(function (ProductType $productType) {
+            ->get()/** @phpstan-ignore-next-line */
+            ->transform(function (ProductType $productType) {
                 return [
                     'productType_id' => $productType->id,
                     'amount' => $amount = rand(1, 3),

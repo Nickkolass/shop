@@ -7,8 +7,8 @@ use Illuminate\Http\UploadedFile;
 class ProductTypeRelationDto
 {
     /**
-     * @param array<int, int> $optionValues
-     * @param array<int, UploadedFile> $productImages
+     * @param array<int> $optionValues
+     * @param array<UploadedFile> $productImages
      */
     public function __construct(
         public readonly array $optionValues,

@@ -43,15 +43,15 @@
 
                     <div class="col col-sm">
                         <h3 class="m-2"><br>Характеристики<br><br></h3>
-                        @foreach($data['properties'] as $property)
+                        @foreach($data['propertyValues'] as $property => $values)
                             <div class="col" style="padding: 5px;">
-                                <label>{{$property->title}}</label>
-                                <input class="form-control" name="propertyValues[{{$property->id}}]"
-                                       value="{{ session()->has('_old_input') ? old("propertyValues.$property->id") : $property->propertyValues->intersect($product->propertyValues)->first()->value ?? '' }}"
-                                       list="datalistOptions[{{$property->id}}]" id="exampleDataList"
+                                <label>{{$property}}</label>
+                                <input class="form-control" name="propertyValues[{{$values->first()->property_id}}]"
+                                       value="{{ old('propertyValues.' . $values->first()->property_id, $values->whereIn('id', $product->propertyValues)->first()->value ?? '') }}"
+                                       list="datalistOptions[{{$property}}]" id="exampleDataList"
                                        style="width:500px">
-                                <datalist id="datalistOptions[{{$property->id}}]">
-                                    @foreach($property->propertyValues as $propertyValue)
+                                <datalist id="datalistOptions[{{$property}}]">
+                                    @foreach($values as $propertyValue)
                                         <option value={{$propertyValue->value}}>
                                     @endforeach
                                 </datalist>
@@ -66,9 +66,9 @@
                                 <label>{{$option_title}}</label><br>
                                 <select name="optionValues[{{$option_title}}][]" class="tags" multiple="multiple"
                                         style="width:500px">
-                                    @foreach($values as $id => $value)
-                                        <option value="{{ $id }}"
-                                            @selected(session()->has('_old_input') ? in_array($id, old("optionValues.$option_title") ?? []) : $product->optionValues->contains($id))> {{$value}}
+                                    @foreach($values as $value)
+                                        <option value="{{ $value->id }}"
+                                            @selected(session()->has('_old_input') ? in_array($value->id, old('optionValues.' . $option_title, [])) : $product->optionValues->contains($value->id))> {{$value->value}}
                                         </option>
                                     @endforeach
                                 </select>

@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 <div id="carouselExampleIndicators{{$product_type['id']}}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         <li data-target="#carouselExampleIndicators{{$product_type['id']}}" data-slide-to="0" class="active"></li>

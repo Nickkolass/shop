@@ -30,7 +30,7 @@ class StoreFrontRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {
@@ -40,6 +40,7 @@ class StoreFrontRequest extends FormRequest
             'offer' => 'required|string',
             'total_price' => 'required|string',
             'cart' => 'required|array',
+            'cart.*' => 'required|int',
             'payment_status' => 'required|bool',
         ];
     }

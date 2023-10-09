@@ -10,11 +10,13 @@ use JsonSerializable;
 class ProductFilterAggregateResource extends JsonResource
 {
 
+    protected bool $preserveKeys = true;
+
     /**
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array<string, mixed>|Arrayable|JsonSerializable
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
     public function toArray($request): array|Arrayable|JsonSerializable
     {

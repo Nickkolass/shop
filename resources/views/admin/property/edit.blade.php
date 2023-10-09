@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="text" name="title" , value="{{ old('title') ?? $property->title }}"
+                            <input type="text" name="title" , value="{{ old('title', $property->title) }}"
                                    class="form-control"
                                    placeholder="title">
                         </div>
@@ -61,7 +61,7 @@
                         <div class="form-group">
                             <h5>Значения</h5>
                             <div id="multi"
-                                 data-old="{{json_encode(old('propertyValues') ?? $property->propertyValues->pluck('value')->all())}}">
+                                 data-old="{{json_encode(old('propertyValues', $property->propertyValues->pluck('value')->all()))}}">
                                 <div class="js-row input-group">
                                     <input type="text" name="propertyValues[0][value]" data-name="propertyValues"
                                            class="form-control">

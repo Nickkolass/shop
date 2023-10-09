@@ -19,23 +19,32 @@ class FilterRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function rules(): array
     {
         return [
-            'filter' => 'array',
-            'filter.tags' => 'array',
-            'filter.salers' => 'array',
-            'filter.optionValues' => 'array',
-            'filter.propertyValues' => 'array',
-            'filter.prices' => 'array',
-            'filter.search' => 'string',
-            'paginate' => 'array',
-            'paginate.orderBy' => 'string',
-            'paginate.perPage' => 'integer',
-            'paginate.page' => 'integer',
-            'cart' => 'array',
+            'filter' => 'nullable|array',
+            'filter.tags' => 'nullable|array',
+            'filter.tags.*' => 'nullable|int',
+            'filter.salers' => 'nullable|array',
+            'filter.salers.*' => 'nullable|int',
+            'filter.optionValues' => 'nullable|array',
+            'filter.optionValues.*' => 'nullable|array',
+            'filter.optionValues.*.*' => 'nullable|int',
+            'filter.propertyValues' => 'nullable|array',
+            'filter.propertyValues.*' => 'nullable|array',
+            'filter.propertyValues.*.*' => 'nullable|int',
+            'filter.prices' => 'nullable|array',
+            'filter.prices.min' => 'nullable|int',
+            'filter.prices.max' => 'nullable|int',
+            'filter.search' => 'nullable|string',
+            'paginate' => 'nullable|array',
+            'paginate.page' => 'nullable|integer',
+            'paginate.orderBy' => 'nullable|string',
+            'paginate.perPage' => 'nullable|integer',
+            'cart' => 'nullable|array',
+            'cart.*' => 'nullable|int',
         ];
     }
 }

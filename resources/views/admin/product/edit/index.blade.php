@@ -36,7 +36,7 @@
                         <div class="row" style="margin:5px">
                             <div class="col" style="padding: 5px;">
                                 <label>Наименование</label>
-                                <input type="text" name="title" value="{{ old('title') ?? $product->title }}"
+                                <input type="text" name="title" value="{{ old('title', $product->title) }}"
                                        class="form-control"
                                        required>
                             </div>
@@ -45,7 +45,7 @@
                             <div class="col" style="padding: 5px;">
                                 <label>Описание</label>
                                 <textarea name="description" class="form-control" rows="5"
-                                          required>{{ old('description') ?? $product->description }}</textarea>
+                                          required>{{ old('description', $product->description) }}</textarea>
                             </div>
                             <div class="w-100"></div>
 
@@ -54,7 +54,7 @@
                                 <select name="category_id" id="category_id" class="categories" style="width: 100%;"
                                         required>
                                     <option selected disabled>Категория</option>
-                                    <h4 hidden>{{$old_category = old('category_id') ?? $product->category_id}}</h4>
+                                    <h4 hidden>{{$old_category = old('category_id', $product->category_id)}}</h4>
                                     @foreach($data['categories'] as $category_id => $category_title_rus)
                                         <option
                                             value="{{ $category_id }}" @selected($old_category == $category_id)>{{ $category_title_rus }}</option>

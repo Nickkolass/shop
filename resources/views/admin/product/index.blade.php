@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -68,7 +67,7 @@
                                             @for($i=1; $i<=5; $i++)
                                                 <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
                                             @endfor
-                                        ({{ $product['countRating'] }})
+                                        ({{ $product['count_rating'] }})
                                         </td>
                                     </tr>
                                 @endforeach

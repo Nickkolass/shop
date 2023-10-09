@@ -6,7 +6,6 @@ use App\Models\ProductType;
 use App\Models\User;
 use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class ProductTypePolicy
 {
@@ -17,9 +16,9 @@ class ProductTypePolicy
      *
      * @param User $user
      * @param ProductType $productType
-     * @return Response|bool
+     * @return bool
      */
-    public function update(User $user, ProductType $productType)
+    public function update(User $user, ProductType $productType): bool
     {
         return $productType->product()->pluck('saler_id')[0] == $user->id;
     }
@@ -29,9 +28,9 @@ class ProductTypePolicy
      *
      * @param User $user
      * @param ProductType $productType
-     * @return Response|bool
+     * @return bool
      */
-    public function delete(User $user, ProductType $productType)
+    public function delete(User $user, ProductType $productType): bool
     {
         return $productType->product()->pluck('saler_id')[0] == $user->id;
     }
@@ -41,9 +40,9 @@ class ProductTypePolicy
      *
      * @param User $user
      * @param ProductType $productType
-     * @return Response|bool
+     * @return false
      */
-    public function restore(User $user, ProductType $productType)
+    public function restore(User $user, ProductType $productType): bool
     {
         return false;
     }
@@ -53,9 +52,9 @@ class ProductTypePolicy
      *
      * @param User $user
      * @param ProductType $productType
-     * @return Response|bool
+     * @return false
      */
-    public function forceDelete(User $user, ProductType $productType)
+    public function forceDelete(User $user, ProductType $productType): bool
     {
         return false;
     }

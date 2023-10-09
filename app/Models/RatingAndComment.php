@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  * @property Carbon $updated_at
  * @property ?User $user
  * @property ?Product $product
- * @property ?Collection<int, CommentImage> $commentImages
+ * @property ?Collection<CommentImage> $commentImages
  */
 class RatingAndComment extends Model
 {

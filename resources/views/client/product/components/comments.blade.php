@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 <div class="down-content" id="comments">
     <h4 style="text-align: center; padding: 10px"> Комментарии </h4>
 

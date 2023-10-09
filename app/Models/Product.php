@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Http\Filters\FilterInterface;
 use App\Models\Traits\Filterable;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,16 +22,18 @@ use Laravel\Scout\Searchable;
  * @property int $category_id
  * @property string $title
  * @property string $description
+ * @property int $rating
+ * @property int $count_rating
+ * @property int $count_comments
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property ?User $saler
  * @property ?Category $category
- * @property ?Collection<int, ProductType> $productTypes
- * @property ?Collection<int, RatingAndComment> $ratingAndComments
- * @property ?Collection<int, Tag> $tags
- * @property ?Collection<int, PropertyValue> $propertyValues
- * @property ?Collection<int, OptionValue> $optionValues
- * @method static static|Builder query()
+ * @property ?Collection<ProductType> $productTypes
+ * @property ?Collection<RatingAndComment> $ratingAndComments
+ * @property ?Collection<Tag> $tags
+ * @property ?Collection<PropertyValue> $propertyValues
+ * @property ?Collection<OptionValue> $optionValues
  * @method static static|Builder filter(FilterInterface $filter)
  * @method static ScoutBuilder search(string $search)
  */

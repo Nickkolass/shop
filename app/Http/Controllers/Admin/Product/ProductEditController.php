@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\ProductRequest;
 use App\Models\Product;
 use App\Services\Admin\Product\ProductCreateEditService;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 
 class ProductEditController extends Controller
@@ -16,7 +15,7 @@ class ProductEditController extends Controller
     {
     }
 
-    public function index(Product $product): View|Factory
+    public function index(Product $product): View
     {
         $this->authorize('update', $product);
         $product->load('tags:id');
@@ -24,12 +23,15 @@ class ProductEditController extends Controller
         return view('admin.product.edit.index', compact('product', 'data'));
     }
 
-    public function relations(Product $product, ProductRequest $request): View|Factory
+    public function relations(Product $product, ProductRequest $request): View
     {
         $data = $request->validated();
         session(['edit' => $data]);
-        $product->load('propertyValues:id', 'optionValues:id');
+        $product->setRelations([
+            'propertyValues' => $product->propertyValues()->pluck('property_values.id'),
+            'optionValues' => $product->optionValues()->pluck('optionValues.id')]);
         $data = $this->service->relations($data['category_id']);
+//        dd($data['optionValues']);
         return view('admin.product.edit.relations', compact('product', 'data'));
     }
 }

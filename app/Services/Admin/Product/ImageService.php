@@ -11,9 +11,9 @@ class ImageService
 {
     /**
      * @param ProductType $productType
-     * @param array<int, UploadedFile> $images
+     * @param array<UploadedFile> $images
      * @param bool $isNewProduct
-     * @return array<int, array<string, mixed>>
+     * @return array<array<mixed>>
      */
     public function prepareOrCreateProductImages(ProductType $productType, array $images, bool $isNewProduct): array
     {
@@ -39,7 +39,7 @@ class ImageService
     }
 
     /**
-     * @param string|array<int, string> $image_paths
+     * @param string|array<string> $image_paths
      * @return void
      */
     public static function deleteImages(array|string $image_paths): void

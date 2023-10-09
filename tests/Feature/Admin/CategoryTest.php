@@ -15,6 +15,7 @@ class CategoryTest extends TestCase
     {
         Category::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.index'))->assertNotFound();
 
@@ -37,6 +38,7 @@ class CategoryTest extends TestCase
     {
         Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.create'))->assertNotFound();
 
@@ -58,6 +60,7 @@ class CategoryTest extends TestCase
     public function test_a_category_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = ['title' => 'xcvxc', 'title_rus' => 'cvxcv'];
 
         $this->post(route('admin.categories.store'), $data)->assertNotFound();
@@ -86,6 +89,7 @@ class CategoryTest extends TestCase
     {
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.show', $category->id))->assertNotFound();
 
@@ -108,6 +112,7 @@ class CategoryTest extends TestCase
     {
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.edit', $category->id))->assertNotFound();
 
@@ -129,6 +134,7 @@ class CategoryTest extends TestCase
     public function test_a_category_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $data = ['title' => 'xcvxc', 'title_rus' => 'xcvxcv'];
 
@@ -157,6 +163,7 @@ class CategoryTest extends TestCase
     {
         $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->has(Product::factory())->create();
+        /** @var User $user */
 
         $this->delete(route('admin.categories.destroy', $category->id))->assertNotFound();
 
