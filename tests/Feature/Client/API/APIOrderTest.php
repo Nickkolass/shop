@@ -22,14 +22,14 @@ class APIOrderTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
         parent::tearDown();
     }
 
     /**@test */
-    public function test_a_order_can_be_viewed_any()
+    public function test_a_order_can_be_viewed_any(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
 
         $this->post('/api/orders', ['page' => 1])->assertUnauthorized();
 
@@ -44,14 +44,14 @@ class APIOrderTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_viewed_with_premissions()
+    public function test_a_order_can_be_viewed_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         if (empty($order = $user->orders()->first())) {
-            $user = User::latest('id')->first();
+            $user = User::query()->latest('id')->first();
             $order = $user->orders()->first();
         }
-        $another_order = Order::where('user_id', '!=', $user->id)->first();
+        $another_order = Order::query()->where('user_id', '!=', $user->id)->first();
 
         $this->post('/api/orders/' . $order->id)->assertUnauthorized();
 
@@ -83,31 +83,31 @@ class APIOrderTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_stored_with_premissions()
+    public function test_a_order_can_be_stored_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $data = Order::factory()->raw();
         $data['user_id'] = $user->id;
-        foreach ($data['productTypes'] as &$productType) $data['cart'][$productType['productType_id']] = $productType['amount'];
+        foreach ($data['productTypes'] as $productType) $data['cart'][$productType['productType_id']] = $productType['amount'];
 
         $this->post('/api/orders/store', $data)->assertUnauthorized();
 
         $this->withoutExceptionHandling();
 
-        $order_performers_count = OrderPerformer::count();
+        $order_performers_count = OrderPerformer::query()->count();
         $this->actingAs($user)->get('/');
         $this->withHeader('Authorization', session('jwt'))->post('/api/orders/store', $data)->assertOk();
-        $count = collect($data['productTypes'])->pluck('saler_id')->unique()->count();
+        $count = collect((array)$data['productTypes'])->pluck('saler_id')->unique()->count();
         $this->assertDatabaseCount('order_performers', $order_performers_count + $count);
         $this->assertDatabaseCount('jobs', 1);
     }
 
     /**@test */
-    public function test_a_order_can_be_accepted_with_premissions()
+    public function test_a_order_can_be_accepted_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $order = $user->orders()->first();
-        $another_order = Order::where('user_id', '!=', $user->id)->first();
+        $another_order = Order::query()->where('user_id', '!=', $user->id)->first();
 
         $this->patch('/api/orders/' . $another_order->id)->assertUnauthorized();
 
@@ -135,11 +135,11 @@ class APIOrderTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_canceled_with_premissions()
+    public function test_a_order_can_be_canceled_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $order = $user->orders()->first();
-        $another_order = Order::where('user_id', '!=', $user->id)->first();
+        $another_order = Order::query()->where('user_id', '!=', $user->id)->first();
 
         $this->delete('/api/orders/' . $another_order->id)->assertUnauthorized();
 

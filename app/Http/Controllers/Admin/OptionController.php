@@ -28,7 +28,7 @@ class OptionController extends Controller
      */
     public function index(): View
     {
-        $options = Option::pluck('title', 'id');
+        $options = Option::query()->pluck('title', 'id');
         return view('admin.option.index', compact('options'));
     }
 
@@ -45,7 +45,7 @@ class OptionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  OptionRequest  $request
+     * @param OptionRequest $request
      * @return View
      */
     public function store(OptionRequest $request): View
@@ -58,7 +58,7 @@ class OptionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Option $option
+     * @param Option $option
      * @return View
      */
     public function show(Option $option): View
@@ -70,7 +70,7 @@ class OptionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Option $option
+     * @param Option $option
      * @return View
      */
     public function edit(Option $option): View
@@ -82,8 +82,8 @@ class OptionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  OptionRequest  $request
-     * @param  Option $option
+     * @param OptionRequest $request
+     * @param Option $option
      * @return View
      */
     public function update(OptionRequest $request, Option $option): View
@@ -96,7 +96,7 @@ class OptionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Option $option
+     * @param Option $option
      * @return RedirectResponse
      */
     public function destroy(Option $option): RedirectResponse

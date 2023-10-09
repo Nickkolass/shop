@@ -14,10 +14,10 @@ class OrderPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @return true
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -25,11 +25,11 @@ class OrderPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param Order $order
+     * @return bool
      */
-    public function view(User $user, Order $order)
+    public function view(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -37,10 +37,10 @@ class OrderPolicy
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @return true
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return true;
     }
@@ -48,11 +48,11 @@ class OrderPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param Order $order
+     * @return bool
      */
-    public function update(User $user, Order $order)
+    public function update(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -60,11 +60,11 @@ class OrderPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param Order $order
+     * @return bool
      */
-    public function delete(User $user, Order $order)
+    public function delete(User $user, Order $order): bool
     {
         return $order->user_id == $user->id;
     }
@@ -72,11 +72,11 @@ class OrderPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param Order $order
+     * @return false
      */
-    public function restore(User $user, Order $order)
+    public function restore(User $user, Order $order): bool
     {
         return false;
     }
@@ -84,11 +84,11 @@ class OrderPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param Order $order
+     * @return false
      */
-    public function forceDelete(User $user, Order $order)
+    public function forceDelete(User $user, Order $order): bool
     {
         return false;
     }

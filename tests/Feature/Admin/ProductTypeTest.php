@@ -20,16 +20,16 @@ class ProductTypeTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
         parent::tearDown();
     }
 
     /**@test */
-    public function test_a_product_type_can_be_created_with_premissions()
+    public function test_a_product_type_can_be_created_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $product = $user->products()->first();
-        $another_product = Product::where('saler_id', '!=', $user->id)->first();
+        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
 
         $this->get(route('admin.productTypes.create', $another_product->id))->assertNotFound();
 
@@ -69,11 +69,11 @@ class ProductTypeTest extends TestCase
     }
 
     /**@test */
-    public function test_a_product_type_can_be_stored_with_premissions()
+    public function test_a_product_type_can_be_stored_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $product = $user->products()->first();
-        $another_product = Product::where('saler_id', '!=', $user->id)->first();
+        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
@@ -103,7 +103,7 @@ class ProductTypeTest extends TestCase
             $this->actingAs($user)->post(route('admin.productTypes.store', $product->id), $data)
                 ->assertRedirect(route('admin.products.show', $product->id));
             session()->flush();
-            $productType = ProductType::latest('id')->first();
+            $productType = ProductType::query()->latest('id')->first();
             $this->assertEquals($productType->price, $data['price']);
             $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
             $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
@@ -115,7 +115,7 @@ class ProductTypeTest extends TestCase
         $this->actingAs($user)->post(route('admin.productTypes.store', $another_product->id), $data)
             ->assertRedirect(route('admin.products.show', $another_product->id));
         session()->flush();
-        $productType = ProductType::latest('id')->first();
+        $productType = ProductType::query()->latest('id')->first();
         $this->assertEquals($productType->price, $data['price']);
         $this->assertCount($productType->optionValues()->count(), $data['relations']['optionValues']);
         $this->assertCount($productType->productImages()->count(), $data['relations']['productImages']);
@@ -123,11 +123,11 @@ class ProductTypeTest extends TestCase
     }
 
     /**@test */
-    public function test_a_product_type_can_be_edited_with_premissions()
+    public function test_a_product_type_can_be_edited_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $productType = $user->productTypes()->first();
-        $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->first();
+        $anotherProductType = Product::query()->where('saler_id', '!=', $user->id)->first()->productTypes()->first();
 
         $this->get(route('admin.productTypes.edit', $anotherProductType->id))->assertNotFound();
 
@@ -158,11 +158,11 @@ class ProductTypeTest extends TestCase
     }
 
     /**@test */
-    public function test_a_product_type_can_be_updated_with_premissions()
+    public function test_a_product_type_can_be_updated_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $productType = $user->productTypes()->with('productImages')->first();
-        $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
+        $anotherProductType = Product::query()->where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
 
         $data = ProductType::factory()->raw();
         $data['preview_image'] = File::create('preview_image.jpeg');
@@ -222,10 +222,10 @@ class ProductTypeTest extends TestCase
     }
 
     /**@test */
-    public function test_a_product_type_can_be_deleted_with_premissions()
+    public function test_a_product_type_can_be_deleted_with_premissions(): void
     {
-        $user = User::first();
-        $anotherProductType = Product::where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
+        $user = User::query()->first();
+        $anotherProductType = Product::query()->where('saler_id', '!=', $user->id)->first()->productTypes()->with('productImages')->first();
 
         $this->delete(route('admin.productTypes.destroy', $anotherProductType->id))->assertNotFound();
 
@@ -250,7 +250,7 @@ class ProductTypeTest extends TestCase
             session()->flush();
             $this->assertFalse(Storage::exists($productType->preview_image));
             $this->assertFalse(Storage::exists($productType->productImages->first()->file_path));
-            $this->assertEmpty(ProductType::find($productType->id));
+            $this->assertEmpty(ProductType::query()->find($productType->id));
             $this->assertEmpty($productType->optionValues()->count());
             $this->assertEmpty($productType->productImages()->count());
         }
@@ -261,7 +261,7 @@ class ProductTypeTest extends TestCase
         session()->flush();
         $this->assertFalse(Storage::exists($anotherProductType->preview_image));
         $this->assertFalse(Storage::exists($anotherProductType->productImages->first()->file_path));
-        $this->assertEmpty(ProductType::find($anotherProductType->id));
+        $this->assertEmpty(ProductType::query()->find($anotherProductType->id));
         $this->assertEmpty($anotherProductType->optionValues()->count());
         $this->assertEmpty($anotherProductType->productImages()->count());
     }

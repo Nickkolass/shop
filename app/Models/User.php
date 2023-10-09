@@ -11,32 +11,44 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
- * @property int id
- * @property int role
- * @property string name
- * @property string email
- * @property string password
- * @property string surname
- * @property string patronymic
- * @property int age
- * @property int gender
- * @property ?string address
- * @property ?int card
- * @property ?int postcode
- * @property ?int INN
- * @property ?string registredOffice
- * @property string remember_token
- * @property Carbon email_verified_at
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $role
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $surname
+ * @property string $patronymic
+ * @property int $age
+ * @property int $gender
+ * @property ?string $address
+ * @property ?int $card
+ * @property ?int $postcode
+ * @property ?int $INN
+ * @property ?string $registredOffice
+ * @property ?string $remember_token
+ * @property ?Carbon $email_verified_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Collection<Product> $products
+ * @property ?Collection<ProductType> $productTypes
+ * @property ?Collection<Order> $orders
+ * @property ?Collection<OrderPerformer> $orderPerformers
+ * @property ?Collection<ProductType> $liked
+ * @property ?Collection<RatingAndComment> $ratingAndComments
  */
 class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
     use HasFactory, Notifiable;
 
+    const GENDER_MALE = 1;
+    const GENDER_FEMALE = 2;
+    const ROLE_ADMIN = 1;
+    const ROLE_SALER = 2;
+    const ROLE_CLIENT = 3;
     protected $table = 'users';
     protected $guarded = false;
     protected $hidden = ['password', 'remember_token'];
@@ -51,12 +63,14 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'INN', 'registredOffice',
     ];
 
-    const GENDER_MALE = 1;
-    const GENDER_FEMALE = 2;
-    const ROLE_ADMIN = 1;
-    const ROLE_SALER = 2;
-    const ROLE_CLIENT = 3;
+    public function getRoleTitleAttribute(): string
+    {
+        return self::getRoles()[$this->role];
+    }
 
+    /**
+     * @return array<string>
+     */
     public static function getRoles(): array
     {
         return [
@@ -64,11 +78,6 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
             self::ROLE_SALER => 'saler',
             self::ROLE_CLIENT => 'client',
         ];
-    }
-
-    public function getRoleTitleAttribute(): string
-    {
-        return self::getRoles()[$this->role];
     }
 
     public function isAdmin(): bool
@@ -86,22 +95,18 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return self::getRoles()[$this->role] == 'client';
     }
 
-    static function getGenders(): array
-    {
-        return [
-            self::GENDER_MALE => 'Мужской',
-            self::GENDER_FEMALE => 'Женский',
-        ];
-    }
-
     public function getGenderTitleAttribute(): string
     {
         return self::getGenders()[$this->gender];
     }
 
-    public function hasVerifiedEmail(): bool
+    /** @return array<string> */
+    public static function getGenders(): array
     {
-        return !is_null($this->email_verified_at);
+        return [
+            self::GENDER_MALE => 'Мужской',
+            self::GENDER_FEMALE => 'Женский',
+        ];
     }
 
     public function products(): HasMany
@@ -139,9 +144,15 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->getKey();
     }
 
+    /** @return array{} */
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function hasVerifiedEmail(): bool
+    {
+        return !is_null($this->email_verified_at);
     }
 
     public function sendPasswordResetNotification($token): void

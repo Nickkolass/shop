@@ -18,14 +18,14 @@ class OrderPerformerTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach(Storage::directories() as $dir) if($dir != 'factory') Storage::deleteDirectory($dir);
+        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
         parent::tearDown();
     }
 
     /**@test */
-    public function test_a_order_can_be_viewed_any_with_premissions()
+    public function test_a_order_can_be_viewed_any_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
 
         $this->get(route('admin.orders.index'))->assertNotFound();
 
@@ -47,11 +47,11 @@ class OrderPerformerTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_viewed_with_premissions()
+    public function test_a_order_can_be_viewed_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $order = $user->orderPerformers()->first();
-        $another_order = OrderPerformer::firstWhere('saler_id', '!=', $user->id);
+        $another_order = OrderPerformer::query()->firstWhere('saler_id', '!=', $user->id);
 
         $this->get(route('admin.orders.show', $order->id))->assertNotFound();
 
@@ -79,11 +79,11 @@ class OrderPerformerTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_sent_with_premissions()
+    public function test_a_order_can_be_sent_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $order = $user->orderPerformers()->first();
-        $another_order = OrderPerformer::firstWhere('saler_id', '!=', $user->id);
+        $another_order = OrderPerformer::query()->firstWhere('saler_id', '!=', $user->id);
 
         $this->patch(route('admin.orders.update', $order->id))->assertNotFound();
 
@@ -117,11 +117,11 @@ class OrderPerformerTest extends TestCase
     }
 
     /**@test */
-    public function test_a_order_can_be_canceled_with_premissions()
+    public function test_a_order_can_be_canceled_with_premissions(): void
     {
-        $user = User::first();
+        $user = User::query()->first();
         $order = $user->orderPerformers()->first();
-        $another_order = OrderPerformer::firstWhere('saler_id', '!=', $user->id);
+        $another_order = OrderPerformer::query()->firstWhere('saler_id', '!=', $user->id);
 
         $this->delete(route('admin.orders.destroy', $another_order->id))->assertNotFound();
 

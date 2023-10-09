@@ -6,14 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 /**
- * @property int id
- * @property string title
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property string $title
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?Collection<Product> $products
  */
-
 class Tag extends Model
 {
 
@@ -25,6 +26,6 @@ class Tag extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->beLongsToMany(Product::class, 'product_tags', 'tag_id','product_id');
+        return $this->beLongsToMany(Product::class, 'product_tags', 'tag_id', 'product_id');
     }
 }

@@ -12,9 +12,9 @@ use App\Models\Category;
 use App\Models\ProductType;
 use App\Models\User;
 use App\Services\Client\API\Product\ProductCartService;
-use App\Services\Client\API\Product\ProductViewedLikedService;
-use App\Services\Client\API\Product\ProductShowService;
 use App\Services\Client\API\Product\ProductFilterService;
+use App\Services\Client\API\Product\ProductShowService;
+use App\Services\Client\API\Product\ProductViewedLikedService;
 
 class APIProductController extends Controller
 {
@@ -28,6 +28,9 @@ class APIProductController extends Controller
     {
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function index(): array
     {
         if (auth('api')->check()) $data['liked'] = $this->productViewedLikedService->getProductTypes();
@@ -35,6 +38,11 @@ class APIProductController extends Controller
         return isset($data) ? IndexResource::make($data)->resolve() : [];
     }
 
+    /**
+     * @param Category $category
+     * @param FilterRequest $request
+     * @return array<mixed>
+     */
     public function filter(Category $category, FilterRequest $request): array
     {
         $data = $request->validated();
@@ -42,18 +50,28 @@ class APIProductController extends Controller
         return ProductFilterAggregateResource::make($result)->resolve();
     }
 
+    /**
+     * @param ProductType $productType
+     * @return array<mixed>
+     */
     public function show(ProductType $productType): array
     {
         $this->productShowService->loadRelationsProductType($productType);
         return ProductTypeResource::make($productType)->resolve();
     }
 
+    /**
+     * @return array{}|array<mixed>
+     */
     public function cart(): array
     {
         $productTypes = $this->productCartService->getProductTypes(request('cart'));
         return $productTypes->count() != 0 ? CartResource::collection($productTypes)->resolve() : [];
     }
 
+    /**
+     * @return array{}|array<mixed>
+     */
     public function liked(): array
     {
         $this->authorize('product', User::class);

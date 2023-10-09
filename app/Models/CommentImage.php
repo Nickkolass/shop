@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int id
- * @property int comment_id
- * @property string file_path
- * @property int size
- * @property Carbon created_at
- * @property Carbon updated_at
+ * @property int $id
+ * @property int $comment_id
+ * @property string $file_path
+ * @property int $size
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?RatingAndComment $comment
  */
-
 class CommentImage extends Model
 {
     use HasFactory;

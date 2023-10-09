@@ -4,24 +4,20 @@ namespace Database\Factories;
 
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Cache;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrderPerformer>
- */
 class OrderPerformerFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
-        $currentSaler_id = cache('saler_ids_for_factory_order_performers')[cache('current_saler_id_for_factory_order_performers')];
-        $order = Order::latest('id')->first();
+        $currentSaler_id = Cache::get('saler_ids_for_factory_order_performers')[Cache::increment('current_saler_id_for_factory_order_performers') - 1];
+        $order = Order::query()->latest('id')->first();
         $productTypes = collect($order->productTypes)->groupBy('saler_id')[$currentSaler_id];
-
-        cache()->increment('current_saler_id_for_factory_order_performers');
 
         return [
             'order_id' => $order->id,

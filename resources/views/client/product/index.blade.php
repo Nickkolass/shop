@@ -27,11 +27,11 @@
             </ul>
         </div>
 
-        @include('client.product.components.index')
-
         @if(empty($product_types['data']))
-            <h4 style="text-align:center">По вашему запросу товаров не найдено</h4>
+            <h4 style="text-align:center; margin-top: 30px; margin-bottom: 450px">По вашему запросу товаров не
+                найдено</h4>
         @else
+            @include('client.product.components.index')
             @include('client.product.components.paginate')
         @endif
 

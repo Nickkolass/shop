@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Order\StoreFrontRequest;
 use Arhitector\Yandex\Disk;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -22,11 +23,12 @@ class FrontOrderController extends Controller
      * Display a listing of the resource.
      *
      * @return View
+     * @throws GuzzleException
      */
 
     public function index(): View
     {
-        $data['page'] = request('page') ?? 1;
+        $data['page'] = request('page', 1);
 
         $orders = $this->client->request('POST', 'api/orders',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
@@ -50,8 +52,9 @@ class FrontOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreFrontRequest  $request
+     * @param StoreFrontRequest $request
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function store(StoreFrontRequest $request): RedirectResponse
     {
@@ -65,8 +68,9 @@ class FrontOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $order_id
+     * @param int $order_id
      * @return View
+     * @throws GuzzleException
      */
     public function show(int $order_id): View
     {
@@ -79,8 +83,9 @@ class FrontOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $order_id
+     * @param int $order_id
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function update(int $order_id): RedirectResponse
     {
@@ -92,8 +97,9 @@ class FrontOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $order_id
+     * @param int $order_id
      * @return RedirectResponse
+     * @throws GuzzleException
      */
     public function destroy(int $order_id): RedirectResponse
     {

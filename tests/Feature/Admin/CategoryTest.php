@@ -11,10 +11,11 @@ class CategoryTest extends TestCase
 {
 
     /**@test */
-    public function test_a_category_can_be_viewed_any_with_premissions()
+    public function test_a_category_can_be_viewed_any_with_premissions(): void
     {
-        Category::create(['title' => 'sadfsdf']);
+        Category::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.index'))->assertNotFound();
 
@@ -33,10 +34,11 @@ class CategoryTest extends TestCase
     }
 
     /**@test */
-    public function test_a_category_can_be_created_with_premissions()
+    public function test_a_category_can_be_created_with_premissions(): void
     {
-        Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.create'))->assertNotFound();
 
@@ -55,9 +57,10 @@ class CategoryTest extends TestCase
     }
 
     /**@test */
-    public function test_a_category_can_be_stored_with_premissions()
+    public function test_a_category_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = ['title' => 'xcvxc', 'title_rus' => 'cvxcv'];
 
         $this->post(route('admin.categories.store'), $data)->assertNotFound();
@@ -76,16 +79,17 @@ class CategoryTest extends TestCase
         $this->actingAs($user)->post(route('admin.categories.store'), $data);
         $this->assertDatabaseCount('categories', 1);
 
-        $category = Category::first();
+        $category = Category::query()->first();
         $this->assertEquals($data['title'], $category->title);
         $this->assertEquals($data['title_rus'], $category->title_rus);
     }
 
     /**@test */
-    public function test_a_category_can_be_viewed_with_premissions()
+    public function test_a_category_can_be_viewed_with_premissions(): void
     {
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.show', $category->id))->assertNotFound();
 
@@ -104,10 +108,11 @@ class CategoryTest extends TestCase
     }
 
     /**@test */
-    public function test_a_category_can_be_edited_with_premissions()
+    public function test_a_category_can_be_edited_with_premissions(): void
     {
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.categories.edit', $category->id))->assertNotFound();
 
@@ -126,10 +131,11 @@ class CategoryTest extends TestCase
     }
 
     /**@test */
-    public function test_a_category_can_be_updated_with_premissions()
+    public function test_a_category_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var User $user */
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $data = ['title' => 'xcvxc', 'title_rus' => 'xcvxcv'];
 
         $this->patch(route('admin.categories.update', $category->id), $data)->assertNotFound();
@@ -147,16 +153,17 @@ class CategoryTest extends TestCase
         $user->save();
         $this->actingAs($user)->patch(route('admin.categories.update', $category->id), $data);
 
-        $category = Category::first();
+        $category = Category::query()->first();
         $this->assertEquals($data['title'], $category->title);
         $this->assertEquals($data['title_rus'], $category->title_rus);
     }
 
     /**@test */
-    public function test_a_category_can_be_deleted_with_premissions()
+    public function test_a_category_can_be_deleted_with_premissions(): void
     {
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->has(Product::factory())->create();
+        /** @var User $user */
 
         $this->delete(route('admin.categories.destroy', $category->id))->assertNotFound();
 

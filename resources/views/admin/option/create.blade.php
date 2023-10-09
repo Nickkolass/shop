@@ -49,7 +49,8 @@
                                 <div class="js-row input-group">
                                     <input type="text" name="optionValues[0]" data-name="optionValues"
                                            class="form-control" value="{{old('optionValues.0')}}">
-                                    <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+</button>
+                                    <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+
+                                    </button>
                                 </div>
                             </div>
                         </div>

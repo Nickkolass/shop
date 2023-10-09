@@ -4,7 +4,8 @@ namespace App\Services\Admin\OrderPerformer;
 
 use App\Mail\MailOrderPerformerDestroy;
 use App\Models\OrderPerformer;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -19,21 +20,19 @@ class OrderPerformerService
     {
         $user = session('user');
         $orders = OrderPerformer::query()
-            ->when($user['role'] == 'admin',
-                fn($q) => $q->with('user:id,name'),
-                fn($q) => $q->whereHas('saler', function ($b) use ($user) {
-                    $b->where('id', $user['id']);
-                }))
             ->withTrashed()
-            ->latest('created_at')
+            ->when($user['role'] == 'admin',
+                fn(Builder $q) => $q->with('user:id,name'),
+                fn(Builder $q) => $q->whereHas('saler', fn(Builder $b) => $b->where('id', $user['id'])))
             ->with('saler:id,name')
+            ->latest('created_at')
             ->simplePaginate(5);
 
         $this->service->getProductsForIndex($orders);
         return $orders;
     }
 
-    public function show(OrderPerformer &$order): void
+    public function show(OrderPerformer $order): void
     {
         $order->load('saler:users.id,name');
         $this->service->getProductsForShow($order);
@@ -44,7 +43,7 @@ class OrderPerformerService
         DB::beginTransaction();
         $order->update(['status' => 'Отправлен ' . now()]);
         $order->order()
-            ->whereHas('orderPerformers', function ($q) use ($order) {
+            ->whereHas('orderPerformers', function (Builder $q) use ($order) {
                 $q->where('order_id', $order->order_id)->where('status', '!=', 'В работе');
             })
             ->update(['status' => 'Отправлен']);

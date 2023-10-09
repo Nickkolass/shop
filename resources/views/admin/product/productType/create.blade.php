@@ -41,7 +41,7 @@
                                                 <option value=0 selected>{{ $option }}</option>
                                                 @foreach($values as $value)
                                                     <option
-                                                        value="{{ $value['id'] }}" @selected(in_array($value['id'], old('optionValues') ?? [] ))>{{ $value['value'] }}</option>
+                                                        value="{{ $value->id }}" @selected(in_array($value->id, old('optionValues', [])))>{{ $value->value }}</option>
                                                 @endforeach
                                             </select>
                                         @endforeach
@@ -90,7 +90,8 @@
                                                     <div class="control-group" id="fields">
                                                         <div class="controls">
                                                             <div class="entry input-group upload-input-group">
-                                                                <input class="form-control" name="relations[productImages][]"
+                                                                <input class="form-control"
+                                                                       name="relations[productImages][]"
                                                                        type="file" multiple>
                                                             </div>
                                                         </div>

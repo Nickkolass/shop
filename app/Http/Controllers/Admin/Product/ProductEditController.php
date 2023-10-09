@@ -27,8 +27,11 @@ class ProductEditController extends Controller
     {
         $data = $request->validated();
         session(['edit' => $data]);
-        $product->load('propertyValues:id', 'optionValues:id');
+        $product->setRelations([
+            'propertyValues' => $product->propertyValues()->pluck('property_values.id'),
+            'optionValues' => $product->optionValues()->pluck('optionValues.id')]);
         $data = $this->service->relations($data['category_id']);
+//        dd($data['optionValues']);
         return view('admin.product.edit.relations', compact('product', 'data'));
     }
 }

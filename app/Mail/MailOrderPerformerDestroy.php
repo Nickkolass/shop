@@ -14,24 +14,16 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public OrderPerformer $order;
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct(OrderPerformer $order)
+    public function __construct(public OrderPerformer $order)
     {
-        $this->order = $order;
     }
 
     /**
      * Get the message envelope.
      *
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * @return Envelope
      */
-    public function envelope()
+    public function envelope(): Envelope
     {
         return new Envelope(
             subject: 'delete orderPerformer',
@@ -41,9 +33,9 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
     /**
      * Get the message content definition.
      *
-     * @return \Illuminate\Mail\Mailables\Content
+     * @return Content
      */
-    public function content()
+    public function content(): Content
     {
         return new Content(
             view: 'mail.orderPerformerDelete',
@@ -53,9 +45,9 @@ class MailOrderPerformerDestroy extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array
+     * @return array<mixed>
      */
-    public function attachments()
+    public function attachments(): array
     {
         return [];
     }

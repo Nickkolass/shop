@@ -38,7 +38,8 @@
                     <!-- small box -->
                     <div class="small-box w-100 bg-success">
                         <div class="inner">
-                            <h3>Выручка за {{$data['revenue']['month'] . ' ' . $data['revenue']['revenue'] . ' р. ( ' . $data['revenue']['count_orders'] . ' заказов )' }}</h3>
+                            <h3>Выручка
+                                за {{$data['revenue']['month'] . ' ' . $data['revenue']['revenue'] . ' р. ( ' . $data['revenue']['count_orders'] . ' заказов )' }}</h3>
                             <h5>@foreach($data['revenue']['orders'] as $order)
                                     * <a style="color: inherit" href="{{ route('admin.orders.show', $order->id) }}"
                                          class="small-box-footer">{{'На ' . $order->total_price}}</a><br>
@@ -59,9 +60,10 @@
                         <div class="inner">
                             <h3>Популярные товары</h3>
                             <h5>@foreach($data['productTypes_liked'] as $product)
-                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                    * <a style="color: inherit"
+                                         href="{{ route('admin.products.show', $product->product_id) }}"
                                          class="small-box-footer">{{$product->title}}</a>
-                                    <i class="fa fa-heart"></i> ( {{$product->liked_count}} ) <br>
+                                    <i class="fa fa-heart"></i> ( {{$product->count_likes}} ) <br>
                                 @endforeach</h5>
                         </div>
                         <div class="icon">
@@ -81,7 +83,7 @@
                                     @for($i=1; $i<=5; $i++)
                                         <i class="fa fa-star{{$i-1<$product->rating & $product->rating<$i ? '-half' : ''}}{{$product->rating<$i ? '-o' : ''}}"></i>
                                     @endfor
-                                    ( {{$product->rating_count}} )<br>
+                                    ( {{$product->count_rating}} )<br>
                                 @endforeach</h5>
                         </div>
                         <div class="icon">
@@ -98,8 +100,10 @@
                         <div class="inner">
                             <h3>Самые продаваемые товары</h3>
                             <h5>@foreach($data['productTypes_ordered'] as $product)
-                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product['productType_id']) }}"
-                                         class="small-box-footer">{{$product['title']}}</a> ( {{$product['amount'] . ' шт. ' . ' на ' . $product['price'] . ' р.'}} ) <br>
+                                    * <a style="color: inherit"
+                                         href="{{ route('admin.products.show', $product['productType_id']) }}"
+                                         class="small-box-footer">{{$product['title']}}</a>
+                                    ( {{$product['amount'] . ' шт. ' . ' на ' . $product['price'] . ' р.'}} ) <br>
                                 @endforeach</h5>
 
                         </div>
@@ -115,7 +119,8 @@
                         <div class="inner">
                             <h3>Неопубликованные товары ( {{$data['product_published_count']}} )</h3>
                             <h5>@foreach($data['product_published'] as $product)
-                                    * <a style="color: inherit" href="{{ route('admin.products.show', $product->product_id) }}"
+                                    * <a style="color: inherit"
+                                         href="{{ route('admin.products.show', $product->product_id) }}"
                                          class="small-box-footer">{{$product->title}}</a><br>
                                 @endforeach</h5>
 

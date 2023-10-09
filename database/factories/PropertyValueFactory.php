@@ -5,21 +5,18 @@ namespace Database\Factories;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PropertyValue>
- */
 class PropertyValueFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'value' => $this->faker->unique()->word(),
-            'property_id' => Property::latest('id')->toBase()->first()->id,
-    ];
+            'property_id' => Property::query()->latest('id')->first()->id,
+        ];
     }
 }

@@ -11,16 +11,7 @@ class OrderStored
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Collection $orderPerformers;
-
-    /**
-     * Create a new event instance.
-     *
-     * @param  array $orderPerformers
-     * @return void
-     */
-    public function __construct(Collection $orderPerformers)
+    public function __construct(public readonly Collection $orderPerformers)
     {
-        $this->orderPerformers = $orderPerformers;
     }
 }

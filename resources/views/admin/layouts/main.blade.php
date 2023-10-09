@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+@php use Illuminate\Support\Facades\Storage; @endphp
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -25,7 +26,7 @@
     <!-- rating -->
     <link rel="stylesheet" href="{{asset('assets/css/rating.css')}}">
 
-    <!-- @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js']) -->
+    @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js'])
 
 </head>
 

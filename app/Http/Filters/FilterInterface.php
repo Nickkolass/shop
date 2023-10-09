@@ -2,7 +2,7 @@
 
 namespace App\Http\Filters;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 
 interface FilterInterface
 {

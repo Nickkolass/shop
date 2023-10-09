@@ -32,16 +32,19 @@ class DatabaseSeeder extends Seeder
         $this->productService->completionsOfProducts();
         $this->storageService->caching();
 
-        User::query()
+        $users = User::query()
             ->take(3)
-            ->get()
-            ->map(function (User $user, $i) {
-                // $i чтобы не было ошибок при многократном наполнении БД в тестах
+            ->pluck('id')
+            ->transform(function (int $id, int $i) {
                 $i++;
-                $user->email = $i . '@mail.ru';
-                $user->password = Hash::make($i);
-                $user->role = $i;
-                $user->save();
-            });
+                return [
+                    'id' => $id,
+                    'email' => $i . '@mail.ru',
+                    'password' => Hash::make((string)$i),
+                    'role' => $i,
+                ];
+            })
+            ->all();
+        User::query()->upsert($users, 'id');
     }
 }

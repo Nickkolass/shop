@@ -49,7 +49,7 @@
                                     style="width: 100%;" required>
                                 @foreach($categories as $category_id => $category_title_rus)
                                     <option
-                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids') ?? []))>{{ $category_title_rus }}
+                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids', [])))>{{ $category_title_rus }}
                                     </option>
                                 @endforeach
                             </select>
@@ -61,7 +61,8 @@
                                 <div class="js-row input-group">
                                     <input type="text" name="propertyValues[0]" data-name="propertyValues"
                                            class="form-control" value="{{old('propertyValues.0')}}">
-                                    <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+</button>
+                                    <button type="button" id="load_old_types" class="js-add btn btn-outline-primary">+
+                                    </button>
                                 </div>
                             </div>
                         </div>

@@ -2,19 +2,19 @@
 
 namespace App\Services\Admin\Product;
 
-use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
 use App\Dto\Admin\Product\ProductTypeDto;
+use App\Dto\Admin\Product\ProductTypeRelationForInsertDto;
 use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Services\Admin\Product\Relations\RelationService;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ProductTypeService
 {
 
-
-    public function __construct (public RelationService $relationService)
+    public function __construct(public RelationService $relationService)
     {
     }
 
@@ -25,19 +25,19 @@ class ProductTypeService
         try {
             $this->storeType($product, $productTypeDto);
             DB::commit();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             ProductException::failedStoreProductOrType($e);
         }
     }
 
-    public function storeType(Product $product, ProductTypeDto $productTypeDto, ?bool $isNewProduct = false): ProductTypeRelationForInsertDto
+    public function storeType(Product $product, ProductTypeDto $productTypeDto, bool $isNewProduct = false): ProductTypeRelationForInsertDto
     {
         $this->relationService->imageService->createPreviewImage($productTypeDto->preview_image, $product->id);
 
         $productTypeRelationDto = $productTypeDto->productTypeRelationDto;
         unset($productTypeDto->productTypeRelationDto);
 
-        $productType = ProductType::create((array) $productTypeDto + ['product_id' => $product->id]);
+        $productType = ProductType::query()->create((array)$productTypeDto + ['product_id' => $product->id]);
         return $this->relationService->createRelationsProductType($product, $productType, $productTypeRelationDto, $isNewProduct);
     }
 
@@ -57,11 +57,11 @@ class ProductTypeService
             $productType->optionValues()->sync($productTypeDto->productTypeRelationDto->optionValues);
             $this->relationService->optionValueService->detachProductOptionValues($productType);
             unset($productTypeDto->productTypeRelationDto);
-            $productType->update(array_filter((array) $productTypeDto));
+            $productType->update(array_filter((array)$productTypeDto));
 
             if (isset($old_image_paths)) $this->relationService->imageService->deleteImages($old_image_paths);
             DB::commit();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             ProductException::failedStoreProductOrType($e);
         }
     }

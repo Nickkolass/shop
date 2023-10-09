@@ -11,7 +11,7 @@ class ProductTypeStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,17 +22,17 @@ class ProductTypeStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'is_published' => $this->count > 0 ? $this->is_published ?? 0 : 0,
-            'relations' => array_filter(array_map('array_filter', $this->relations)),
+            'is_published' => $this->input('count') > 0 ? $this->input('is_published', 0) : 0,
+            'relations' => array_filter(array_map('array_filter', $this->input('relations'))),
         ]);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'price' => 'required|integer',

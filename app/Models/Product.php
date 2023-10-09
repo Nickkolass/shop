@@ -5,29 +5,38 @@ namespace App\Models;
 use App\Http\Filters\FilterInterface;
 use App\Models\Traits\Filterable;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
+use Illuminate\Support\Collection;
 use Laravel\Scout\Attributes\SearchUsingFullText;
-use Laravel\Scout\Attributes\SearchUsingPrefix;
+use Laravel\Scout\Builder as ScoutBuilder;
+use Laravel\Scout\Searchable;
 
 /**
- * @property int id
- * @property int saler_id
- * @property int category_id
- * @property string title
- * @property string description
- * @property Carbon created_at
- * @property Carbon updated_at
- * @method static self|Builder query()
- * @method self|Builder filter(FilterInterface $filter)
- * @method static \Laravel\Scout\Builder search(string $search)
+ * @property int $id
+ * @property int $saler_id
+ * @property int $category_id
+ * @property string $title
+ * @property string $description
+ * @property int $rating
+ * @property int $count_rating
+ * @property int $count_comments
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property ?User $saler
+ * @property ?Category $category
+ * @property ?Collection<ProductType> $productTypes
+ * @property ?Collection<RatingAndComment> $ratingAndComments
+ * @property ?Collection<Tag> $tags
+ * @property ?Collection<PropertyValue> $propertyValues
+ * @property ?Collection<OptionValue> $optionValues
+ * @method static static|Builder filter(FilterInterface $filter)
+ * @method static ScoutBuilder search(string $search)
  */
-
 class Product extends Model
 {
 
@@ -35,7 +44,7 @@ class Product extends Model
 
     protected $table = 'products';
     protected $guarded = false;
-    protected $hidden = array('pivot');
+    protected $hidden = ['pivot'];
 
     public function productTypes(): HasMany
     {
@@ -52,7 +61,7 @@ class Product extends Model
         return $this->beLongsToMany(Tag::class, 'product_tags', 'product_id', 'tag_id');
     }
 
-        public function saler(): BelongsTo
+    public function saler(): BelongsTo
     {
         return $this->beLongsTo(User::class, 'saler_id', 'id');
     }
@@ -72,6 +81,9 @@ class Product extends Model
         return $this->beLongsToMany(OptionValue::class, 'optionValue_products', 'product_id', 'optionValue_id');
     }
 
+    /**
+     * @return array<string, string>
+     */
 //    #[SearchUsingPrefix()]
     #[SearchUsingFullText(['title', 'description'])]
     public function toSearchableArray(): array

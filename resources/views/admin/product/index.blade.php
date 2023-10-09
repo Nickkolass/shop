@@ -56,17 +56,18 @@
                                             </td>
                                         @endif
                                         <td>@foreach($product->productTypes as $productType)
-                                                <img src="{{\Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
-                                                     width='50'
-                                                     height='50'
-                                                     class="img img-responsive">
+                                                <img
+                                                    src="{{Storage::url($productType->preview_image) }}"
+                                                    width='50'
+                                                    height='50'
+                                                    class="img img-responsive">
                                             @endforeach
                                         </td>
                                         <td>
                                             @for($i=1; $i<=5; $i++)
                                                 <i class="fa fa-star{{$i-1<$product['rating'] & $product['rating']<$i ? '-half' : ''}}{{$product['rating']<$i ? '-o' : ''}}"></i>
                                             @endfor
-                                        ({{ $product['countRating'] }})
+                                        ({{ $product['count_rating'] }})
                                         </td>
                                     </tr>
                                 @endforeach

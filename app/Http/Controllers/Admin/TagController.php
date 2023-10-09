@@ -22,7 +22,7 @@ class TagController extends Controller
      */
     public function index(): View
     {
-        $tags = Tag::toBase()->get();
+        $tags = Tag::query()->toBase()->get();
         return view('admin.tag.index', compact('tags'));
     }
 
@@ -43,25 +43,14 @@ class TagController extends Controller
      */
     public function store(): View
     {
-        Tag::firstOrCreate(['title' => request('title')]);
+        Tag::query()->firstOrCreate(['title' => request('title')]);
         return $this->index();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  Tag $tag
-     * @return View
-     */
-    public function show(Tag $tag): View
-    {
-        return view('admin.tag.show', compact('tag'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Tag $tag
+     * @param Tag $tag
      * @return View
      */
     public function edit(Tag $tag): View
@@ -72,7 +61,7 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Tag $tag
+     * @param Tag $tag
      * @return View
      */
     public function update(Tag $tag): View
@@ -82,9 +71,20 @@ class TagController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param Tag $tag
+     * @return View
+     */
+    public function show(Tag $tag): View
+    {
+        return view('admin.tag.show', compact('tag'));
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
-     * @param  Tag $tag
+     * @param Tag $tag
      * @return RedirectResponse
      */
     public function destroy(Tag $tag): RedirectResponse

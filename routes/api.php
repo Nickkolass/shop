@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Client\API\APIProductController;
-use App\Http\Controllers\Client\API\JWTAuthController;
-use App\Http\Controllers\Client\API\APIUserActiveController;
 use App\Http\Controllers\Client\API\APIOrderController;
+use App\Http\Controllers\Client\API\APIProductController;
+use App\Http\Controllers\Client\API\APIUserActiveController;
+use App\Http\Controllers\Client\API\JWTAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*

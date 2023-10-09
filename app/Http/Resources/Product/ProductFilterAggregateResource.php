@@ -2,19 +2,23 @@
 
 namespace App\Http\Resources\Product;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use JsonSerializable;
 
 class ProductFilterAggregateResource extends JsonResource
 {
-    protected $preserveKeys = true;
+
+    protected bool $preserveKeys = true;
 
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param Request $request
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array|Arrayable|JsonSerializable
     {
         return [
             'product_types' => new ProductTypeCollection($this->resource['productTypes']),

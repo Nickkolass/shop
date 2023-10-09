@@ -12,9 +12,10 @@ class PropertyService
     public function store(PropertyDto $dto): void
     {
         DB::beginTransaction();
-        $property = Property::firstOrCreate(['title' => $dto->title]);
+        $property = Property::query()->firstOrCreate(['title' => $dto->title]);
+        $data = [];
         foreach ($dto->propertyValues as $propertyValue) $data[] = ['property_id' => $property->id, 'value' => $propertyValue];
-        PropertyValue::insert($data);
+        if (!empty($data)) PropertyValue::query()->insert($data);
         $property->categories()->attach($dto->category_ids);
         DB::commit();
     }
@@ -32,7 +33,7 @@ class PropertyService
             ->where('property_id', $property->id)
             ->whereIn('value', $deleteValues)
             ->delete();
-        PropertyValue::insert($createValues);
+        PropertyValue::query()->insert($createValues);
         $property->update(['title' => $dto->title]);
         $property->categories()->sync($dto->category_ids);
         DB::commit();

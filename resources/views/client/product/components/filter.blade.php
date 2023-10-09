@@ -70,7 +70,8 @@
                 <h4>{{$option}}</h4>
                 <ul class="cd-filter-content cd-filters list">
                     @foreach ($option_values as $option_value)
-                        <li><input class="filter" name="filter[optionValues][{{$option_value['option_id']}}][]" type="checkbox"
+                        <li><input class="filter" name="filter[optionValues][{{$option_value['option_id']}}][]"
+                                   type="checkbox"
                                    value="{{$option_value['id']}}" @checked(in_array($option_value['id'], $data['filter']['optionValues'][$option_value['option_id']] ?? []))>
                             <label class="checkbox-label">{{$option_value['value']}}</label>
                         </li>
@@ -84,7 +85,8 @@
                 <h4>{{$property}}</h4>
                 <ul class="cd-filter-content cd-filters list">
                     @foreach ($property_values as $property_value)
-                        <li><input class="filter" name="filter[propertyValues][{{$property_value['property_id']}}][]" type="checkbox"
+                        <li><input class="filter" name="filter[propertyValues][{{$property_value['property_id']}}][]"
+                                   type="checkbox"
                                    value="{{$property_value['id']}}" @checked(in_array($property_value['id'], $data['filter']['propertyValues'][$property_value['property_id']] ?? []))>
                             <label class="checkbox-label">{{$property_value['value']}}</label>
                         </li>

@@ -14,35 +14,35 @@ class ProductTypePolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param ProductType $productType
+     * @return bool
      */
-    public function update(User $user, ProductType $productType)
+    public function update(User $user, ProductType $productType): bool
     {
-        return $productType->product()->pluck('saler_id')->first() == $user->id;
+        return $productType->product()->pluck('saler_id')[0] == $user->id;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param ProductType $productType
+     * @return bool
      */
-    public function delete(User $user, ProductType $productType)
+    public function delete(User $user, ProductType $productType): bool
     {
-        return $productType->product()->pluck('saler_id')->first() == $user->id;
+        return $productType->product()->pluck('saler_id')[0] == $user->id;
     }
 
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param ProductType $productType
+     * @return false
      */
-    public function restore(User $user, ProductType $productType)
+    public function restore(User $user, ProductType $productType): bool
     {
         return false;
     }
@@ -50,11 +50,11 @@ class ProductTypePolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ProductType  $productType
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param ProductType $productType
+     * @return false
      */
-    public function forceDelete(User $user, ProductType $productType)
+    public function forceDelete(User $user, ProductType $productType): bool
     {
         return false;
     }

@@ -195,7 +195,7 @@ use App\Http\Controllers\Controller;
  *     ),
  * ),
  *
- *  @OA\Delete(
+ * @OA\Delete(
  *     path="/api/orders/{order}",
  *     summary="Отмена заказа",
  *     tags={"orders"},
@@ -656,7 +656,6 @@ use App\Http\Controllers\Controller;
  *     ),
  * ),
  */
-
 class SwaggerOAController extends Controller
 {
 }

@@ -11,10 +11,11 @@ class OptionTest extends TestCase
 {
 
     /**@test */
-    public function test_a_option_can_be_viewed_any_with_premissions()
+    public function test_a_option_can_be_viewed_any_with_premissions(): void
     {
-        Option::create(['title' => 'sadfsdf']);
+        Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.index'))->assertNotFound();
 
@@ -33,9 +34,10 @@ class OptionTest extends TestCase
     }
 
     /**@test */
-    public function test_a_option_can_be_created_with_premissions()
+    public function test_a_option_can_be_created_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.create'))->assertNotFound();
 
@@ -54,9 +56,10 @@ class OptionTest extends TestCase
     }
 
     /**@test */
-    public function test_a_option_can_be_stored_with_premissions()
+    public function test_a_option_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
 
         $this->post(route('admin.options.store'), $data)->assertNotFound();
@@ -75,14 +78,15 @@ class OptionTest extends TestCase
         $this->actingAs($user)->post(route('admin.options.store'), $data);
         $this->assertDatabaseCount('options', 1);
         $this->assertDatabaseCount('optionValues', 3);
-        $this->assertEquals($data['title'], Option::first()->title);
+        $this->assertEquals($data['title'], Option::query()->first()->title);
     }
 
     /**@test */
-    public function test_a_option_can_be_viewed_with_premissions()
+    public function test_a_option_can_be_viewed_with_premissions(): void
     {
-        $option = Option::create(['title' => 'sadfsdf']);
+        $option = Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.show', $option->id))->assertNotFound();
 
@@ -101,10 +105,11 @@ class OptionTest extends TestCase
     }
 
     /**@test */
-    public function test_a_option_can_be_edited_with_premissions()
+    public function test_a_option_can_be_edited_with_premissions(): void
     {
-        $option = Option::create(['title' => 'sadfsdf']);
+        $option = Option::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.options.edit', $option->id))->assertNotFound();
 
@@ -123,10 +128,11 @@ class OptionTest extends TestCase
     }
 
     /**@test */
-    public function test_a_option_can_be_updated_with_premissions()
+    public function test_a_option_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
-        $option = Option::create(['title' => 'sadfsdf']);
+        /** @var User $user */
+        $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory(4)->create();
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
 
@@ -145,7 +151,7 @@ class OptionTest extends TestCase
         $user->save();
         $this->actingAs($user)->patch(route('admin.options.update', $option->id), $data);
 
-        $option = Option::first();
+        $option = Option::query()->first();
         $this->assertEquals($data['title'], $option->title);
         $optionValues = $option->optionValues()->pluck('value')->all();
         $data['optionValues'] = array_column($data['optionValues'], 'value');
@@ -153,10 +159,11 @@ class OptionTest extends TestCase
     }
 
     /**@test */
-    public function test_a_option_can_be_deleted_with_premissions()
+    public function test_a_option_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
-        $option = Option::create(['title' => 'sadfsdf']);
+        /** @var User $user */
+        $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory()->create();
 
         $this->delete(route('admin.options.destroy', $option->id))->assertNotFound();

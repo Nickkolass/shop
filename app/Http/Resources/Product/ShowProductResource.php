@@ -2,17 +2,20 @@
 
 namespace App\Http\Resources\Product;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use JsonSerializable;
 
 class ShowProductResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param Request $request
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array|Arrayable|JsonSerializable
     {
         return [
             'id' => $this->resource->id,
@@ -23,9 +26,9 @@ class ShowProductResource extends JsonResource
             'property_values' => $this->resource->propertyValues,
             'product_types' => ShowProductTypesResource::collection($this->resource->productTypes)->resolve(),
             'rating' => $this->resource->rating,
-            'count_rating' => $this->resource->countRating,
-            'count_comments' => $this->resource->countComments,
-            'commentable' => !$this->resource->rating_and_comments_exists,
+            'count_rating' => $this->resource->count_rating,
+            'count_comments' => $this->resource->count_comments,
+            'commentable' => !$this->resource->ratingAndComments->contains('user_id', '=', auth('api')->id()),
             'rating_and_comments' => RatingAndCommentsResource::collection($this->resource->ratingAndComments)->resolve(),
         ];
 

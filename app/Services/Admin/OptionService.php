@@ -12,9 +12,11 @@ class OptionService
     public function store(OptionDto $dto): void
     {
         DB::beginTransaction();
-        $option_id = Option::firstOrCreate(['title' => $dto->title])->id;
-        foreach ($dto->optionValues as $optionValue) $data[] = ['option_id' => $option_id, 'value' => $optionValue];
-        OptionValue::insert($data);
+        $option_id = Option::query()->firstOrCreate(['title' => $dto->title])->id;
+        foreach ($dto->optionValues as $optionValue) {
+            $data[] = ['option_id' => $option_id, 'value' => $optionValue];
+        }
+        if (!empty($data)) OptionValue::query()->insert($data);
         DB::commit();
     }
 
@@ -24,14 +26,16 @@ class OptionService
         $newValues = $dto->optionValues;
         $deleteValue = array_diff($oldValues, $newValues);
         $createValue = array_diff($newValues, $oldValues);
-        foreach ($createValue as &$optionValue) $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
+        foreach ($createValue as &$optionValue) {
+            $optionValue = ['option_id' => $option->id, 'value' => $optionValue];
+        }
 
         DB::beginTransaction();
         $option->optionValues()
             ->where('option_id', $option->id)
             ->whereIn('value', $deleteValue)
             ->delete();
-        OptionValue::insert($createValue);
+        OptionValue::query()->insert($createValue);
         $option->update(['title' => $dto->title]);
         DB::commit();
     }

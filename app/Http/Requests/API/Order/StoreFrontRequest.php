@@ -11,7 +11,7 @@ class StoreFrontRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -30,9 +30,9 @@ class StoreFrontRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'delivery' => 'required|string',
@@ -40,6 +40,7 @@ class StoreFrontRequest extends FormRequest
             'offer' => 'required|string',
             'total_price' => 'required|string',
             'cart' => 'required|array',
+            'cart.*' => 'required|int',
             'payment_status' => 'required|bool',
         ];
     }

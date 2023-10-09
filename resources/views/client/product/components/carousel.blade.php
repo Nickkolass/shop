@@ -9,7 +9,7 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <a href="{{ route('client.products.show', $product_type['id']) }}">
-                <img src="{{\Illuminate\Support\Facades\Storage::url($product_type['preview_image'])}}"
+                <img src="{{Storage::url($product_type['preview_image'])}}"
                      style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 ? '0.6' : '1'}}"
                      class="d-block w-100">
             </a>
@@ -17,7 +17,7 @@
         @foreach ($product_type['product_images'] as $img)
             <div class="carousel-item">
                 <a href="{{ route('client.products.show', $product_type['id']) }}">
-                    <img src="{{\Illuminate\Support\Facades\Storage::url($img)}}"
+                    <img src="{{Storage::url($img)}}"
                          style="opacity:{{$product_type['is_published'] == 0 || $product_type['count'] == 0 ? '0.3' : '1'}}"
                          class="d-block w-100">
                 </a>

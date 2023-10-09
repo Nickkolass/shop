@@ -12,9 +12,10 @@ class PropertyTest extends TestCase
 {
 
     /**@test */
-    public function test_a_property_can_be_viewed_any_with_premissions()
+    public function test_a_property_can_be_viewed_any_with_premissions(): void
     {
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.index'))->assertNotFound();
 
@@ -33,10 +34,11 @@ class PropertyTest extends TestCase
     }
 
     /**@test */
-    public function test_a_property_can_be_created_with_premissions()
+    public function test_a_property_can_be_created_with_premissions(): void
     {
-        Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.create'))->assertNotFound();
 
@@ -55,10 +57,11 @@ class PropertyTest extends TestCase
     }
 
     /**@test */
-    public function test_a_property_can_be_stored_with_premissions()
+    public function test_a_property_can_be_stored_with_premissions(): void
     {
         $user = User::factory()->create();
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var User $user */
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
         $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
 
         $this->post(route('admin.properties.store'), $data)->assertNotFound();
@@ -77,15 +80,16 @@ class PropertyTest extends TestCase
         $this->actingAs($user)->post(route('admin.properties.store'), $data);
         $this->assertDatabaseCount('properties', 1);
         $this->assertDatabaseCount('property_values', 3);
-        $this->assertEquals($data['title'], Property::first()->title);
+        $this->assertEquals($data['title'], Property::query()->first()->title);
     }
 
     /**@test */
-    public function test_a_property_can_be_viewed_with_premissions()
+    public function test_a_property_can_be_viewed_with_premissions(): void
     {
-        Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $property = Property::create(['title' => 'sadfsdf']);
+        Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $property = Property::query()->create(['title' => 'sadfsdf']);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.show', $property->id))->assertNotFound();
 
@@ -104,12 +108,13 @@ class PropertyTest extends TestCase
     }
 
     /**@test */
-    public function test_a_property_can_be_edited_with_premissions()
+    public function test_a_property_can_be_edited_with_premissions(): void
     {
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $property = Property::create(['title' => 'sadfsdf']);
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('admin.properties.edit', $property->id))->assertNotFound();
 
@@ -128,11 +133,12 @@ class PropertyTest extends TestCase
     }
 
     /**@test */
-    public function test_a_property_can_be_updated_with_premissions()
+    public function test_a_property_can_be_updated_with_premissions(): void
     {
         $user = User::factory()->create();
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $property = Property::create(['title' => 'sadfsdf']);
+        /** @var User $user */
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         PropertyValue::factory(4)->create();
         $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
@@ -152,7 +158,7 @@ class PropertyTest extends TestCase
         $user->save();
         $this->actingAs($user)->patch(route('admin.properties.update', $property->id), $data);
 
-        $property = Property::first();
+        $property = Property::query()->first();
         $this->assertEquals($data['title'], $property->title);
         $propertyValues = $property->propertyValues()->pluck('value')->all();
         $data['propertyValues'] = array_column($data['propertyValues'], 'value');
@@ -160,11 +166,12 @@ class PropertyTest extends TestCase
     }
 
     /**@test */
-    public function test_a_property_can_be_deleted_with_premissions()
+    public function test_a_property_can_be_deleted_with_premissions(): void
     {
         $user = User::factory()->create();
-        $category = Category::create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $property = Property::create(['title' => 'sadfsdf']);
+        /** @var User $user */
+        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         PropertyValue::factory()->create();
 

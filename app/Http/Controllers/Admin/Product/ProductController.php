@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
@@ -44,8 +45,8 @@ class ProductController extends Controller
         $productDto = new ProductDto(...session()->pull('create.product'));
         $productRelationDto = new ProductRelationDto(...session()->pull('create.relations'));
 
-        $collectionProductTypeDto = collect($request->validated()['types'])->map(function (array $productType) {
-            $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($productType));
+        $collectionProductTypeDto = collect((array)$request->validated()['types'])->transform(function (array $productType) {
+            $productType['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($productType, 'relations'));
             return new ProductTypeDto(...$productType);
         });
 

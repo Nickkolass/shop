@@ -2,16 +2,15 @@
 
 namespace App\Http\Filters;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 
 abstract class AbstractFilter implements FilterInterface
 {
 
+    /** @param array<mixed> $queryParams */
     public function __construct(private array $queryParams)
     {
     }
-
-    abstract protected function getCallbacks(): array;
 
     public function apply(Builder $builder): void
     {
@@ -24,12 +23,15 @@ abstract class AbstractFilter implements FilterInterface
         }
     }
 
-    protected function before(Builder $builder)
+    protected function before(Builder $builder): void
     {
         $this->queryParams = array_filter($this->queryParams);
     }
 
-    protected function getQueryParam(string $key, $default = null): mixed
+    /** @return array<string, callable>> */
+    abstract protected function getCallbacks(): array;
+
+    protected function getQueryParam(string $key, mixed $default = null): mixed
     {
         return $this->queryParams[$key] ?? $default;
     }

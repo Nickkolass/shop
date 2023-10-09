@@ -12,7 +12,7 @@ class ProductRelationsRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,17 +23,17 @@ class ProductRelationsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'optionValues' => array_unique(Arr::flatten($this->optionValues ?? [])),
-            'propertyValues' => array_filter($this->propertyValues ?? []),
+            'optionValues' => array_unique(Arr::flatten($this->input('optionValues', []))),
+            'propertyValues' => array_filter($this->input('propertyValues', [])),
         ]);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'tags' => 'required|array',

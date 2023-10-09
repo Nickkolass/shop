@@ -19,18 +19,18 @@ class FrontProductController extends Controller
 
     public function index(): View
     {
-        $data['viewed'] = array_slice(array_keys(session('viewed') ?? []), 0, 12);
+        $data['viewed'] = array_slice(array_keys(session('viewed', [])), 0, 12);
 
         $data = $this->client->request('POST', 'api/products',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
 
         $data = json_decode($data, true);
-        $data['cart'] = session('cart') ?? [];
+        $data['cart'] = session('cart', []);
 
         return view('client.index', compact('data'));
     }
 
-    public function filter(string $category_title, ProductsRequest $request)
+    public function filter(string $category_title, ProductsRequest $request): View
     {
         $query_params = $request->validated();
         FrontService::scenarioGetProducts($query_params);

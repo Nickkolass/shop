@@ -14,22 +14,18 @@ use App\Models\User;
 use App\Policies\CategoryPolicy;
 use App\Policies\OptionPolicy;
 use App\Policies\OrderPerformerPolicy;
+use App\Policies\OrderPolicy;
+use App\Policies\ProductPolicy;
 use App\Policies\ProductTypePolicy;
 use App\Policies\PropertyPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
-use App\Policies\OrderPolicy;
-use App\Policies\ProductPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     *
-     * @var array
-     */
+
     protected $policies = [
         User::class => UserPolicy::class,
         Order::class => OrderPolicy::class,
@@ -47,7 +43,7 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
 

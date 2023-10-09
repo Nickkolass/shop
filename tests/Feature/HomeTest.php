@@ -9,11 +9,12 @@ class HomeTest extends TestCase
 {
 
     /**@test */
-    public function test_base_url()
+    public function test_base_url(): void
     {
         $this->withoutExceptionHandling();
 
         $user = User::factory()->create();
+        /** @var User $user */
 
         $this->get(route('home'))->assertRedirect(route('login'));
 

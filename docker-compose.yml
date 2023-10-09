@@ -8,7 +8,7 @@ services:
             - ./:/var/www
             - ./_docker/nginx/conf.d:/etc/nginx/conf.d
         ports:
-            - 8876:80
+            - '8876:80'
         depends_on:
             - app
         container_name: shop_nginx
@@ -17,7 +17,7 @@ services:
         restart: always
         build:
             context: .
-            dockerfile: _docker/app/DockerFile
+            dockerfile: ./_docker/app/DockerFile
         volumes:
             - ./:/var/www
         environment:
@@ -33,10 +33,10 @@ services:
         volumes:
             - ./tmp/db:/var/lib/mysql
         environment:
-            MYSQL_DATABASE: root
-            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: ${DB_USERNAME}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         ports:
-            - 8101:3306
+            - 8101:${DB_PORT}
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         container_name: shop_db
 
@@ -46,18 +46,18 @@ services:
         volumes:
             - ./tmp/db_testing:/var/lib/mysql_testing
         environment:
-            MYSQL_DATABASE: root
-            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: ${DB_USERNAME}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
         ports:
-            - 8102:3306
+            - 8102:${DB_PORT}
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         container_name: shop_db_testing
 
     phpmyadmin:
-        image: phpmyadmin
+        image: phpmyadmin:latest
         restart: always
         ports:
-            - 8080:80
+            - '8080:80'
         environment:
             - PMA_ARBITRARY=1
         depends_on:
@@ -71,7 +71,7 @@ services:
         depends_on:
             - app
         ports:
-            - 6379:6379
+            - '6379:6379'
         volumes:
             - ../RedisData/data:/data
         container_name: shop_redis

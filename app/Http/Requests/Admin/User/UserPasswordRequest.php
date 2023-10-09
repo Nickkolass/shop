@@ -12,11 +12,16 @@ class UserPasswordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<mixed>
+     */
     /**
      * Handle a passed validation attempt.
      */
@@ -28,9 +33,9 @@ class UserPasswordRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'password' => 'required|string|current_password',
@@ -38,7 +43,8 @@ class UserPasswordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    /** @return array<string, string> */
+    public function messages(): array
     {
         return [
             'password.current_password' => 'Веден неверный пароль',

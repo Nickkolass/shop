@@ -22,7 +22,7 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $categories = Category::toBase()->get();
+        $categories = Category::query()->toBase()->get();
         return view('admin.category.index', compact('categories'));
     }
 
@@ -44,19 +44,8 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request): View
     {
         $data = $request->validated();
-        Category::firstOrCreate($data);
+        Category::query()->firstOrCreate($data);
         return $this->index();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Category $category
-     * @return View
-     */
-    public function show(Category $category): View
-    {
-        return view('admin.category.show', compact('category'));
     }
 
     /**
@@ -82,6 +71,17 @@ class CategoryController extends Controller
         $data = $request->validated();
         $category->update($data);
         return $this->show($category);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Category $category
+     * @return View
+     */
+    public function show(Category $category): View
+    {
+        return view('admin.category.show', compact('category'));
     }
 
     /**

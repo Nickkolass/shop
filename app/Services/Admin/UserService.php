@@ -15,18 +15,19 @@ class UserService
     {
         $password_generated = Str::random(10);
         DB::beginTransaction();
-        $user = User::firstOrCreate(
-            ['email' => $dto->email, 'INN' => $dto->INN],
-            (array) $dto + ['password' => Hash::make($password_generated)]
-        );
-        $user->password_generated = $password_generated;
+        $user = User::query()
+            ->firstOrCreate(
+                ['email' => $dto->email, 'INN' => $dto->INN],
+                (array)$dto + ['password' => Hash::make($password_generated)])
+            ->setAttribute('password_generated', $password_generated);
+        /** @var User $user */
         event(new Registered($user));
         DB::commit();
     }
 
     public function update(User $user, UserDto $dto): void
     {
-        $user->update(array_filter((array) $dto));
+        $user->update(array_filter((array)$dto));
     }
 
     public function passwordUpdate(User $user, string $new_password): void

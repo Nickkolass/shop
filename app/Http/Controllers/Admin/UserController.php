@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $users = User::toBase()->simplePaginate(5);
+        $users = User::query()->toBase()->simplePaginate(5);
         return view('admin.user.index', compact('users'));
     }
 
@@ -57,17 +57,6 @@ class UserController extends Controller
         $data = $request->validated();
         $this->service->store(new UserDto(...$data));
         return $this->index();
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param User $user
-     * @return View
-     */
-    public function show(User $user): View
-    {
-        return view('admin.user.show', compact('user'));
     }
 
     /**
@@ -96,6 +85,17 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param User $user
+     * @return View
+     */
+    public function show(User $user): View
+    {
+        return view('admin.user.show', compact('user'));
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param User $user
@@ -115,7 +115,7 @@ class UserController extends Controller
      */
     public function passwordEdit(int $user_id): View
     {
-        if($user_id != auth()->id()) abort(401);
+        if ($user_id != auth()->id()) abort(401);
         return view('admin.user.password');
     }
 

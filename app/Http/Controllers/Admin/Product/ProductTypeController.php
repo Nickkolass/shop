@@ -12,6 +12,7 @@ use App\Models\ProductType;
 use App\Services\Admin\Product\ProductTypeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 class ProductTypeController extends Controller
 {
@@ -24,7 +25,7 @@ class ProductTypeController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Product $product
-     * @return View
+     * @return View|RedirectResponse
      */
     public function create(Product $product): View|RedirectResponse
     {
@@ -48,7 +49,7 @@ class ProductTypeController extends Controller
         $this->authorize('update', $product);
 
         $data = $request->validated();
-        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($data, 'relations'));
 
         $this->productTypeService->store($product, new ProductTypeDto(...$data));
         return redirect()->route('admin.products.show', $product->id);
@@ -80,23 +81,10 @@ class ProductTypeController extends Controller
         $this->authorize('update', $productType);
 
         $data = $request->validated();
-        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...array_pop($data));
+        $data['productTypeRelationDto'] = new ProductTypeRelationDto(...Arr::pull($data, 'relations'));
 
         $this->productTypeService->update($productType, new ProductTypeDto(...$data));
         return redirect()->route('admin.products.show', $productType->product_id);
-    }
-
-    /**
-     * Publish the specified resource in storage.
-     *
-     * @param ProductType $productType
-     * @return RedirectResponse
-     */
-    public function publish(ProductType $productType): RedirectResponse
-    {
-        if ($productType->product()->pluck('saler_id')->first() != auth()->id() & session('user.role') != 'admin') abort(403);
-        $productType->update(['is_published' => !$productType->is_published]);
-        return back();
     }
 
     /**
@@ -110,5 +98,18 @@ class ProductTypeController extends Controller
         $this->authorize('delete', $productType);
         $this->productTypeService->delete($productType);
         return redirect()->route('admin.products.show', $productType->product_id);
+    }
+
+    /**
+     * Publish the specified resource in storage.
+     *
+     * @param ProductType $productType
+     * @return RedirectResponse
+     */
+    public function publish(ProductType $productType): RedirectResponse
+    {
+        if ($productType->product()->pluck('saler_id')[0] != auth()->id() & session('user.role') != 'admin') abort(403);
+        $productType->update(['is_published' => !$productType->is_published]);
+        return back();
     }
 }

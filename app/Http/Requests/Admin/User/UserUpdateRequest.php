@@ -11,7 +11,7 @@ class UserUpdateRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,24 +19,25 @@ class UserUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'email'=> 'required|string|email|unique:users,email,' . $this->id,
+            'email' => 'required|string|email|unique:users,email,' . $this->input('id'),
             'name' => 'required|string',
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
             'age' => 'required|integer',
             'postcode' => 'nullable|integer',
             'address' => 'nullable|string',
-            'INN' => 'nullable|integer|unique:users,INN,' . $this->id,
+            'INN' => 'nullable|integer|unique:users,INN,' . $this->input('id'),
             'registredOffice' => 'nullable|string',
         ];
     }
 
-    public function messages()
+    /** @return array<string, string> */
+    public function messages(): array
     {
         return [
             'email.unique' => 'Пользователь с таким email уже зарегистрирован',

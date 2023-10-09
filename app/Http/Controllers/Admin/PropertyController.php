@@ -16,12 +16,6 @@ class PropertyController extends Controller
 
     public PropertyService $service;
 
-    public function __construct(PropertyService $service)
-    {
-        $this->authorizeResource(Property::class, 'property');
-        $this->service = $service;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -29,8 +23,14 @@ class PropertyController extends Controller
      */
     public function index(): View
     {
-        $properties = Property::pluck('title', 'id');
+        $properties = Property::query()->pluck('title', 'id');
         return view('admin.property.index', compact('properties'));
+    }
+
+    public function __construct(PropertyService $service)
+    {
+        $this->authorizeResource(Property::class, 'property');
+        $this->service = $service;
     }
 
     /**
@@ -40,14 +40,14 @@ class PropertyController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::pluck('title_rus', 'id');
+        $categories = Category::query()->pluck('title_rus', 'id');
         return view('admin.property.create', compact('categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  PropertyRequest  $request
+     * @param PropertyRequest $request
      * @return View
      */
     public function store(PropertyRequest $request): View
@@ -58,35 +58,23 @@ class PropertyController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  Property $property
-     * @return View
-     */
-    public function show(Property $property): View
-    {
-        $property->load('propertyValues:property_id,value', 'categories:title_rus');
-        return view('admin.property.show', compact('property'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  Property $property
+     * @param Property $property
      * @return View
      */
     public function edit(Property $property): View
     {
         $property->load('propertyValues:property_id,value', 'categories:id,title_rus');
-        $categories = Category::pluck('title_rus', 'id');
+        $categories = Category::query()->pluck('title_rus', 'id');
         return view('admin.property.edit', compact('property', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  PropertyRequest  $request
-     * @param  Property $property
+     * @param PropertyRequest $request
+     * @param Property $property
      * @return View
      */
     public function update(PropertyRequest $request, Property $property): View
@@ -97,9 +85,21 @@ class PropertyController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param Property $property
+     * @return View
+     */
+    public function show(Property $property): View
+    {
+        $property->load('propertyValues:property_id,value', 'categories:title_rus');
+        return view('admin.property.show', compact('property'));
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
-     * @param  Property $property
+     * @param Property $property
      * @return RedirectResponse
      */
     public function destroy(Property $property): RedirectResponse

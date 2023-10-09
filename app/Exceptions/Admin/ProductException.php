@@ -8,11 +8,12 @@ use App\Services\Admin\Product\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProductException
 {
     public static function failedStoreProductOrType(
-        \Throwable          $e,
+        Throwable           $e,
         ?ProductDto         $productDto = null,
         ?ProductRelationDto $productRelationDto = null,
         ?int                $product_id_for_delete_directory_product = null

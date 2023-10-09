@@ -14,10 +14,10 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @return bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->isSaler();
     }
@@ -25,11 +25,11 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\OrderPerformer  $orderPerformer
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return bool
      */
-    public function view(User $user, OrderPerformer $orderPerformer)
+    public function view(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -37,11 +37,11 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\OrderPerformer  $orderPerformer
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return bool
      */
-    public function update(User $user, OrderPerformer $orderPerformer)
+    public function update(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -49,11 +49,11 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\OrderPerformer  $orderPerformer
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return bool
      */
-    public function delete(User $user, OrderPerformer $orderPerformer)
+    public function delete(User $user, OrderPerformer $orderPerformer): bool
     {
         return $orderPerformer->saler_id == $user->id;
     }
@@ -61,11 +61,11 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\OrderPerformer  $orderPerformer
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return false
      */
-    public function restore(User $user, OrderPerformer $orderPerformer)
+    public function restore(User $user, OrderPerformer $orderPerformer): bool
     {
         return false;
     }
@@ -73,11 +73,11 @@ class OrderPerformerPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\OrderPerformer  $orderPerformer
-     * @return \Illuminate\Auth\Access\Response|bool
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return false
      */
-    public function forceDelete(User $user, OrderPerformer $orderPerformer)
+    public function forceDelete(User $user, OrderPerformer $orderPerformer): bool
     {
         return false;
     }

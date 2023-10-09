@@ -11,7 +11,7 @@ class ProductRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,12 +19,12 @@ class ProductRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'title' => 'required|string|unique:products,title,' . $this->product_id ?? 0,
+            'title' => 'required|string|unique:products,title,' . $this->input('product_id'),
             'description' => 'required|string',
             'category_id' => 'required|integer',
             'saler_id' => 'required|integer',

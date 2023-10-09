@@ -41,12 +41,12 @@
                                             <select name="relations[optionValues][]" class="tags" style="width:200px">
                                                 <option value=0 selected>{{ $option }}</option>
                                                 @foreach($values as $value)
-                                                    <option value="{{ $value['id'] }}"
+                                                    <option value="{{ $value->id }}"
                                                         @selected(
                                                             session()->has('_old_input')
-                                                            ? in_array($value['id'], old('relations.optionValues'))
-                                                            : $productType->optionValues->contains($value['id'])
-                                                        )>{{ $value['value'] }}</option>
+                                                            ? in_array($value->id, old('relations.optionValues'))
+                                                            : $productType->optionValues->contains($value->id)
+                                                        )>{{ $value->value }}</option>
                                                 @endforeach
                                             </select>
                                         @endforeach
@@ -55,12 +55,12 @@
                                 <tr>
                                     <td>Цена</td>
                                     <td><input type="number" name="price" class="form-control"
-                                               value="{{ old('price') ?? $productType->price }}" required></td>
+                                               value="{{ old('price', $productType->price) }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Остаток</td>
                                     <td><input type="number" name="count" class="form-control"
-                                               value="{{ old('count') ?? $productType->count }}" required></td>
+                                               value="{{ old('count', $productType->count) }}" required></td>
                                 </tr>
                                 <tr>
                                     <td>Опубликовать</td>
@@ -80,7 +80,7 @@
                                                                 <input name="preview_image" type="file"
                                                                        class="form-control">
                                                                 <img
-                                                                    src="{{ \Illuminate\Support\Facades\Storage::url($productType->preview_image) }}"
+                                                                    src="{{ Storage::url($productType->preview_image) }}"
                                                                     width='70' height='70' class="img img-responsive"
                                                                     style="margin-left: 10px">
                                                             </div>
@@ -104,10 +104,11 @@
                                                                        name="relations[productImages][]"
                                                                        type="file" multiple>
                                                                 @foreach($productType->productImages as $img)
-                                                                    <img src="{{\Illuminate\Support\Facades\Storage::url( $img->file_path) }}"
-                                                                         width='70' height='70'
-                                                                         class="img img-responsive"
-                                                                         style="margin-left: 10px">
+                                                                    <img
+                                                                        src="{{Storage::url( $img->file_path) }}"
+                                                                        width='70' height='70'
+                                                                        class="img img-responsive"
+                                                                        style="margin-left: 10px">
                                                                 @endforeach
                                                             </div>
                                                         </div>

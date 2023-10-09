@@ -2,27 +2,30 @@
 
 namespace App\Http\Resources\Product;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use JsonSerializable;
 
 class ProductTypeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param Request $request
+     * @return array<mixed>|Arrayable|JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array|Arrayable|JsonSerializable
     {
         return [
             'id' => $this->resource->id,
             'product_id' => $this->resource->product_id,
             'price' => $this->resource->price,
             'count' => $this->resource->count,
-            'is_published' => (bool) $this->resource->is_published,
+            'is_published' => (bool)$this->resource->is_published,
             'preview_image' => $this->resource->preview_image,
             'product_images' => $this->resource->productImages->pluck('file_path'),
-            'option_values' => $this->resource->optionValues,
+            'option_values' => $this->resource->relationLoaded('optionValues') ? $this->resource->optionValues : null,
             'likeable' => !$this->resource->liked_exists,
             'product' => $request->route()->getName() == 'back.api.products.filter'
                 ? ProductResource::make($this->resource->product)->resolve()
