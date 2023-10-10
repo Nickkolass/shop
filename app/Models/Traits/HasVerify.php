@@ -6,7 +6,7 @@ use App\Models\User;
 
 trait HasVerify
 {
-    public function verify(?string &$role): void
+    public function verify(?int &$role): void
     {
         if (!$role && $user = auth()->user()) {
             /** @var User $user */
@@ -17,7 +17,8 @@ trait HasVerify
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'role' => $role = User::getRoles()[$user->role]
+                    'role' => $role = $user->role,
+                    'verify' => $user->hasVerifiedEmail()
                 ],
             ]);
         }

@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $users = User::query()->toBase()->simplePaginate(5);
+        $users = User::query()->simplePaginate(5);
         return view('admin.user.index', compact('users'));
     }
 
@@ -115,7 +115,7 @@ class UserController extends Controller
      */
     public function passwordEdit(int $user_id): View
     {
-        if ($user_id != auth()->id()) abort(401);
+        if ($user_id != session('user.id')) abort(401);
         return view('admin.user.password');
     }
 

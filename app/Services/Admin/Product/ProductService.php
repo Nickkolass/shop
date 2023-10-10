@@ -7,6 +7,7 @@ use App\Dto\Admin\Product\ProductRelationDto;
 use App\Dto\Admin\Product\ProductTypeDto;
 use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +27,7 @@ class ProductService
     {
         $user = session('user');
         return Product::query()
-            ->when($user['role'] != 'admin', function (Builder $q) use ($user) {
+            ->when($user['role'] != User::ROLE_ADMIN, function (Builder $q) use ($user) {
                 $q->whereHas('saler', fn(Builder $q) => $q->where('id', $user['id']));
             })
             ->select('id', 'title', 'saler_id', 'category_id', 'rating', 'count_rating', 'count_comments')

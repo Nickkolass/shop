@@ -3,7 +3,10 @@
 
     @include('admin.product.errors')
 
-    @if(session()->has('user'))
+    @if(!session('user.verify'))
+        <h4 style="text-align: center; padding: 10px">Чтобы оставить комментарий и оценить товар зарегистрируйтесь,
+            войдите или подтвердите email. </h4>
+    @else
         <form action="{{route('client.comment.store', $product_type['product_id'])}}" method="post"
               enctype="multipart/form-data">
             @csrf
@@ -36,9 +39,6 @@
                    title="{{!$product_type['product']['commentable'] ? 'Вы уже комментировали этот товар' : ''}}" @disabled(!$product_type['product']['commentable'])>
 
         </form>
-    @else
-        <h4 style="text-align: center; padding: 10px">Чтобы оставить комментарий и оценить товар зарегистрируйтесь или
-            войдите. </h4>
     @endif
 
     @if(!empty($product_type['product']['rating_and_comments']))

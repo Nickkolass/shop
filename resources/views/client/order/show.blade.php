@@ -58,7 +58,7 @@
                                         Стоимость: {{ $product_type['price'] }}<br>
                                         Статус: {{ $product_type['status'] }}<br>
                                         Продавец:
-                                        @if(session('user.role') == 'admin')
+                                        @if(session('user.role') == \App\Models\User::ROLE_ADMIN)
                                             <a class="linkclass disabled"
                                                href="{{ route('users.show', $product_type['saler_id']) }}"> {{ $product_type['saler'] }} </a>
                                             <br>

@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->unsignedMediumInteger('total_price');
             $table->string('payment');
             $table->boolean('payment_status');
-            $table->string('status')->nullable()->default('В работе');
+            $table->string('status')->default('В работе');
             $table->softDeletes();
             $table->timestamps();
         });

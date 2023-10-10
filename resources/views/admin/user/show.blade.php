@@ -1,5 +1,5 @@
 @extends(
-$user->isSaler() || session('admin.user.role') == 'admin'
+$user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
 ? 'admin.layouts.main'
 : 'client.layouts.main'
 )
@@ -40,7 +40,7 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                                     <td>ID</td>
                                     <td>{{ $user->id }}</td>
                                 </tr>
-                                @if(session('user.role') == 'admin')
+                                @if(session('user.role') == \App\Models\User::ROLE_ADMIN)
                                     <tr>
                                         <td>Статус</td>
                                         <td>{{ $user->getRoleTitleAttribute() }}</td>

@@ -198,7 +198,7 @@
                         </a>
                     </li>
 
-                    @if (session('user.role') == 'admin')
+                    @if (session('user.role') == \App\Models\User::ROLE_ADMIN)
                         <li class="nav-item">
                             <a href="{{ route('admin.categories.index') }}" class="nav-link">
                                 <i class="nav-icon far fa-image"></i>

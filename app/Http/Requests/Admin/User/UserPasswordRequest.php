@@ -18,16 +18,11 @@ class UserPasswordRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<mixed>
-     */
-    /**
      * Handle a passed validation attempt.
      */
     protected function prepareForValidation(): void
     {
-        if (request('user')->id != auth()->id()) abort(401);
+        if ($this->route()->parameter('user.id') != session('user.id')) abort(401);
     }
 
     /**

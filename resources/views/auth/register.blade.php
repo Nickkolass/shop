@@ -119,8 +119,8 @@
                                         <select name="gender" class="custom-select form-control"
                                                 id="exampleSelectBorder">
                                             <option disabled selected></option>
-                                            <option @selected(old('gender') == 1) value="1">Мужской</option>
-                                            <option @selected(old('gender') == 2) value="2">Женский</option>
+                                            <option value="{{\App\Models\User::GENDER_MALE}}">Мужской</option>
+                                            <option @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">Женский</option>
                                         </select>
                                     </div>
                                     @error('gender')
@@ -185,8 +185,6 @@
                                     </label>
                                 </div>
                             </div>
-
-                            <input type="hidden" name="role" value="3">
 
                             <div class="row mb-0">
                                 <div class="col-md-6 offset-md-4">

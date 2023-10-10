@@ -1,11 +1,11 @@
 @extends(
-session('admin.user.role') == 'admin' || session('admin.user.role') == 'saler'
+in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_SALER])
 ? 'admin.layouts.main'
 : 'client.layouts.main'
 )
 @section('content')
     <!-- Content Header (Page header) -->
-    @if(session('user.role') != 'admin' || session('user.role') != 'saler')
+    @if(in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_SALER]))
         <br><br><br><br><br><br>
     @endif
     <div class="content-header">
@@ -34,7 +34,7 @@ session('admin.user.role') == 'admin' || session('admin.user.role') == 'saler'
                 </div><!-- /.container-fluid -->
             @endif
             <div class="row">
-                <form action="{{ route('users.password.update', request()->route()->parameter('user') ) }}"
+                <form action="{{ route('users.password.update', session('user.id')) }}"
                       method="post">
                     @csrf
                     @method('patch')

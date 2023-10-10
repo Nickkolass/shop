@@ -24,15 +24,15 @@ class UserStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $password_rule = url()->previousPath() == '/users/create' ? 'nullable' : 'required';
+        $password_rule = url()->previousPath() == '/users/create' ? ['required', 'nullable'] : ['nullable', 'required'];
         return [
-            'role' => 'required|integer',
+            'role' => [$password_rule[0], 'integer'],
             'email' => 'required|string|email|unique:users',
-            'password' => [$password_rule, 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
+            'password' => [$password_rule[1], 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
             'name' => 'required|string',
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
-            'gender' => 'required|integer',
+            'gender' => 'required|bool',
             'age' => 'required|integer',
 
             'postcode' => 'nullable|integer',

@@ -74,7 +74,7 @@
                                     <td>{{ $product->id }}</td>
                                 </tr>
 
-                                @if (session('user.role') == 'admin')
+                                @if (session('user.role') == \App\Models\User::ROLE_ADMIN)
                                     <tr>
                                         <td>Продавец</td>
                                         <td>{{ $product->saler_id }}</td>

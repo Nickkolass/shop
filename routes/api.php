@@ -27,7 +27,7 @@ Route::prefix('/products')->controller(APIProductController::class)->group(funct
 
 Route::prefix('/products')->controller(APIUserActiveController::class)->middleware('jwt.auth')->group(function () {
     Route::post('/liked/{productType}', 'likedToggle');
-    Route::post('{product}/comment', 'commentStore');
+    Route::post('{product}/comment', 'commentStore')->middleware('verified');
 });
 
 Route::prefix('/orders')->middleware(['jwt.auth', 'verified'])->controller(APIOrderController::class)->group(function () {

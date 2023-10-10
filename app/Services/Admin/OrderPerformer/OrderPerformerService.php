@@ -4,6 +4,7 @@ namespace App\Services\Admin\OrderPerformer;
 
 use App\Mail\MailOrderPerformerDestroy;
 use App\Models\OrderPerformer;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,7 @@ class OrderPerformerService
         $user = session('user');
         $orders = OrderPerformer::query()
             ->withTrashed()
-            ->when($user['role'] == 'admin',
+            ->when($user['role'] == User::ROLE_ADMIN,
                 fn(Builder $q) => $q->with('user:id,name'),
                 fn(Builder $q) => $q->whereHas('saler', fn(Builder $b) => $b->where('id', $user['id'])))
             ->with('saler:id,name')

@@ -98,7 +98,7 @@
                             <a class="nav-link" href="{{ route('users.show', session('user.id')) }}"
                                style="white-space: pre">{{ session('user.name') }}</a>
                         </li>
-                        @if(session('user.role') == 'admin' || session('user.role') == 'saler')
+                        @if(in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_SALER]))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.index') }}"
                                    style="white-space: pre">Админка</a>

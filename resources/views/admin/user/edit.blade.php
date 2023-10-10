@@ -1,5 +1,5 @@
 @extends(
-$user->isSaler() || session('admin.user.role') == 'admin'
+$user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
 ? 'admin.layouts.main'
 : 'client.layouts.main'
 )

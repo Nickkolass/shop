@@ -14,8 +14,8 @@ return new class extends Migration {
     {
         Schema::create('productType_optionValues', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('productType_id')->nullable()->constrained('productTypes')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('optionValue_id')->nullable()->constrained('optionValues')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('productType_id')->constrained('productTypes')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('optionValue_id')->constrained('optionValues')->cascadeOnUpdate()->cascadeOnDelete();
             $table->unique(['productType_id', 'optionValue_id']);
             $table->timestamps();
         });

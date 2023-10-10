@@ -39,12 +39,12 @@ Route::resource('/users', UserController::class);
 
 Route::name('client.')->group(function () {
     Route::view('/about', 'client.about')->name('about');
-    Route::post('/orders/create', [FrontOrderController::class, 'create'])->name('orders.create')->middleware('client');
-    Route::apiResource('/orders', FrontOrderController::class)->middleware('verified');
+    Route::post('/orders/create', [FrontOrderController::class, 'create'])->name('orders.create')->middleware(['client', 'verified']);
+    Route::apiResource('/orders', FrontOrderController::class)->middleware(['client', 'verified']);
     Route::controller(FrontUserActiveController::class)->group(function () {
         Route::post('/cart', 'addToCart')->name('addToCart');
         Route::post('/products/liked/{productType}', 'likedToggle')->name('liked.toggle')->middleware('client');
-        Route::post('/products/{product}/comment', 'commentStore')->name('comment.store')->middleware('client');
+        Route::post('/products/{product}/comment', 'commentStore')->name('comment.store')->middleware(['client', 'verified']);
     });
     Route::get('/cart', [FrontProductController::class, 'cart'])->name('cart');
     Route::prefix('/products')->name('products.')->controller(FrontProductController::class)->group(function () {

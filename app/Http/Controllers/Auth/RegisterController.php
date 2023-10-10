@@ -51,7 +51,8 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm(): View
     {
-        $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
+        if (!config('services.yandexdisk.oauth_token')) $policy = 'https://disk.yandex.ru/d/IowD1shlYuOiFw';
+        else $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
         return view('auth.register', compact('policy'));
     }
 

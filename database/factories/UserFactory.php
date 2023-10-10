@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,14 +16,14 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'role' => 2,
+            'role' => User::ROLE_SALER,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make($this->faker->password(5)),
+            'password' => Hash::make($this->faker->password()),
             'name' => $this->faker->name(),
             'surname' => $this->faker->lastName(),
             'patronymic' => $this->faker->name(),
-            'gender' => $this->faker->numberBetween(1, 2),
+            'gender' => $this->faker->boolean(),
             'age' => $this->faker->numberBetween(20, 70),
 
             'card' => $this->faker->numerify('################'),

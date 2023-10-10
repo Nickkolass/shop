@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('comment_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('comment_id')->index()->constrained('rating_and_comments')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('comment_id')->constrained('rating_and_comments')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('file_path');
             $table->unsignedInteger('size');
             $table->timestamps();

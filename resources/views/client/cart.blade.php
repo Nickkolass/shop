@@ -71,7 +71,7 @@
             </div>
             <div style="text-align: center">
                 <h4>Итого {{$i-1}} товаров общей стоимостью {{ $total_price }} рублей</h4><br>
-                @if(session()->has('user'))
+                @if(session('user.verify'))
                     <form action="{{route('client.orders.create')}}" method="post">
                         @csrf
                         <input type="hidden" name="total_price" value="{{$total_price}}">
@@ -82,8 +82,8 @@
                 @else
                     <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"
                        href="{{route('login')}}">
-                        <h4 style="padding: 10px; margin-left:-15px; text-align: center">Зарегистрируйтесь или
-                            войдите</h4></a>
+                        <h4>Зарегистрируйтесь, войдите <br>
+                            или подтвердите email</h4></a>
                 @endif
             </div>
         @endif

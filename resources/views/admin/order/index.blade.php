@@ -33,7 +33,7 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                     <tr style="text-align: center">
-                                        @if(session('user.role') == 'admin')
+                                        @if(session('user.role') == \App\Models\User::ROLE_ADMIN)
                                             <th>Заказ</th>
                                             <th>Заказчик</th>
                                         @endif
@@ -51,14 +51,14 @@
                                     <tbody>
                                     @foreach($orders as $order)
                                         <tr style="text-align: center">
-                                            @if(session('user.role') == 'admin')
+                                            @if(session('user.role') == \App\Models\User::ROLE_ADMIN)
                                                 <td><a href="{{ route('client.orders.show', $order->order_id) }}">
                                                         {{ $order->order_id }}</a></td>
                                                 <td><a href="{{ route('users.show', $order->user->id) }}">
                                                         {{ $order->user->name }}</a></td>
                                             @endif
                                             <td>
-                                                <a href="{{ route('users.show', $order->saler->id) }}" @disabled(session('user.role') != 'admin')>
+                                                <a href="{{ route('users.show', $order->saler->id) }}" @disabled(session('user.role') != \App\Models\User::ROLE_ADMIN)>
                                                     {{ $order->saler->name }}</a></td>
                                             <td><a href="{{ route('admin.orders.show', $order->id) }}">
                                                     {{ $order->id }}</a></td>

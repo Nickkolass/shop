@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Traits\HasVerify;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class SalerMiddleware
     {
         $role = session('user.role');
         $this->verify($role);
-        if ($role == 'saler' || $role == 'admin') return $next($request);
+        if ($role == User::ROLE_SALER || $role == User::ROLE_ADMIN) return $next($request);
         abort(404);
     }
 }
