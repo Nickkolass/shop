@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers\Client\Front;
 
+use App\Components\Guzzle\GuzzleClient;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\RatingAndComment\StoreFrontRequest;
+use App\Http\Requests\Client\RatingAndComment\StoreFrontRequest;
 use App\Services\Client\Front\FrontService;
-use GuzzleHttp\Client;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 class FrontUserActiveController extends Controller
 {
-    private Client $client;
-
-    public function __construct()
+    public function __construct(private readonly GuzzleClient $guzzle)
     {
-        $this->client = new Client(config('guzzle'));
     }
 
     public function addToCart(): RedirectResponse
@@ -32,7 +29,7 @@ class FrontUserActiveController extends Controller
     {
         $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
         if ($prev_name == 'api.products.filter') session(['backFilter' => true]);
-        $this->client->request('POST', 'api/products/liked/' . $product_type_id,
+        $this->guzzle->client->request('POST', 'api/products/liked/' . $product_type_id,
             ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
@@ -41,7 +38,7 @@ class FrontUserActiveController extends Controller
     {
         $data = $request->validated();
         if (!empty($data['comment_images'])) FrontService::imgEncode($data['comment_images']);
-        $this->client->request('POST', 'api/products/' . $product_id . '/comment',
+        $this->guzzle->client->request('POST', 'api/products/' . $product_id . '/comment',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
         return back();
     }

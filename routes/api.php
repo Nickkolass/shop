@@ -33,6 +33,7 @@ Route::prefix('/products')->controller(APIUserActiveController::class)->middlewa
 Route::prefix('/orders')->middleware(['jwt.auth', 'verified'])->controller(APIOrderController::class)->group(function () {
     Route::post('/', 'index')->name('back.api.orders.index');
     Route::post('/store', 'store');
+    Route::post('/{order}/payment', 'payment');
     Route::post('/{order}', 'show')->withTrashed();
     Route::patch('/{order}', 'update');
     Route::delete('/{order}', 'destroy');

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c04bc12bc802525495d05711007999d",
+    "content-hash": "910b860ac8611947b60e0607abd544aa",
     "packages": [
         {
             "name": "arhitector/yandex",
@@ -873,21 +873,21 @@
         },
         {
             "name": "fruitcake/php-cors",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fruitcake/php-cors.git",
-                "reference": "58571acbaa5f9f462c9c77e911700ac66f446d4e"
+                "reference": "3d158f36e7875e2f040f37bc0573956240a5a38b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fruitcake/php-cors/zipball/58571acbaa5f9f462c9c77e911700ac66f446d4e",
-                "reference": "58571acbaa5f9f462c9c77e911700ac66f446d4e",
+                "url": "https://api.github.com/repos/fruitcake/php-cors/zipball/3d158f36e7875e2f040f37bc0573956240a5a38b",
+                "reference": "3d158f36e7875e2f040f37bc0573956240a5a38b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "symfony/http-foundation": "^4.4|^5.4|^6"
+                "symfony/http-foundation": "^4.4|^5.4|^6|^7"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.4",
@@ -897,7 +897,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.1-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -928,7 +928,7 @@
             ],
             "support": {
                 "issues": "https://github.com/fruitcake/php-cors/issues",
-                "source": "https://github.com/fruitcake/php-cors/tree/v1.2.0"
+                "source": "https://github.com/fruitcake/php-cors/tree/v1.3.0"
             },
             "funding": [
                 {
@@ -940,7 +940,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-20T15:07:15+00:00"
+            "time": "2023-10-12T05:21:21+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -1749,16 +1749,16 @@
         },
         {
             "name": "laravel/scout",
-            "version": "v10.4.0",
+            "version": "v10.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/scout.git",
-                "reference": "cc46608b277c2922c53533995b8fe2b7bf72315a"
+                "reference": "c3fe5fdef438c0dec6e58834cf2b18037e9d0358"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/scout/zipball/cc46608b277c2922c53533995b8fe2b7bf72315a",
-                "reference": "cc46608b277c2922c53533995b8fe2b7bf72315a",
+                "url": "https://api.github.com/repos/laravel/scout/zipball/c3fe5fdef438c0dec6e58834cf2b18037e9d0358",
+                "reference": "c3fe5fdef438c0dec6e58834cf2b18037e9d0358",
                 "shasum": ""
             },
             "require": {
@@ -1820,7 +1820,7 @@
                 "issues": "https://github.com/laravel/scout/issues",
                 "source": "https://github.com/laravel/scout"
             },
-            "time": "2023-09-26T16:36:29+00:00"
+            "time": "2023-10-10T15:41:23+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -3228,6 +3228,61 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
+        },
+        {
+            "name": "php-ds/php-ds",
+            "version": "v1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-ds/polyfill.git",
+                "reference": "43d2df301a9e2017f67b8c11d94a5222f9c00fd1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-ds/polyfill/zipball/43d2df301a9e2017f67b8c11d94a5222f9c00fd1",
+                "reference": "43d2df301a9e2017f67b8c11d94a5222f9c00fd1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.0"
+            },
+            "provide": {
+                "ext-ds": "1.3.0"
+            },
+            "require-dev": {
+                "php-ds/tests": "^1.3"
+            },
+            "suggest": {
+                "ext-ds": "to improve performance and reduce memory usage"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ds\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rudi Theunissen",
+                    "email": "rudolf.theunissen@gmail.com"
+                }
+            ],
+            "keywords": [
+                "data structures",
+                "ds",
+                "php",
+                "polyfill"
+            ],
+            "support": {
+                "issues": "https://github.com/php-ds/polyfill/issues",
+                "source": "https://github.com/php-ds/polyfill/tree/v1.4.1"
+            },
+            "time": "2022-03-09T20:39:30+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -7385,6 +7440,102 @@
             "time": "2022-06-03T18:03:27+00:00"
         },
         {
+            "name": "yoomoney/yookassa-sdk-php",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.yoomoney.ru/scm/sdk/yookassa-sdk-php.git",
+                "reference": "a7570b5e42142e73dd6bf0aeab9f8405fa96ad4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://git.yoomoney.ru/rest/api/latest/projects/SDK/repos/yookassa-sdk-php/archive?at=refs%2Ftags%2F3.1.0&format=zip"
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=8.0",
+                "php-ds/php-ds": "^1.4",
+                "psr/log": "^2.0 || ^3.0",
+                "yoomoney/yookassa-sdk-validator": "^1.0"
+            },
+            "require-dev": {
+                "ext-xml": "*",
+                "friendsofphp/php-cs-fixer": "^3.15",
+                "mockery/mockery": "^1.5",
+                "php-parallel-lint/php-parallel-lint": "^1.3",
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "YooKassa\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "YooMoney",
+                    "email": "cms@yoomoney.ru"
+                }
+            ],
+            "description": "This is a developer tool for integration with YooMoney.",
+            "homepage": "https://yookassa.ru/developers/api",
+            "keywords": [
+                "api",
+                "payments",
+                "sdk",
+                "yookassa",
+                "yoomoney"
+            ],
+            "time": "2023-06-30T11:16:46+00:00"
+        },
+        {
+            "name": "yoomoney/yookassa-sdk-validator",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://git.yoomoney.ru/scm/sdk/yookassa-sdk-validator-php.git",
+                "reference": "0726f254113cd48881ac6b90bf2d9645e6c5a285"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://git.yoomoney.ru/rest/api/latest/projects/SDK/repos/yookassa-sdk-validator-php/archive?at=refs%2Ftags%2F1.0.1&format=zip"
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=8.0.0"
+            },
+            "require-dev": {
+                "ext-xml": "*",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "YooKassa\\Validator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "YooMoney",
+                    "email": "cms@yoomoney.ru"
+                }
+            ],
+            "description": "This is a developer tool for validating with YooMoney.",
+            "time": "2023-06-23T08:14:29+00:00"
+        },
+        {
             "name": "zircote/swagger-php",
             "version": "4.7.14",
             "source": {
@@ -7938,16 +8089,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.13.2",
+            "version": "v1.13.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "bbb13460d7f8c5c0cd9a58109beedd79cd7331ff"
+                "reference": "93b2d0d49719bc6e444ba21cd4dbbccec935413d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/bbb13460d7f8c5c0cd9a58109beedd79cd7331ff",
-                "reference": "bbb13460d7f8c5c0cd9a58109beedd79cd7331ff",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/93b2d0d49719bc6e444ba21cd4dbbccec935413d",
+                "reference": "93b2d0d49719bc6e444ba21cd4dbbccec935413d",
                 "shasum": ""
             },
             "require": {
@@ -7958,7 +8109,7 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.26.1",
+                "friendsofphp/php-cs-fixer": "^3.34.1",
                 "illuminate/view": "^10.23.1",
                 "laravel-zero/framework": "^10.1.2",
                 "mockery/mockery": "^1.6.6",
@@ -8000,7 +8151,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2023-09-19T15:55:02+00:00"
+            "time": "2023-10-10T15:39:09+00:00"
         },
         {
             "name": "laravel/telescope",

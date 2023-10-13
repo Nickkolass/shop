@@ -16,9 +16,10 @@ use Illuminate\Support\Collection;
  * @property int $order_id
  * @property Carbon $dispatch_time
  * @property string $status
- * @property array|Collection<int, ProductType> $productTypes
+ * @property array|Collection<ProductType> $productTypes
  * @property string $delivery
  * @property int $total_price
+ * @property string $refund_id
  * @property ?Carbon $deleted_at
  * @property Carbon $created_at
  * @property Carbon $updated_at

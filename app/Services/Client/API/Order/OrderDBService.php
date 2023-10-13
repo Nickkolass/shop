@@ -2,10 +2,14 @@
 
 namespace App\Services\Client\API\Order;
 
-use App\Events\OrderStored;
+use App\Components\Yookassa\YooKassaClient;
+use App\Events\Order\OrderCanceled;
+use App\Events\Order\OrderStored;
+use App\Events\Order\Payment;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -13,63 +17,50 @@ class OrderDBService
 {
     /**
      * @param array<mixed> $data
-     * @return void
+     * @return string $payment_url
      */
-    public function store(array $data): void
+    public function store(array $data): string
     {
         DB::beginTransaction();
-        $this->productCountUpdate($data['cart'])->orderStore($data)->orderPerformerStore($data);
+        $url = $this->productCountUpdate($data['cart'])->orderStore($data)->payment($data['order']);
         DB::commit();
+        return $url;
     }
 
     /**
-     * @param array<mixed> &$data
-     * @return void
+     * @param Order $order
+     * @return string $payment_url
      */
-    private function orderPerformerStore(array &$data): void
+    public function payment(Order $order): string
     {
-        $data['cart'] = collect((array)$data['cart'])
-            ->groupBy('saler_id')/** @phpstan-ignore-next-line */
-            ->transform(function (Collection $order, int $saler_id) use ($data) {
-                return [
-                    'order_id' => $data['order']->id,
-                    'saler_id' => $saler_id,
-                    'user_id' => $data['user_id'],
-                    'productTypes' => $order,
-                    'dispatch_time' => now()->addDays(25),
-                    'delivery' => $data['delivery'],
-                    'total_price' => $order->sum('price'),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            });
-        OrderPerformer::query()->insert($data['cart']->all());
-
-        event(new OrderStored($data['cart']));
+        $payment = YooKassaClient::make()->payment($order);
+        event(new Payment($order, $payment['payment_id']));
+        return $payment['payment_url'];
     }
 
     /**
-     * @param array<mixed> &$data
-     * @return OrderDBService
+     * @param array<mixed> $data
+     * @return self
      */
-    private function orderStore(array &$data): OrderDBService
+    private function orderStore(array &$data): self
     {
+        $user = auth('api')->user();
+        /** @var User $user */
+
         $data['order'] = Order::query()->create([
-            'user_id' => $data['user_id'],
-            'productTypes' => $data['cart'],
-            'delivery' => $data['delivery'],
+            'user_id' => $user->id,
+            'productTypes' => array_values($data['cart']),
+            'delivery' => $data['delivery'] . ". Получатель: $user->surname $user->name $user->patronymic. Адрес: $user->address",
             'total_price' => $data['total_price'],
-            'payment' => $data['payment'],
-            'payment_status' => $data['payment_status'],
         ]);
         return $this;
     }
 
     /**
      * @param array<int> &$cart
-     * @return OrderDBService
+     * @return self
      */
-    private function productCountUpdate(array &$cart): OrderDBService
+    private function productCountUpdate(array &$cart): self
     {
         $productTypes = ProductType::query()
             ->with('product:id,saler_id')
@@ -94,13 +85,31 @@ class OrderDBService
         return $this;
     }
 
-    public function delete(Order $order): void
+    /**
+     * @param Order $order
+     * @return void
+     */
+    public function completeStore(Order $order, string $payment_id): void
     {
+        $orderPerformers = collect($order->productTypes)
+            ->groupBy('saler_id')/** @phpstan-ignore-next-line */
+            ->transform(function (Collection $orderPerformer, int $saler_id) use ($order) {
+                return [
+                    'order_id' => $order->id,
+                    'saler_id' => $saler_id,
+                    'user_id' => $order->user_id,
+                    'productTypes' => $orderPerformer,
+                    'dispatch_time' => now()->addDays(25),
+                    'delivery' => $order->delivery,
+                    'total_price' => $orderPerformer->sum('price'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            });
         DB::beginTransaction();
-        $order->orderPerformers()->update(['status' => 'Отменен ' . now()]);
-        $order->orderPerformers()->delete();
-        $order->update(['status' => 'Отменен ' . now()]);
-        $order->delete();
+        $order->update(['status' => 'В работе', 'payment_id' => $payment_id]);
+        OrderPerformer::query()->insert($orderPerformers->values()->all());
+        event(new OrderStored($order));
         DB::commit();
     }
 
@@ -109,6 +118,28 @@ class OrderDBService
         DB::beginTransaction();
         $order->update(['status' => 'Получен ' . now()]);
         $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
+        DB::commit();
+    }
+
+    public function delete(Order $order, bool $due_to_payment = false): void
+    {
+        $now = now();
+        $type_upd = [];
+        $productTypes = array_column((array)$order->productTypes, 'amount', 'productType_id');
+        ProductType::query()
+            ->whereIn('id', array_keys($productTypes))
+            ->pluck('count', 'id')
+            ->each(function (int $count, int $id) use (&$type_upd, $productTypes) {
+                $type_upd[] = ['id' => $id, 'count' => $count + $productTypes[$id]];
+            });
+
+        DB::beginTransaction();
+        ProductType::upsert($type_upd, 'id', ['count']);
+        $order->update(['status' => 'Отменен ' . now(), 'deleted_at' => $now]);
+        if (!$due_to_payment) {
+            $order->orderPerformers()->update(['status' => 'Отменен ' . $now, 'deleted_at' => $now]);
+            event(new OrderCanceled($order));
+        }
         DB::commit();
     }
 }

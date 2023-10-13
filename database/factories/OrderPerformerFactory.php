@@ -27,6 +27,7 @@ class OrderPerformerFactory extends Factory
             'dispatch_time' => $order->created_at->addDays(25),
             'delivery' => $order->delivery,
             'total_price' => $productTypes->sum('price'),
+            'payment_id' => uniqid('', true),
         ];
     }
 }

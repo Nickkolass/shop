@@ -33,13 +33,15 @@ Auth::routes(['verify' => true]);
 
 Route::get('/', HomeController::class)->name('home');
 
-Route::get('/users/{user}/password', [UserController::class, 'passwordEdit'])->name('users.password.edit');
-Route::patch('/users/{user}/password', [UserController::class, 'passwordUpdate'])->name('users.password.update');
+Route::prefix('/users/{user}/password')->controller(UserController::class)->name('users.password.')->group(function () {
+    Route::get('/', 'passwordEdit')->name('edit');
+    Route::patch('/', 'passwordUpdate')->name('update');
+});
 Route::resource('/users', UserController::class);
 
 Route::name('client.')->group(function () {
     Route::view('/about', 'client.about')->name('about');
-    Route::post('/orders/create', [FrontOrderController::class, 'create'])->name('orders.create')->middleware(['client', 'verified']);
+    Route::get('/orders/{order_id}/payment', [FrontOrderController::class, 'payment'])->middleware(['client', 'verified'])->name('orders.store.payment');
     Route::apiResource('/orders', FrontOrderController::class)->middleware(['client', 'verified']);
     Route::controller(FrontUserActiveController::class)->group(function () {
         Route::post('/cart', 'addToCart')->name('addToCart');

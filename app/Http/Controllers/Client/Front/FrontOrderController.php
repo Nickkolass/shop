@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers\Client\Front;
 
+use App\Components\Guzzle\GuzzleClient;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\Order\StoreFrontRequest;
-use Arhitector\Yandex\Disk;
-use GuzzleHttp\Client;
+use App\Http\Requests\Client\Order\StoreFrontRequest;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class FrontOrderController extends Controller
 {
-    private Client $client;
 
-    public function __construct()
+    public function __construct(private readonly GuzzleClient $guzzle)
     {
-        $this->client = new Client(config('guzzle'));
     }
 
     /**
@@ -29,25 +26,11 @@ class FrontOrderController extends Controller
     public function index(): View
     {
         $data['page'] = request('page', 1);
-
-        $orders = $this->client->request('POST', 'api/orders',
+        $orders = $this->guzzle->client->request('POST', 'api/orders',
             ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $orders = json_decode($orders, true);
 
         return view('client.order.index', compact('orders'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return View
-     */
-    public function create(): View
-    {
-        $total_price = request('total_price');
-        if (!config('services.yandexdisk.oauth_token')) $policy = 'https://disk.yandex.ru/d/IowD1shlYuOiFw';
-        else $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
-        return view('client.order.create', compact('total_price', 'policy'));
     }
 
     /**
@@ -60,10 +43,22 @@ class FrontOrderController extends Controller
     public function store(StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $this->client->request('POST', 'api/orders/store',
-            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
+        $payment_url = $this->guzzle->client->request('POST', 'api/orders/store',
+            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         session()->forget(['cart', 'filter', 'paginate']);
-        return redirect()->route('client.orders.index');
+        return redirect()->to($payment_url);
+    }
+
+    /**
+     * @param int $order_id
+     * @return RedirectResponse
+     * @throws GuzzleException
+     */
+    public function payment(int $order_id): RedirectResponse
+    {
+        $payment_url = $this->guzzle->client->request('POST', "api/orders/$order_id/payment",
+            ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
+        return redirect()->to($payment_url);
     }
 
     /**
@@ -75,7 +70,7 @@ class FrontOrderController extends Controller
      */
     public function show(int $order_id): View
     {
-        $order = $this->client->request('POST', 'api/orders/' . $order_id,
+        $order = $this->guzzle->client->request('POST', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
         $order = json_decode($order, true);
         return view('client.order.show', compact('order'));
@@ -90,7 +85,7 @@ class FrontOrderController extends Controller
      */
     public function update(int $order_id): RedirectResponse
     {
-        $this->client->request('PATCH', 'api/orders/' . $order_id,
+        $this->guzzle->client->request('PATCH', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }
@@ -104,7 +99,7 @@ class FrontOrderController extends Controller
      */
     public function destroy(int $order_id): RedirectResponse
     {
-        $this->client->request('DELETE', 'api/orders/' . $order_id,
+        $this->guzzle->client->request('DELETE', 'api/orders/' . $order_id,
             ['headers' => ['Authorization' => session('jwt')]]);
         return back();
     }

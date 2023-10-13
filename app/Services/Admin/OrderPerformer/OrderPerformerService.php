@@ -2,13 +2,13 @@
 
 namespace App\Services\Admin\OrderPerformer;
 
-use App\Mail\MailOrderPerformerDestroy;
+use App\Events\Order\OrderPerformerCanceled;
 use App\Models\OrderPerformer;
+use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class OrderPerformerService
 {
@@ -53,13 +53,14 @@ class OrderPerformerService
 
     public function delete(OrderPerformer $order): void
     {
+        $now = now();
         DB::beginTransaction();
-        $order->update(['status' => 'Отменен ' . now()]);
-        $order->delete();
-        $query = $order->order()->doesntHave('orderPerformers');
-        $query->update(['status' => 'Отменен ' . now()]);
-        $query->delete();
-        Mail::to($order->user()->pluck('email'))->send(new MailOrderPerformerDestroy($order));
+        foreach ($order->productTypes as $type) {
+            ProductType::query()->where('id', $type['productType_id'])->increment('count', $type['amount']);
+        }
+        $order->update(['status' => 'Отменен ' . $now, 'deleted_at' => $now]);
+        $order->order()->doesntHave('orderPerformers')->update(['status' => 'Отменен ' . $now, 'deleted_at' => $now]);
+        event(new OrderPerformerCanceled($order, false));
         DB::commit();
     }
 }

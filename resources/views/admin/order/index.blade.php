@@ -69,7 +69,7 @@
                                                         @csrf
                                                         @method('patch')
                                                         <div class="form-group">
-                                                            <input type="submit" class="btn-btn-primary"
+                                                            <input type="submit" class="btn-primary"
                                                                    value="Подтвердить отправку">
                                                         </div>
                                                         <form>

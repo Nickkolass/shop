@@ -13,12 +13,12 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property int $user_id
- * @property array|Collection<int, ProductType> $productTypes
+ * @property array|Collection<ProductType> $productTypes
  * @property string $delivery
  * @property int $total_price
- * @property string $payment
- * @property bool $payment_status
  * @property string $status
+ * @property string $payment_id
+ * @property string $refund_id
  * @property ?Carbon $deleted_at
  * @property Carbon $created_at
  * @property Carbon $updated_at

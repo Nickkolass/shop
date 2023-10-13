@@ -27,6 +27,15 @@
                     <td>{{ $order['created_at'] }}</td>
                 </tr>
                 <tr>
+                    <td>Оплата</td>
+                    <td>@if(!isset($order['payment_id']))
+                            <a class="btn-primary"
+                               href="{{ route('client.orders.store.payment', [$order['id'], 'total_price' => $order['total_price']]) }}">Оплатить</a>
+                        @else
+                            Оплачен
+                        @endif</td>
+                </tr>
+                <tr>
                     <td>Срок доставки</td>
                     <td>{{ $order['dispatch_time'] }}</td>
                 </tr>

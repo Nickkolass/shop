@@ -18,10 +18,11 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamp('dispatch_time');
-            $table->string('status')->default('В работе');
             $table->jsonb('productTypes');
             $table->string('delivery');
             $table->unsignedMediumInteger('total_price');
+            $table->string('status')->default('В работе');
+            $table->string('refund_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

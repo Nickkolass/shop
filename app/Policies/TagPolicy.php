@@ -4,12 +4,12 @@ namespace App\Policies;
 
 use App\Models\Tag;
 use App\Models\User;
-use App\Policies\Trait\PreAuthChecks;
+use App\Policies\Trait\IsAdmin;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TagPolicy
 {
-    use HandlesAuthorization, PreAuthChecks;
+    use HandlesAuthorization, IsAdmin;
 
     /**
      * Determine whether the user can view any models.

@@ -76,7 +76,7 @@
 
                     <div class="w-100"></div>
                     <div class="row" style="padding: 5px;">
-                        <input type="submit" class="btn-btn-primary" value="Продолжить">
+                        <input type="submit" class="btn-primary" value="Продолжить">
                     </div>
                 </div>
             </form>

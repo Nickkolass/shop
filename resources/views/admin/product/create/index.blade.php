@@ -62,7 +62,7 @@
                 </div><!-- /.container-fluid -->
                 <input type="hidden" name="saler_id" value="{{session('user.id')}}">
                 <div class="col" style="padding: 5px;">
-                    <input type="submit" class="btn-btn-primary" value="Продолжить">
+                    <input type="submit" class="btn-primary" value="Продолжить">
                 </div>
             </form>
         </div>

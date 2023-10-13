@@ -54,8 +54,14 @@
                     <div class="form-group">
                         <select name="gender" class="custom-select form-control" id="exampleSelectBorder" required>
                             <option disabled>Пол</option>
-                            <option value="{{\App\Models\User::GENDER_MALE}}">Мужской</option>
-                            <option @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">Женский</option>
+                            <option
+                                @selected(old('gender') == \App\Models\User::GENDER_MALE) value="{{\App\Models\User::GENDER_MALE}}">
+                                Мужской
+                            </option>
+                            <option
+                                @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">
+                                Женский
+                            </option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -72,7 +78,7 @@
                     </div>
                     <input type="number" name="role" value="2" hidden>
                     <div class="form-group">
-                        <input type="submit" class="btn-btn-primary" value="Добавить">
+                        <input type="submit" class="btn-primary" value="Добавить">
                     </div>
                 </form>
             </div><!-- /.row -->

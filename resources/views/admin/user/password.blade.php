@@ -52,7 +52,7 @@ in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::
                                    class="form-control" placeholder="Повторите новый пароль" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="submit" class="btn-btn-primary" value="Редактировать">
+                            <input type="submit" class="btn-primary" value="Редактировать">
                         </div>
                     </div>
                 </form>

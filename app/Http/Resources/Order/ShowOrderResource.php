@@ -26,6 +26,7 @@ class ShowOrderResource extends JsonResource
             'delivery' => $this->resource->delivery,
             'total_price' => $this->resource->total_price,
             'status' => $this->resource->status,
+            'payment_id' => $this->resource->payment_id,
             'created_at' => $this->resource->created_at->toDateString(),
             'dispatch_time' => $this->resource->orderPerformers->max('dispatch_time'),
         ];

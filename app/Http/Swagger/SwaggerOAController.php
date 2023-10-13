@@ -113,7 +113,7 @@ use App\Http\Controllers\Controller;
  *     @OA\RequestBody(
  *         @OA\JsonContent(
  *             @OA\Property(property="total_price", type="integer", example=1000),
- *             @OA\Property(property="payment_status", type="bool", example=true),
+ *             @OA\Property(property="payment_id", type="null|string", example="123a-dasi-wa5i"),
  *             @OA\Property(property="payment", type="string", example="card"),
  *             @OA\Property(property="cart", type="object",
  *                 @OA\Property(property="662341", type="integer", example="2"),

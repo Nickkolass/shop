@@ -127,7 +127,7 @@ $user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
                             </div>
                         @endif
                         <div class="col-md-6">
-                            <input type="submit" class="btn-btn-primary" value="Редактировать">
+                            <input type="submit" class="btn-primary" value="Редактировать">
                         </div>
                     </div>
                 </form>

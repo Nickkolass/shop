@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\Product\FilterRequest;
+use App\Http\Requests\Client\Product\FilterRequest;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\IndexResource;
 use App\Http\Resources\Product\ProductFilterAggregateResource;
