@@ -2,20 +2,10 @@
 
 namespace App\Providers;
 
-use App\Events\Order\OrderCanceled;
-use App\Events\Order\OrderPerformerCanceled;
-use App\Events\Order\OrderPerformerStored;
-use App\Events\Order\OrderStored;
-use App\Events\Order\Payment;
-use App\Listeners\Payment\PaymentListener;
-use App\Listeners\Payment\RefundOrderListener;
-use App\Listeners\Payment\RefundOrderPerformerListener;
+use App\Listeners\Payment\PaymentSubscriber;
 use App\Notifications\Auth\EmailVerificationNotificationQueue;
 use App\Notifications\Auth\WelcomeNotification;
-use App\Notifications\Order\OrderCanceledNotificationQueue;
-use App\Notifications\Order\OrderPerformerCanceledNotificationQueue;
-use App\Notifications\Order\OrderPerformerStoredNotificationQueue;
-use App\Notifications\Order\OrderStoredNotificationQueue;
+use App\Notifications\Order\OrderNotificationSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -30,23 +20,14 @@ class EventServiceProvider extends ServiceProvider
             EmailVerificationNotificationQueue::class,
             WelcomeNotification::class,
         ],
-        OrderStored::class => [
-            OrderStoredNotificationQueue::class,
-        ],
-        OrderPerformerStored::class => [
-            OrderPerformerStoredNotificationQueue::class,
-        ],
-        OrderCanceled::class => [
-            OrderCanceledNotificationQueue::class,
-            RefundOrderListener::class,
-        ],
-        OrderPerformerCanceled::class => [
-            OrderPerformerCanceledNotificationQueue::class,
-            RefundOrderPerformerListener::class,
-        ],
-        Payment::class => [
-            PaymentListener::class,
-        ],
+    ];
+
+    /**
+     * @var array<string>
+     */
+    protected $subscribe = [
+        OrderNotificationSubscriber::class,
+        PaymentSubscriber::class,
     ];
 
     /**

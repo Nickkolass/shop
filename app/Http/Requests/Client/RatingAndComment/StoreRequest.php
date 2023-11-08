@@ -19,14 +19,6 @@ class StoreRequest extends FormRequest
     }
 
     /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge(['user_id' => auth('api')->id()]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<mixed>
@@ -34,12 +26,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
-                'required', 'integer', Rule::unique('rating_and_comments')
-                    ->where(fn(Builder $q) => $q->where([
-                        'product_id' => $this->input('product_id'), 'user_id' => $this->input('user_id')
-                    ]))
-            ],
+            'user_id' => ['required', 'integer', Rule::unique('rating_and_comments')->where(function (Builder $q) {
+                $q->where(['product_id' => $this->input('product_id'), 'user_id' => $this->input('user_id')]);
+            })],
             'product_id' => 'required|integer',
             'rating' => 'required|integer',
             'message' => 'nullable|string',

@@ -16,8 +16,9 @@
                 <li>
                     @foreach($data['filterable']['prices'] as $key => $price)
                         <input class="filter" style="width:125px; padding: 5px;" name="filter[prices][{{$key}}]"
-                               type="number" min="0" max="{{$data['filterable']['prices']['max']}}"
-                               value="{{ $data['filter']['prices'][$key] ?? '' }}"
+                               type="number" value="{{ $data['filter']['prices'][$key] ?? '' }}"
+                               min="{{$data['filterable']['prices']['min']}}"
+                               max="{{$data['filterable']['prices']['max']}}"
                                placeholder="{{$data['filterable']['prices'][$key]}}">
                     @endforeach
                 </li>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\OrderPerformer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,8 +22,8 @@ return new class extends Migration {
             $table->jsonb('productTypes');
             $table->string('delivery');
             $table->unsignedMediumInteger('total_price');
-            $table->string('status')->default('В работе');
-            $table->string('refund_id')->nullable();
+            $table->unsignedTinyInteger('status')->default(OrderPerformer::STATUS_WAIT_PAYMENT)->index();
+            $table->string('payout_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -42,7 +42,7 @@ class OrderPerformerProductService
                 }])
             ->get()
             ->each(function (ProductType $productType) use ($productTypesFromOrder) {
-                $productTypeFromOrder = $productTypesFromOrder->where('productType_id', $productType->id)->first();
+                $productTypeFromOrder = $productTypesFromOrder->firstWhere('productType_id', $productType->id);
                 $productType->setAttribute('amount', $productTypeFromOrder['amount']);
                 $productType->price = $productTypeFromOrder['price'];
                 $productType->setRelation('optionValues', $productType->optionValues->pluck('value', 'option_title'));

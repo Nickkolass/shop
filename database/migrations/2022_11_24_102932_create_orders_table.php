@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +19,7 @@ return new class extends Migration {
             $table->jsonb('productTypes');
             $table->string('delivery');
             $table->unsignedMediumInteger('total_price');
-            $table->string('status')->default('В работе');
+            $table->unsignedTinyInteger('status')->default(Order::STATUS_WAIT_PAYMENT);
             $table->string('payment_id')->nullable();
             $table->string('refund_id')->nullable();
             $table->softDeletes();

@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
@@ -17,96 +18,102 @@ class UserTest extends TestCase
     /**@test */
     public function test_a_user_can_be_viewed_any_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('users.index');
 
-        $this->get(route('users.index'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.index'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('users.index'))->assertViewIs('admin.user.index');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.user.index');
         session()->flush();
     }
 
     /**@test */
     public function test_a_user_can_be_created_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('users.create');
 
-        $this->get(route('users.create'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.create'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('users.create'))->assertViewIs('admin.user.create');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.user.create');
     }
 
     /**@test */
     public function test_a_user_can_be_stored_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
         $data = User::factory()->raw();
         unset($data['card'], $data['postcode'], $data['address'], $data['password']);
+        $route = route('users.store');
+        $from = route('users.create');
 
-        $this->from(route('users.create'))->post(route('users.store'), $data)->assertNotFound();
+        $this->from($from)->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->from(route('users.create'))->post(route('users.store'), $data)->assertNotFound();
+            $this->actingAs($user)
+                ->from($from)
+                ->post($route, $data)
+                ->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->from(route('users.create'))->post(route('users.store'), $data);
-        $this->assertDatabaseCount('users', 2);
-        $this->assertDatabaseCount('jobs', 2);
-
-        $user = User::query()->first()->toArray();
-        unset($user['id'], $user['email_verified_at'], $user['created_at'], $user['updated_at'], $data['email_verified_at'], $data['password']);
-
-        $this->assertEquals(sort($data), sort($user));
+        $this->actingAs($user)
+            ->from($from)
+            ->expectsEvents(Registered::class)
+            ->post($route, $data)
+            ->assertOk();
+        $this->assertTrue(User::query()->where('email', $data['email'])->exists());
     }
 
     /**@test */
     public function test_a_user_can_be_viewed_with_premissions(): void
     {
-        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff']);
-        View::share('categories', $categories);
-
-        $users = User::factory(2)->create();
         /** @var Collection<User> $users */
+        $users = User::factory(2)->create();
         $user = $users->first();
         $another_user = $users->last();
+        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff']);
+        View::share('categories', $categories);
+        $route = route('users.show', $user->id);
+        $another_route = route('users.show', $another_user->id);
 
-        $this->get(route('users.show', $another_user->id))->assertNotFound();
+        $this->get($another_route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.show', $another_user->id))->assertForbidden();
+            $this->actingAs($user)->get($another_route)->assertForbidden();
             session()->flush();
         }
 
@@ -115,31 +122,32 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.show', $user->id))->assertViewIs('admin.user.show');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.user.show');
             session()->flush();
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('users.show', $another_user->id))->assertViewIs('admin.user.show');
+        $this->actingAs($user)->get($another_route)->assertViewIs('admin.user.show');
     }
 
     /**@test */
     public function test_a_user_can_be_edited_with_premissions(): void
     {
-        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff'])->toArray();
-        View::share('categories', $categories);
-
-        $users = User::factory(2)->create();
         /** @var Collection<User> $users */
+        $users = User::factory(2)->create();
         $user = $users->first();
         $another_user = $users->last();
+        $categories[] = Category::query()->create(['title' => 'asf', 'title_rus' => 'asff'])->toArray();
+        View::share('categories', $categories);
+        $route = route('users.edit', $user->id);
+        $another_route = route('users.edit', $another_user->id);
 
-        $this->get(route('users.edit', $another_user->id))->assertNotFound();
+        $this->get($another_route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.edit', $another_user->id))->assertForbidden();
+            $this->actingAs($user)->get($another_route)->assertForbidden();
             session()->flush();
         }
 
@@ -148,34 +156,37 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.edit', $user->id))->assertViewIs('admin.user.edit');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.user.edit');
             session()->flush();
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('users.edit', $another_user->id))->assertViewIs('admin.user.edit');
+        $this->actingAs($user)->get($another_route)->assertViewIs('admin.user.edit');
     }
 
     /**@test */
     public function test_a_user_can_be_updated_with_premissions(): void
     {
+        $users = User::factory(2)->create();
+        /** @var User $user */
+        $user = $users->first();
+        /** @var User $another_user */
+        $another_user = $users->last();
         $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
         View::share('categories', $categories);
-        $users = User::factory(2)->create();
-        /** @var Collection<User> $users */
-        $user = $users->first();
-        $another_user = $users->last();
+        $route = route('users.update', $user->id);
+        $another_route = route('users.update', $another_user->id);
 
         $data = User::factory()->raw();
         $data['id'] = $user->id;
-        unset($data['card'], $data['postcode'], $data['address']);
+        unset($data['card'], $data['postcode'], $data['address'], $data['password'], $data['INN']);
 
-        $this->patch(route('users.update', $another_user->id), $data)->assertNotFound();
+        $this->patch($another_route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->patch(route('users.update', $another_user->id), $data)->assertForbidden();
+            $this->actingAs($user)->patch($another_route, $data)->assertForbidden();
             session()->flush();
         }
 
@@ -184,47 +195,37 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $data_for_upd = $data;
-
-            $this->actingAs($user)->patch(route('users.update', $user->id), $data_for_upd);
-
-            $updated_user = User::query()->first()->toArray();
-            unset($updated_user['password'], $updated_user['email_verified_at'], $updated_user['gender'], $updated_user['card'], $updated_user['created_at'], $updated_user['updated_at'],
-                $data_for_upd['password'], $data_for_upd['email_verified_at'], $data_for_upd['gender'], $data_for_upd['card']);
-            $this->assertEquals(sort($data_for_upd), sort($updated_user));
+            $data['email'] = $i . 'wqaqw@mail.ru';
+            $this->actingAs($user)->patch($route, $data);
+            $this->assertEquals($user->refresh()->email, $data['email']);
             session()->flush();
         }
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $data_for_upd = $data;
-        $data_for_upd['id'] = $another_user->id;
-        $data_for_upd['email'] = $another_user->email;
-        $data_for_upd['INN'] = $another_user->INN;
+        $data['email'] = 0 . $user->email;
+        $data['id'] = $another_user->id;
 
-        $this->actingAs($user)->patch(route('users.update', $another_user->id), $data_for_upd)->assertOk();
-
-        $updated_user = User::query()->latest()->first()->toArray();
-        unset($updated_user['password'], $updated_user['email_verified_at'], $updated_user['gender'], $updated_user['card'], $updated_user['created_at'], $updated_user['updated_at'],
-            $data_for_upd['password'], $data_for_upd['email_verified_at'], $data_for_upd['gender'], $data_for_upd['card']);
-        $this->assertEquals(sort($data_for_upd), sort($updated_user));
+        $this->actingAs($user)->patch($another_route, $data)->assertOk();
+        $this->assertEquals($another_user->refresh()->email, $data['email']);
     }
 
     /**@test */
     public function test_a_user_can_be_deleted_with_premissions(): void
     {
         Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
-        $users = User::factory(5)->has(Product::factory())->create();
         /** @var Collection<User> $users */
+        $users = User::factory(5)->has(Product::factory())->create();
         $user = $users->first();
-        $another_user = $users->last();
+        $another_user = $users->pop();
+        $another_route = route('users.destroy', $another_user->id);
 
-        $this->delete(route('users.destroy', $another_user->id))->assertNotFound();
+        $this->delete($another_route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->delete(route('users.destroy', $another_user->id))->assertForbidden();
+            $this->actingAs($user)->delete($another_route)->assertForbidden();
             session()->flush();
         }
 
@@ -233,34 +234,36 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $deleted_user = $users->pop();
             $deleted_user->role = $i;
-            $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirect(route('users.index'));
+            $this->actingAs($deleted_user)->delete(route('users.destroy', $deleted_user->id))->assertRedirectToRoute('users.index');
             session()->flush();
-            $this->assertDatabaseCount('users', 5 - $i);
-            $this->assertTrue($deleted_user->products()->count() == 0);
+            $this->assertModelMissing($deleted_user)
+                ->assertFalse($deleted_user->products()->exists());
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->delete(route('users.destroy', $users->last()->id))->assertRedirect(route('users.index'));
-        $this->assertDatabaseCount('users', 1);
-        $this->assertTrue($deleted_user->products()->count() == 0);
+        $this->actingAs($user)->delete($another_route)->assertRedirectToRoute('users.index');
+        $this->assertModelMissing($another_user)
+            ->assertFalse($another_user->products()->exists());
     }
 
     /**@test */
     public function test_a_user_password_can_be_edited_with_premissions(): void
     {
-        $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
-        View::share('categories', $categories);
-        $users = User::factory(2)->create();
         /** @var Collection<User> $users */
+        $users = User::factory(2)->create();
         $user = $users->first();
         $another_user = $users->last();
+        $categories[] = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog'])->toArray();
+        View::share('categories', $categories);
+        $route = route('users.password.edit', $user->id);
+        $another_route = route('users.password.edit', $another_user->id);
 
-        $this->get(route('users.password.edit', $user->id))->assertNotFound();
+        $this->get($another_route)->assertNotFound();
 
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.password.edit', $another_user->id))->assertUnauthorized();
+            $this->actingAs($user)->get($another_route)->assertForbidden();
             session()->flush();
         }
 
@@ -269,7 +272,7 @@ class UserTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('users.password.edit', $user->id))->assertViewIs('admin.user.password');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.user.password');
             session()->flush();
         }
     }
@@ -277,22 +280,24 @@ class UserTest extends TestCase
     /**@test */
     public function test_a_user_password_can_be_updated_with_premissions(): void
     {
-        $users = User::factory(2)->create();
         /** @var Collection<User> $users */
+        $users = User::factory(2)->create();
         $user = $users->first();
         $another_user = $users->last();
         $another_user->password = Hash::make('1');
         $another_user->save();
+        $route = route('users.password.update', $user->id);
+        $another_route = route('users.password.update', $another_user->id);
 
         $password = Hash::make(Str::random(5));
         $data = ['password' => '1', 'new_password' => $password, 'new_password_confirmation' => $password];
 
-        $this->patch(route('users.password.update', $another_user->id), $data)->assertNotFound();
+        $this->patch($another_route, $data)->assertNotFound();
 
         for ($i = 1; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->patch(route('users.password.update', $another_user->id), $data)->assertUnauthorized();
+            $this->actingAs($user)->patch($another_route, $data)->assertForbidden();
             session()->flush();
         }
 
@@ -304,7 +309,7 @@ class UserTest extends TestCase
             $user->save();
             $password = Hash::make(Str::random(5));
             $data = ['password' => (string)$i, 'new_password' => $password, 'new_password_confirmation' => $password];
-            $this->actingAs($user)->patch(route('users.password.update', $user->id), $data)->assertRedirect(route('users.show', $user->id));
+            $this->actingAs($user)->patch($route, $data)->assertRedirectToRoute('users.show', $user->id);
             session()->flush();
         }
     }

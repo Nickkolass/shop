@@ -1,3 +1,4 @@
+@php use App\Models\Order; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -28,7 +29,6 @@
                         <th>Срок доставки</th>
                         <th>Способ доставки, получатель</th>
                         <th>Стоимость заказа</th>
-                        <th>Оплата</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -37,7 +37,7 @@
                             <td style="vertical-align: middle"><a
                                     href="{{ route('client.orders.show', $order['id']) }}">{{ $order['id'] }}</a></td>
                             <td style="vertical-align: middle">
-                                @if ($order['status'] == 'В работе' || str_starts_with($order['status'], 'Отправлен'))
+                                @if ($order['status'] == Order::STATUS_PAID)
                                     <form action="{{ route('client.orders.update', $order['id']) }}" method="post">
                                         @csrf
                                         @method('patch')
@@ -45,8 +45,14 @@
                                             <input type="submit" value="Подтвердить получение">
                                         </div>
                                     </form>
+                                @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
+                                    <form action="{{ route('client.orders.payment', $order['id']) }}"
+                                          method="post">
+                                        @csrf
+                                        <input type="submit" class="btn-primary" value="Оплатить">
+                                    </form>
                                 @else
-                                    {{$order['status']}}
+                                    {{Order::getStatuses()[$order['status']]}}
                                 @endif
                             </td>
                             <td style="vertical-align: middle">
@@ -62,14 +68,6 @@
                             <td style="vertical-align: middle">{{ $order['dispatch_time'] }}</td>
                             <td style="vertical-align: middle">{{ $order['delivery'] }}</td>
                             <td style="vertical-align: middle">{{ $order['total_price'] }}</td>
-                            <td style="vertical-align: middle">
-                                @if(!isset($order['payment_id']))
-                                    <a class="btn-primary"
-                                       href="{{ route('client.orders.store.payment', [$order['id'], 'total_price' => $order['total_price']]) }}">Оплатить</a>
-                                @else
-                                    Оплачен
-                                @endif
-                            </td>
                         </tr>
                     @endforeach
                     </tbody>

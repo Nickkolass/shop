@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\Auth\ResetPasswordNotificationQueue;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,7 +25,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property int $age
  * @property bool $gender
  * @property ?string $address
- * @property ?int $card
+ * @property ?array{payout_token: string, first6: string, last4: string, card_type: string, issuer_country: string} $card
  * @property ?int $postcode
  * @property ?int $INN
  * @property ?string $registredOffice
@@ -51,7 +52,10 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     protected $table = 'users';
     protected $guarded = false;
     protected $hidden = ['password', 'remember_token'];
-    protected $casts = ['email_verified_at' => 'datetime'];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'card' => 'array',
+    ];
     protected $fillable = [
         'role', 'surname',
         'email', 'password',
@@ -145,4 +149,10 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         return [];
     }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotificationQueue($token));
+    }
+
 }

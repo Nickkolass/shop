@@ -11,6 +11,7 @@ use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\Auth\ResetPasswordNotificationQueue;
 use App\Policies\CategoryPolicy;
 use App\Policies\OptionPolicy;
 use App\Policies\OrderPerformerPolicy;
@@ -50,7 +51,5 @@ class AuthServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
             return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
-
-        //
     }
 }

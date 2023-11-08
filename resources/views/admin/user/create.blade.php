@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -55,11 +56,11 @@
                         <select name="gender" class="custom-select form-control" id="exampleSelectBorder" required>
                             <option disabled>Пол</option>
                             <option
-                                @selected(old('gender') == \App\Models\User::GENDER_MALE) value="{{\App\Models\User::GENDER_MALE}}">
+                                @selected(old('gender') == User::GENDER_MALE) value="{{User::GENDER_MALE}}">
                                 Мужской
                             </option>
                             <option
-                                @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">
+                                @selected (old('gender') == User::GENDER_FEMALE) value="{{User::GENDER_FEMALE}}">
                                 Женский
                             </option>
                         </select>

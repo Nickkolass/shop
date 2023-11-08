@@ -1,8 +1,4 @@
-@isset($orders)
-    @php
-        $product_types = $orders;
-    @endphp
-@endisset
+@php if(isset($orders)) $product_types = $orders; @endphp
 
 @if($product_types['next_page_url'] !== $product_types['prev_page_url'])
     <div>

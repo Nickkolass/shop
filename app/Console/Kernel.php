@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new DBCleanUpdateJob())->weeklyOn(1, '08:00');
+        $schedule->call('db:clean')->weeklyOn(1, '08:00');
     }
 
     /**

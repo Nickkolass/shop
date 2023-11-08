@@ -24,6 +24,7 @@ class StoreFrontRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'required|integer',
             'rating' => 'required|integer',
             'message' => 'nullable|string',
             'comment_images' => 'nullable|array',

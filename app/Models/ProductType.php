@@ -27,7 +27,7 @@ use Illuminate\Support\Collection;
  * @property ?Product $product
  * @property ?Category $category
  * @property ?User $saler
- * @property ?Collection<OptionValue> $optionValues
+ * @property null|Collection<OptionValue>|Collection<string, string> $optionValues
  * @property ?Collection<ProductImage> $productImages
  * @property ?Collection<ProductType> $liked
  * @method static static|Builder sort(string $orderBy)

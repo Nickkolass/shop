@@ -39,7 +39,6 @@ class OrderFactory extends Factory
             'productTypes' => $productTypes->all(),
             'delivery' => $user->address,
             'total_price' => $productTypes->pluck('price')->sum(),
-            'payment_id' => uniqid('', true),
         ];
     }
 }

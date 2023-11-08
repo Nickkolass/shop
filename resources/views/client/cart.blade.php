@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -71,7 +72,7 @@
             </div>
             <div style="text-align: center">
                 <h4>Итого {{$i-1}} товаров общей стоимостью {{ $total_price }} рублей</h4><br>
-                @if(session('user.verify'))
+                @can('verify', User::class)
                     <form action="{{route('client.orders.store')}}" method="post">
                         @csrf
                         <div class="card-body table-responsive" style="width: 30%; margin-inline: auto">
@@ -125,7 +126,7 @@
                        href="{{route('login')}}">
                         <h4>Зарегистрируйтесь, войдите <br>
                             или подтвердите email</h4></a>
-                @endif
+                @endcan
             </div>
         @endif
     </main>

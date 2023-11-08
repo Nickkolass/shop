@@ -9,7 +9,6 @@ use App\Http\Requests\Admin\Product\ProductType\ProductTypeStoreRequest;
 use App\Http\Requests\Admin\Product\ProductType\ProductTypeUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductType;
-use App\Models\User;
 use App\Services\Admin\Product\ProductTypeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -109,7 +108,7 @@ class ProductTypeController extends Controller
      */
     public function publish(ProductType $productType): RedirectResponse
     {
-        if ($productType->product()->pluck('saler_id')[0] != session('user.id') && session('user.role') != User::ROLE_ADMIN) abort(403);
+        $this->authorize('update', $productType);
         $productType->update(['is_published' => !$productType->is_published]);
         return back();
     }

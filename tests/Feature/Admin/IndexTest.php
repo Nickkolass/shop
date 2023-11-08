@@ -26,9 +26,9 @@ class IndexTest extends TestCase
     {
         $user = User::query()->first();
 
-        $this->get(route('home'))->assertRedirect(route('login'));
+        $this->get(route('home'))->assertRedirectToRoute('login');
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
         $this->actingAs($user)->get(route('admin.index'))->assertNotFound();
         session()->flush();

@@ -13,12 +13,12 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property int $user_id
- * @property array|Collection<ProductType> $productTypes
+ * @property array<array{productType_id:int, saler_id:int, amount:int, price:int}>|Collection<ProductType> $productTypes
  * @property string $delivery
  * @property int $total_price
- * @property string $status
- * @property string $payment_id
- * @property string $refund_id
+ * @property int $status
+ * @property ?string $payment_id
+ * @property ?string $refund_id
  * @property ?Carbon $deleted_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -32,7 +32,27 @@ class Order extends Model
 
     protected $table = 'orders';
     protected $guarded = false;
-    protected $casts = ['productTypes' => 'array'];
+    protected $casts = [
+        'productTypes' => 'array',
+        'refund_id' => 'array',
+    ];
+    const STATUS_WAIT_PAYMENT = 0;
+    const STATUS_PAID = 1;
+    const STATUS_COMPLETED = 2;
+    const STATUS_CANCELED = 3;
+
+    /**
+     * @return array<int, string>
+     */
+    public static function getStatuses(): array
+    {
+        return ['Ожидает оплаты', 'Оплачен', 'Завершен', 'Отменен'];
+    }
+
+    public function getStatusTitleAttribute(): string
+    {
+        return self::getStatuses()[$this->status];
+    }
 
     public function user(): BelongsTo
     {

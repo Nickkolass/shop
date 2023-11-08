@@ -14,10 +14,8 @@
         <div class="col-sm" style="padding-right:5px; padding-left:5px">
             <form action="{{ route('client.liked.toggle', $product_type['id']) }}" method="post">
                 @csrf
-                <button type="submit" class="border-0 bg-transparent"
-                        title="{{!session()->has('user') ? 'Для добавления в избранное зарегистрируйтесь или войдите' : ''}}" @disabled(!session()->has('user'))>
-                    <i class="fa fa-heart{{$product_type['likeable'] ? '-o': ''}}"
-                       style="cursor: pointer;"></i>
+                <button type="submit" class="border-0 bg-transparent">
+                    <i class="fa fa-heart{{$product_type['likeable'] ? '-o': ''}}" style="cursor: pointer;"></i>
                 </button>
             </form>
         </div>

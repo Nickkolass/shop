@@ -1,11 +1,12 @@
 @extends(
-$user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
-? 'admin.layouts.main'
-: 'client.layouts.main'
+    \Illuminate\Support\Facades\Gate::check('role', [User::class, User::ROLE_SALER])
+    ? 'admin.layouts.main'
+    : 'client.layouts.main'
 )
+
 @section('content')
     <!-- Content Header (Page header) -->
-    @if($user->isClient())
+    @can('role', [User::class, User::ROLE_CLIENT])
         <br><br><br><br><br><br>
     @else
         <div class="content-header">
@@ -23,7 +24,7 @@ $user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
-    @endif
+    @endcan
 
 
     <!-- Main content -->
@@ -88,7 +89,7 @@ $user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
                                        placeholder="Email" required>
                             </div>
                         </div>
-                        @if($user->isAdmin() || $user->isSaler())
+                        @can('role', [User::class, User::ROLE_SALER])
                             <div class="row mb-3">
                                 <label for="INN" class="col-md-6 col-form-label text-md-end">{{ __('ИНН') }}</label>
                                 <div class="col-md-6">
@@ -125,7 +126,7 @@ $user->isSaler() || session('user.role') == \App\Models\User::ROLE_ADMIN
                                            placeholder="Адрес" required>
                                 </div>
                             </div>
-                        @endif
+                        @endcan
                         <div class="col-md-6">
                             <input type="submit" class="btn-primary" value="Редактировать">
                         </div>

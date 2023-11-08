@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('auth.layouts.app')
 
 @section('content')
@@ -120,11 +121,11 @@
                                                 id="exampleSelectBorder">
                                             <option disabled selected></option>
                                             <option
-                                                @selected(old('gender') == \App\Models\User::GENDER_MALE) value="{{\App\Models\User::GENDER_MALE}}">
+                                                @selected(old('gender') == User::GENDER_MALE) value="{{User::GENDER_MALE}}">
                                                 Мужской
                                             </option>
                                             <option
-                                                @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">
+                                                @selected (old('gender') == User::GENDER_FEMALE) value="{{User::GENDER_FEMALE}}">
                                                 Женский
                                             </option>
                                         </select>

@@ -3,9 +3,11 @@
 namespace App\Services\Client\API\Order;
 
 use App\Models\Order;
+use App\Models\OrderPerformer;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 
 class OrderService
 {
@@ -16,12 +18,10 @@ class OrderService
 
     public function index(int $page): ?Paginator
     {
-        $user = auth('api')->user();
-        /** @var User $user */
-
         $orders = Order::query()
             ->withTrashed()
-            ->when(!$user->isAdmin(), fn(Builder $q) => $q->where('user_id', $user->id))
+            ->when(!Gate::check('role', [User::class, User::ROLE_ADMIN]),
+                fn(Builder $q) => $q->where('user_id', auth('api')->id()))
             ->with(['orderPerformers' => function (Builder $q) {
                 /** @phpstan-ignore-next-line */
                 $q->withTrashed()->select('order_id', 'dispatch_time');
@@ -36,13 +36,27 @@ class OrderService
         return null;
     }
 
-    public function show(Order $order): Order
+    public function show(Order $order): void
     {
         $order->load(['orderPerformers' => function (Builder $q) {
             /** @phpstan-ignore-next-line */
-            $q->withTrashed()->select('id', 'saler_id', 'order_id', 'status', 'dispatch_time');
-        }]);
-        $this->service->getProductsForShow($order);
-        return $order;
+            $q->select('id', 'saler_id', 'order_id', 'total_price', 'productTypes', 'status', 'dispatch_time')
+                ->selectSub(function (\Illuminate\Contracts\Database\Query\Builder $q) {
+                    $q->from('users')
+                        ->whereColumn('users.id', 'saler_id')
+                        ->select('name');
+                }, 'saler_name')
+                ->withTrashed();
+        }])
+            ->setAttribute('refundable',
+                isset($order->payment_id)
+                && is_null($order->refund_id)
+                && ($order->status == Order::STATUS_COMPLETED || $order->status == Order::STATUS_CANCELED)
+                && !empty($order->orderPerformers->firstWhere('status', OrderPerformer::STATUS_CANCELED)))
+            ->setAttribute('cancelable',
+                is_null($order->refund_id)
+                && ($order->status == Order::STATUS_WAIT_PAYMENT || $order->status == Order::STATUS_PAID)
+                && empty($order->orderPerformers->firstWhere('status', OrderPerformer::STATUS_SENT)));
+        $this->service->getProductsForShow2($order);
     }
 }

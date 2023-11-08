@@ -6,21 +6,16 @@ use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\ProductTypeUserLike;
 use App\Models\PropertyValue;
-use Database\Seeders\Components\SeederStorageService;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Artisan;
 
-class DBCleanUpdateJob implements ShouldQueue
+class DBCleanUpdateJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, SerializesModels;
 
     public function handle(): void
     {
-        Artisan::call('telescope:prune', ['--env' => 'local']);
         PropertyValue::query()->doesntHave('products')->delete();
 
         $productTypes_update = [];
@@ -47,11 +42,9 @@ class DBCleanUpdateJob implements ShouldQueue
                     'count_rating' => $product->ratingAndComments->count(),
                     'count_comments' => $product->ratingAndComments->whereNotNull('message')->count(),
                 ];
-            });
-        Product::query()->upsert($products_update->all(), 'id');
+            })->all();
+        Product::query()->upsert($products_update, 'id');
         ProductType::query()->upsert($productTypes_update, 'id');
-
-        (new SeederStorageService)->caching();
     }
 }
 

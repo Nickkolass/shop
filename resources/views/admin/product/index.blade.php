@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -35,9 +36,9 @@
                                     <th>ID</th>
                                     <th>Продукты</th>
                                     <th>Категория</th>
-                                    @if (session('user.role') == \App\Models\User::ROLE_ADMIN)
+                                    @can('role', [User::class, User::ROLE_ADMIN])
                                         <th>Продавец</th>
-                                    @endif
+                                    @endcan
                                     <th>Виды</th>
                                     <th>Рейтинг</th>
                                 </tr>
@@ -50,11 +51,11 @@
                                             <a href="{{ route('admin.products.show', $product->id) }}">{{ $product->title }}</a>
                                         </td>
                                         <td>{{ $product->category->title_rus }}</td>
-                                        @if (session('user.role') == \App\Models\User::ROLE_ADMIN)
+                                        @can('role', [User::class, User::ROLE_ADMIN])
                                             <td>
                                                 <a href="{{ route('users.show', $product->saler_id) }}">{{$product->saler_id}}</a>
                                             </td>
-                                        @endif
+                                        @endcan
                                         <td>@foreach($product->productTypes as $productType)
                                                 <img
                                                     src="{{Storage::url($productType->preview_image) }}"

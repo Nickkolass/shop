@@ -2,7 +2,14 @@
 
 namespace App\Providers;
 
+use App\Components\Disk\DiskClientInterface;
+use App\Components\Disk\Yandexdisk\YandexDiskClient;
+use App\Components\HttpClient\Guzzle\GuzzleClient;
+use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Payment\PaymentClientStub;
+use App\Components\Payment\PaymentClientInterface;
 use App\Models\Category;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+        $this->app->bind(HttpClientInterface::class, GuzzleClient::class);
+        $this->app->bind(DiskClientInterface::class, YandexDiskClient::class);
+        $this->app->bind(PaymentClientInterface::class, function (Application $app) {
+            $connection = config('payment.default');
+            $bind = config("payment.connections.$connection.bind");
+            return $app->make($bind);
+        });
     }
 
     /**

@@ -2,14 +2,14 @@
 
 namespace App\Services\Client\API\Order;
 
-use App\Components\Yookassa\YooKassaClient;
 use App\Events\Order\OrderCanceled;
-use App\Events\Order\OrderStored;
-use App\Events\Order\Payment;
+use App\Events\Order\OrderReceived;
+use App\Jobs\Client\Order\OrderStoredJob;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
 use App\Models\User;
+use App\Services\Payment\PaymentService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -22,45 +22,21 @@ class OrderDBService
     public function store(array $data): string
     {
         DB::beginTransaction();
-        $url = $this->productCountUpdate($data['cart'])->orderStore($data)->payment($data['order']);
+        $this
+            ->countProductReduction($data['cart'])
+            ->orderStore($data)
+            ->orderPerformerStore($data['order']);
+        $url = app(PaymentService::class)->payment($data['order']);
+        dispatch(new OrderStoredJob($data['order']))->delay(600);
         DB::commit();
         return $url;
-    }
-
-    /**
-     * @param Order $order
-     * @return string $payment_url
-     */
-    public function payment(Order $order): string
-    {
-        $payment = YooKassaClient::make()->payment($order);
-        event(new Payment($order, $payment['payment_id']));
-        return $payment['payment_url'];
-    }
-
-    /**
-     * @param array<mixed> $data
-     * @return self
-     */
-    private function orderStore(array &$data): self
-    {
-        $user = auth('api')->user();
-        /** @var User $user */
-
-        $data['order'] = Order::query()->create([
-            'user_id' => $user->id,
-            'productTypes' => array_values($data['cart']),
-            'delivery' => $data['delivery'] . ". Получатель: $user->surname $user->name $user->patronymic. Адрес: $user->address",
-            'total_price' => $data['total_price'],
-        ]);
-        return $this;
     }
 
     /**
      * @param array<int> &$cart
      * @return self
      */
-    private function productCountUpdate(array &$cart): self
+    private function countProductReduction(array &$cart): self
     {
         $productTypes = ProductType::query()
             ->with('product:id,saler_id')
@@ -68,7 +44,7 @@ class OrderDBService
             ->find(array_keys($cart));
 
         foreach ($cart as $productType_id => $amount) {
-            $productType = $productTypes->where('id', $productType_id)->first();
+            $productType = $productTypes->firstWhere('id', $productType_id);
 
             $update[$productType_id]['id'] = $productType->id;
             $update[$productType_id]['count'] = $productType->count - $amount;
@@ -86,10 +62,28 @@ class OrderDBService
     }
 
     /**
-     * @param Order $order
-     * @return void
+     * @param array<mixed> &$data
+     * @return self
      */
-    public function completeStore(Order $order, string $payment_id): void
+    private function orderStore(array &$data): self
+    {
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        $data['order'] = Order::query()->create([
+            'user_id' => $user->id,
+            'productTypes' => array_values($data['cart']),
+            'delivery' => $data['delivery'] . ". Получатель: $user->surname $user->name $user->patronymic. Адрес: $user->address",
+            'total_price' => $data['total_price'],
+        ]);
+        return $this;
+    }
+
+    /**
+     * @param Order $order
+     * @return self
+     */
+    private function orderPerformerStore(Order $order): self
     {
         $orderPerformers = collect($order->productTypes)
             ->groupBy('saler_id')/** @phpstan-ignore-next-line */
@@ -105,41 +99,80 @@ class OrderDBService
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
-            });
-        DB::beginTransaction();
-        $order->update(['status' => 'В работе', 'payment_id' => $payment_id]);
-        OrderPerformer::query()->insert($orderPerformers->values()->all());
-        event(new OrderStored($order));
-        DB::commit();
+            })
+            ->values()
+            ->all();
+        OrderPerformer::query()->insert($orderPerformers);
+        return $this;
     }
 
     public function update(Order $order): void
     {
         DB::beginTransaction();
-        $order->update(['status' => 'Получен ' . now()]);
-        $order->orderPerformers()->update(['status' => 'Получен ' . now()]);
+        $order->increment('status');
+        $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_RECEIVED]);
+        event(new OrderReceived($order));
         DB::commit();
     }
 
-    public function delete(Order $order, bool $due_to_payment = false): void
+    public function delete(Order $order, bool $due_to_payment): void
     {
-        $now = now();
-        $type_upd = [];
-        $productTypes = array_column((array)$order->productTypes, 'amount', 'productType_id');
-        ProductType::query()
-            ->whereIn('id', array_keys($productTypes))
-            ->pluck('count', 'id')
-            ->each(function (int $count, int $id) use (&$type_upd, $productTypes) {
-                $type_upd[] = ['id' => $id, 'count' => $count + $productTypes[$id]];
-            });
-
+        $order->load('orderPerformers:id,order_id,productTypes,status');
         DB::beginTransaction();
-        ProductType::upsert($type_upd, 'id', ['count']);
-        $order->update(['status' => 'Отменен ' . now(), 'deleted_at' => $now]);
-        if (!$due_to_payment) {
-            $order->orderPerformers()->update(['status' => 'Отменен ' . $now, 'deleted_at' => $now]);
-            event(new OrderCanceled($order));
-        }
+        $orderPerformer_deleted_ids = $this->countProductRestoration($order)->orderDelete($order, $due_to_payment);
+        if (!$due_to_payment) event(new OrderCanceled($order, $orderPerformer_deleted_ids));
         DB::commit();
+    }
+
+    /**
+     * @param Order $order
+     * @return self
+     */
+    private function countProductRestoration(Order $order): self
+    {
+        $productTypes = $order
+            ->orderPerformers
+            ->where('status', OrderPerformer::STATUS_WAIT_DELIVERY)
+            ->pluck('productTypes')
+            ->flatten(1)
+            ->pluck('amount', 'productType_id');
+
+        $type_upd = ProductType::query()
+            ->whereIn('id', $productTypes->keys())
+            ->pluck('count', 'id')
+            ->transform(function (int $count, int $id) use ($productTypes) {
+                return ['id' => $id, 'count' => $count + $productTypes[$id], 'is_published' => true];
+            })
+            ->all();
+        ProductType::upsert($type_upd, 'id');
+        return $this;
+    }
+
+    /**
+     * @param Order $order
+     * @param bool $due_to_payment
+     * @return null|array<int> $orderPerformer_deleted_ids
+     */
+    private function orderDelete(Order $order, bool $due_to_payment): ?array
+    {
+        if ($due_to_payment) {
+            $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_CANCELED, 'deleted_at' => now()]);
+            $order->update(['status' => Order::STATUS_CANCELED, 'deleted_at' => now()]);
+            return null;
+        } else {
+            $delete_ids = $order
+                ->orderPerformers
+                ->where('status', OrderPerformer::STATUS_WAIT_DELIVERY)
+                ->pluck('id')
+                ->all();
+            $order->orderPerformers()->whereIn('id', $delete_ids)->update(['status' => OrderPerformer::STATUS_CANCELED, 'deleted_at' => now()]);
+            Order::query()
+                ->take(1)
+                ->where('id', $order->id)
+                ->doesntHave('orderPerformers')
+                ->update(['status' => Order::STATUS_CANCELED, 'deleted_at' => now()]);
+
+            return $delete_ids;
+        }
     }
 }
