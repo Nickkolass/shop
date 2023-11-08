@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="submit" class="btn-btn-primary" value="Редактировать">
+                        <input type="submit" class="btn-primary" value="Редактировать">
                     </div>
 
                 </form>

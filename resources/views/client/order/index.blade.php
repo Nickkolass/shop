@@ -1,3 +1,4 @@
+@php use App\Models\Order; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -36,16 +37,22 @@
                             <td style="vertical-align: middle"><a
                                     href="{{ route('client.orders.show', $order['id']) }}">{{ $order['id'] }}</a></td>
                             <td style="vertical-align: middle">
-                                @if ($order['status'] == 'В работе' || str_starts_with($order['status'], 'Отправлен'))
+                                @if ($order['status'] == Order::STATUS_PAID)
                                     <form action="{{ route('client.orders.update', $order['id']) }}" method="post">
                                         @csrf
                                         @method('patch')
                                         <div class="form-group">
-                                            <input type="submit" class="btn-btn-primary" value="Подтвердить получение">
+                                            <input type="submit" value="Подтвердить получение">
                                         </div>
                                     </form>
+                                @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
+                                    <form action="{{ route('client.orders.payment', $order['id']) }}"
+                                          method="post">
+                                        @csrf
+                                        <input type="submit" class="btn-primary" value="Оплатить">
+                                    </form>
                                 @else
-                                    {{$order['status']}}
+                                    {{Order::getStatuses()[$order['status']]}}
                                 @endif
                             </td>
                             <td style="vertical-align: middle">

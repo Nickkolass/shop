@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Notifications\ResetPasswordNotificationQueue;
+use App\Notifications\Auth\ResetPasswordNotificationQueue;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,9 +23,9 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property string $surname
  * @property string $patronymic
  * @property int $age
- * @property int $gender
+ * @property bool $gender
  * @property ?string $address
- * @property ?int $card
+ * @property ?array{payout_token: string, first6: string, last4: string, card_type: string, issuer_country: string} $card
  * @property ?int $postcode
  * @property ?int $INN
  * @property ?string $registredOffice
@@ -44,15 +44,18 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
     use HasFactory, Notifiable;
 
-    const GENDER_MALE = 1;
-    const GENDER_FEMALE = 2;
+    const GENDER_MALE = 0;
+    const GENDER_FEMALE = 1;
     const ROLE_ADMIN = 1;
     const ROLE_SALER = 2;
     const ROLE_CLIENT = 3;
     protected $table = 'users';
     protected $guarded = false;
     protected $hidden = ['password', 'remember_token'];
-    protected $casts = ['email_verified_at' => 'datetime'];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'card' => 'array',
+    ];
     protected $fillable = [
         'role', 'surname',
         'email', 'password',
@@ -63,50 +66,47 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'INN', 'registredOffice',
     ];
 
-    public function getRoleTitleAttribute(): string
-    {
-        return self::getRoles()[$this->role];
-    }
-
     /**
      * @return array<string>
      */
     public static function getRoles(): array
     {
         return [
-            self::ROLE_ADMIN => 'admin',
-            self::ROLE_SALER => 'saler',
-            self::ROLE_CLIENT => 'client',
+            self::ROLE_ADMIN => 'Администратор',
+            self::ROLE_SALER => 'Продавец',
+            self::ROLE_CLIENT => 'Пользователь',
         ];
+    }
+
+    public function getRoleTitleAttribute(): string
+    {
+        return self::getRoles()[$this->role];
     }
 
     public function isAdmin(): bool
     {
-        return self::getRoles()[$this->role] == 'admin';
+        return $this->role == self::ROLE_ADMIN;
     }
 
     public function isSaler(): bool
     {
-        return self::getRoles()[$this->role] == 'saler';
+        return $this->role == self::ROLE_SALER;
     }
 
     public function isClient(): bool
     {
-        return self::getRoles()[$this->role] == 'client';
-    }
-
-    public function getGenderTitleAttribute(): string
-    {
-        return self::getGenders()[$this->gender];
+        return $this->role == self::ROLE_CLIENT;
     }
 
     /** @return array<string> */
     public static function getGenders(): array
     {
-        return [
-            self::GENDER_MALE => 'Мужской',
-            self::GENDER_FEMALE => 'Женский',
-        ];
+        return ['Мужской', 'Женский'];
+    }
+
+    public function getGenderTitleAttribute(): string
+    {
+        return self::getGenders()[$this->gender];
     }
 
     public function products(): HasMany
@@ -150,13 +150,9 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return [];
     }
 
-    public function hasVerifiedEmail(): bool
-    {
-        return !is_null($this->email_verified_at);
-    }
-
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotificationQueue($token));
     }
+
 }

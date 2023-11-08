@@ -5,41 +5,34 @@ namespace Tests\Feature\Admin;
 use App\Models\Category;
 use App\Models\OptionValue;
 use App\Models\Product;
-use App\Models\ProductImage;
+use App\Models\ProductType;
 use App\Models\PropertyValue;
 use App\Models\Tag;
 use App\Models\User;
+use Arr;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->seed();
-    }
-
-    protected function tearDown(): void
-    {
-        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
-        parent::tearDown();
-    }
+    use StorageDbPrepareForTestTrait;
 
     /**@test */
     public function test_a_product_can_be_viewed_any_with_premissions(): void
     {
         $user = User::query()->first();
+        $route = route('admin.products.index');
 
-        $this->get(route('admin.products.index'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.index'))->assertNotFound();
+        $this->actingAs($user)->get($route)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -47,7 +40,7 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.index'))->assertViewIs('admin.product.index');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.product.index');
             session()->flush();
         }
     }
@@ -55,15 +48,17 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_viewed_with_premissions(): void
     {
-        $user = User::query()->first();
+        $user = User::query()->has('products')->first();
         $product = $user->products()->first();
-        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
+        $another_product = Product::query()->firstWhere('saler_id', '!=', $user->id);
+        $route = route('admin.products.show', $product->id);
+        $another_route = route('admin.products.show', $another_product->id);
 
-        $this->get(route('admin.products.show', $another_product->id))->assertNotFound();
+        $this->get($another_route)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.show', $another_product->id))->assertNotFound();
+        $this->actingAs($user)->get($another_route)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -71,13 +66,12 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.show', $product->id))->assertViewIs('admin.product.show');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.product.show');
             session()->flush();
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.show',
-            $another_product->id))->assertViewIs('admin.product.show');
+        $this->actingAs($user)->get($another_route)->assertViewIs('admin.product.show');
         session()->flush();
     }
 
@@ -85,12 +79,13 @@ class ProductTest extends TestCase
     public function test_a_product_can_be_create_index_with_premissions(): void
     {
         $user = User::query()->first();
+        $route = route('admin.products.create');
 
-        $this->get(route('admin.products.create'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.create'))->assertNotFound();
+        $this->actingAs($user)->get($route)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -98,7 +93,7 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.create'))->assertViewIs('admin.product.create.index');
+            $this->actingAs($user)->get($route)->assertViewIs('admin.product.create.index');
             session()->flush();
         }
     }
@@ -114,12 +109,13 @@ class ProductTest extends TestCase
             'saler_id' => $user->id,
         ];
         $data = http_build_query($data);
+        $route = route('admin.products.create.relations');
 
-        $this->get(route('admin.products.create.relations') . '?' . $data)->assertNotFound();
+        $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.create.relations') . '?' . $data)->assertNotFound();
+        $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -127,7 +123,7 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.create.relations') . '?' . $data)->assertViewIs('admin.product.create.relations');
+            $this->actingAs($user)->get($route . '?' . $data)->assertViewIs('admin.product.create.relations');
             session()->flush();
         }
     }
@@ -142,12 +138,13 @@ class ProductTest extends TestCase
         $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
             ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
         $data = http_build_query($data);
+        $route = route('admin.products.create.types');
 
-        $this->get(route('admin.products.create.types') . '?' . $data)->assertNotFound();
+        $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.create.types') . '?' . $data)->assertNotFound();
+        $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -156,7 +153,7 @@ class ProductTest extends TestCase
             $user->role = $i;
             $user->save();
             $this->actingAs($user)->from(route('admin.products.create.relations'))
-                ->get(route('admin.products.create.types') . '?' . $data)
+                ->get($route . '?' . $data)
                 ->assertViewIs('admin.product.create.types');
             session()->flush();
         }
@@ -166,6 +163,7 @@ class ProductTest extends TestCase
     public function test_a_product_can_be_stored_with_premissions(): void
     {
         $user = User::query()->first();
+        $route = route('admin.products.store');
 
         $session = [
             'create' => [
@@ -207,37 +205,44 @@ class ProductTest extends TestCase
         ];
 
         session($session);
-        $this->post(route('admin.products.store'), $data)->assertNotFound();
+        $this->post($route, $data)->assertNotFound();
         session()->flush();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
         session($session);
-        $this->actingAs($user)->post(route('admin.products.store'), $data)->assertNotFound();
+        $this->actingAs($user)->post($route, $data)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
 
-        $session['create']['product']['saler_id'] = $user->id;
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
             $session['create']['product']['title'] = Str::random(5);
             session($session);
-            $res = $this->actingAs($user)->post(route('admin.products.store'), $data);
-            $product = Product::query()->with(['productTypes', 'tags'])->latest('id')->first();
+            $this->actingAs($user)->post($route, $data);
+            $product = Product::query()
+                ->withCount(['optionValues', 'propertyValues', 'productTypes', 'tags'])
+                ->firstWhere('title', $session['create']['product']['title']);
 
-            $res->assertRedirect(route('admin.products.show', $product->id));
-            $this->assertEquals($session['create']['product']['title'], $product->title);
-            $this->assertTrue($product->productTypes->count() == 2);
-            $this->assertTrue($product->tags->count() == 3);
+            $this->assertCount($product->product_types_count, $data['types']);
+            $this->assertCount($product->tags_count, $session['create']['relations']['tags']);
+            $this->assertCount($product->property_values_count, $session['create']['relations']['propertyValues']);
+            $this->assertCount($product->option_values_count, $session['create']['relations']['optionValues']);
 
-            $file_path = ProductImage::query()->latest('id')->first()->file_path;
-            $this->assertTrue(Storage::exists($file_path));
-            $this->assertTrue(Storage::exists($product->productTypes->first()->preview_image));
-
+            $product->productTypes()
+                ->select('id', 'preview_image')
+                ->withExists(['optionValues', 'ProductImages'])
+                ->get()
+                ->each(function (ProductType $productType) {
+                    $this->assertModelExists($productType);
+                    /** @phpstan-ignore-next-line */
+                    $this->assertTrue($productType->product_images_exists && $productType->option_values_exists);
+                    $this->assertTrue(Storage::exists($productType->preview_image));
+                });
             $this->actingAs($user)->delete(route('admin.products.destroy', $product->id));
-            $this->assertFalse(Product::query()->where('id', $product->id)->exists());
+            $this->assertModelMissing($product);
             session()->flush();
         }
     }
@@ -245,20 +250,21 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_edit_index_with_premissions(): void
     {
-        $user = User::query()->first();
+        $user = User::query()->has('products')->first();
         $product = $user->products()->first();
-        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
+        $another_product = Product::query()->firstWhere('saler_id', '!=', $user->id);
+        $route = route('admin.products.edit', $product->id);
+        $another_route = route('admin.products.edit', $another_product->id);
+        $this->get($another_route)->assertNotFound();
 
-        $this->get(route('admin.products.edit', $another_product->id))->assertNotFound();
-
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.edit', $another_product->id))->assertNotFound();
+        $this->actingAs($user)->get($another_route)->assertNotFound();
         session()->flush();
 
-        $user->role = 2;
+        $user->role = User::ROLE_SALER;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.edit', $another_product->id))->assertForbidden();
+        $this->actingAs($user)->get($another_route)->assertForbidden();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -266,21 +272,21 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.edit', $product->id))
+            $this->actingAs($user)->get($route)
                 ->assertViewIs('admin.product.edit.index');
             session()->flush();
         }
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.edit', $another_product->id))
+        $this->actingAs($user)->get($another_route)
             ->assertViewIs('admin.product.edit.index');
     }
 
     /**@test */
     public function test_a_product_can_be_edit_relations_with_premissions(): void
     {
-        $user = User::query()->first();
+        $user = User::query()->has('products')->first();
         $product = $user->products()->first();
         $data = [
             'title' => '1',
@@ -289,12 +295,13 @@ class ProductTest extends TestCase
             'saler_id' => $user->id,
         ];
         $data = http_build_query($data);
+        $route = route('admin.products.edit.relations', $product->id);
 
-        $this->get(route('admin.products.edit.relations', $product->id) . '?' . $data)->assertNotFound();
+        $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id) . '?' . $data)->assertNotFound();
+        $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -302,7 +309,7 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.products.edit.relations', $product->id) . '?' . $data)
+            $this->actingAs($user)->get($route . '?' . $data)
                 ->assertViewIs('admin.product.edit.relations');
             session()->flush();
         }
@@ -311,10 +318,9 @@ class ProductTest extends TestCase
     /**@test */
     public function test_a_product_can_be_updated_with_premissions(): void
     {
-        $user = User::query()->first();
+        $user = User::query()->has('products')->first();
         $product = $user->products()->first();
-        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
-
+        $another_product = Product::query()->firstWhere('saler_id', '!=', $user->id);
         $session = [
             'edit' => [
                 'title' => '1',
@@ -328,21 +334,22 @@ class ProductTest extends TestCase
             'property_id')->all();
         $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
             ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
+        $route = route('admin.products.update', $another_product->id);
 
         session($session);
-        $this->patch(route('admin.products.update', $another_product->id), $data)->assertNotFound();
+        $this->patch($route, $data)->assertNotFound();
         session()->flush();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
         session($session);
-        $this->actingAs($user)->patch(route('admin.products.update', $another_product->id), $data)->assertNotFound();
+        $this->actingAs($user)->patch($route, $data)->assertNotFound();
         session()->flush();
 
-        $user->role = 2;
+        $user->role = User::ROLE_SALER;
         $user->save();
         session($session);
-        $this->actingAs($user)->patch(route('admin.products.update', $another_product->id), $data)->assertForbidden();
+        $this->actingAs($user)->patch($route, $data)->assertForbidden();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -350,58 +357,61 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-            $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+            $data['tags'] = Tag::query()->inRandomOrder()->take(3)->pluck('id')->all();
+            $data['propertyValues'] = PropertyValue::query()->inRandomOrder()->groupBy('property_id')->take(2)->pluck('value',
                 'property_id')->all();
-            $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+            $data['optionValues'] = OptionValue::query()->inRandomOrder()->take(2)->select('option_id', 'id')->toBase()->get()
                 ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->toArray();
             $session['edit']['title'] = Str::random(5);
             session($session);
+
             $this->actingAs($user)->patch(route('admin.products.update', $product->id), $data)
-                ->assertRedirect(route('admin.products.show', $product->id));
-            $product->refresh();
+                ->assertRedirectToRoute('admin.products.show', $product->id);
+            $product->refresh()->load('propertyValues', 'optionValues');
             $this->assertEquals($session['edit']['title'], $product->title);
-            $this->assertEquals($product->propertyValues()->pluck('value', 'property_id')->all(),
-                $data['propertyValues']);
-            $this->assertTrue($product->optionValues()->pluck('optionValues.id') == collect($data['optionValues'])->flatten());
+            $this->assertTrue($product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues'])->isEmpty());
+            $this->assertTrue($product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1))->isEmpty());
             session()->flush();
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $data['tags'] = Tag::query()->take(3)->pluck('id')->all();
-        $data['propertyValues'] = PropertyValue::query()->groupBy('property_id')->take(2)->pluck('value',
+        $data['tags'] = Tag::query()->inRandomOrder()->take(3)->pluck('id')->all();
+        $data['propertyValues'] = PropertyValue::query()->inRandomOrder()->groupBy('property_id')->take(2)->pluck('value',
             'property_id')->all();
-        $data['optionValues'] = OptionValue::query()->take(2)->select('option_id', 'id')->toBase()->get()
+        $data['optionValues'] = OptionValue::query()->inRandomOrder()->take(2)->select('option_id', 'id')->toBase()->get()
             ->groupBy('option_id')->transform(fn(Collection $optionValue) => $optionValue->pluck('id'))->all();
         $session['edit']['title'] = Str::random(5);
         session($session);
         $this->actingAs($user)->patch(route('admin.products.update', $another_product->id), $data)
-            ->assertRedirect(route('admin.products.show', $another_product->id));
-        $another_product->refresh();
+            ->assertRedirectToRoute('admin.products.show', $another_product->id);
+
+        $another_product->refresh()->load('propertyValues', 'optionValues');
         $this->assertEquals($session['edit']['title'], $another_product->title);
-        $this->assertEquals($another_product->propertyValues()->pluck('value', 'property_id')->all(),
-            $data['propertyValues']);
-        $this->assertTrue($another_product->optionValues()->pluck('optionValues.id') == collect($data['optionValues'])->flatten());
+        $this->assertTrue($another_product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues'])->isEmpty());
+        $this->assertTrue($another_product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1))->isEmpty());
+
         session()->flush();
     }
 
     /**@test */
     public function test_a_product_can_be_deleted_with_premissions(): void
     {
-        $user = User::query()->first();
-        $another_product = Product::query()->where('saler_id', '!=',
-            $user->id)->with('productTypes.productImages')->first();
+        $user = User::query()->has('products')->first();
+        $another_product = Product::query()
+            ->with('productTypes.productImages')
+            ->firstWhere('saler_id', '!=', $user->id);
+        $another_route = route('admin.products.destroy', $another_product->id);
 
-        $this->delete(route('admin.products.destroy', $another_product->id))->assertNotFound();
+        $this->delete($another_route)->assertNotFound();
 
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.products.destroy', $another_product->id))->assertNotFound();
+        $this->actingAs($user)->delete($another_route)->assertNotFound();
         session()->flush();
 
-        $user->role = 2;
+        $user->role = User::ROLE_SALER;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.products.destroy', $another_product->id))->assertForbidden();
+        $this->actingAs($user)->delete($another_route)->assertForbidden();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -409,57 +419,46 @@ class ProductTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $user->role = $i;
             $user->save();
-            $product = $user->products()->with('productTypes.productImages')->first();
-            $this->actingAs($user)->delete(route('admin.products.destroy',
-                $product->id))->assertViewIs('admin.product.index');
+            $product = $user->products()->first();
+            $this->actingAs($user)->delete(route('admin.products.destroy', $product->id))->assertViewIs('admin.product.index');
             session()->flush();
-            $this->assertEmpty($product->optionValues()->count());
-            $this->assertEmpty($product->propertyValues()->count());
-            $this->assertEmpty($product->tags()->count());
-            $this->assertEmpty($product->productTypes()->count());
-            $productType_ids = $product->productTypes()->pluck('id');
-            $this->assertEmpty(ProductImage::query()->whereIn('productType_id', $productType_ids)->count());
-            $this->assertEmpty(OptionValue::query()->whereIn('productType_id', $productType_ids)->count());
-            $this->assertEmpty(Product::query()->find($product->id));
-
-            $this->assertFalse(Storage::exists($product->productTypes->first()->productImages->first()->file_path));
-            $this->assertFalse(Storage::exists($product->productTypes->first()->preview_image));
+            $product->load(['optionValues', 'propertyValues', 'tags', 'productTypes']);
+            $this->assertEmpty($product->optionValues);
+            $this->assertEmpty($product->propertyValues);
+            $this->assertEmpty($product->tags);
+            $this->assertEmpty($product->productTypes);
+            $this->assertModelMissing($product);
         }
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.products.destroy',
-            $another_product->id))->assertViewIs('admin.product.index');
+        $this->actingAs($user)->delete($another_route)->assertViewIs('admin.product.index');
         session()->flush();
-        $this->assertEquals($another_product->optionValues()->count(), 0);
-        $this->assertEquals($another_product->propertyValues()->count(), 0);
-        $this->assertEquals($another_product->productTypes()->count(), 0);
-        $this->assertEquals($another_product->tags()->count(), 0);
-        $productType_ids = $another_product->productTypes()->pluck('id');
-        $this->assertEquals(ProductImage::query()->whereIn('productType_id', $productType_ids)->count(), 0);
-        $this->assertEquals(OptionValue::query()->whereIn('productType_id', $productType_ids)->count(), 0);
-        $this->assertEmpty(Product::query()->find($another_product->id));
-
-        $this->assertFalse(Storage::exists($another_product->productTypes->first()->productImages->first()->file_path));
-        $this->assertFalse(Storage::exists($another_product->productTypes->first()->preview_image));
+        $another_product->load(['optionValues', 'propertyValues', 'tags', 'productTypes']);
+        $this->assertEmpty($another_product->optionValues);
+        $this->assertEmpty($another_product->propertyValues);
+        $this->assertEmpty($another_product->tags);
+        $this->assertEmpty($another_product->productTypes);
+        $this->assertModelMissing($another_product);
     }
 
     /**@test */
     public function test_a_product_can_be_published_with_premissions(): void
     {
-        $user = User::query()->first();
+        $user = User::query()->has('products')->first();
         $product = $user->products()->first();
-        $another_product = Product::query()->where('saler_id', '!=', $user->id)->first();
+        $another_product = Product::query()->firstWhere('saler_id', '!=', $user->id);
+        $route = route('admin.products.publish', $product->id);
+        $another_route = route('admin.products.publish', $another_product->id);
+        $this->patch($another_route)->assertNotFound();
 
-        $this->patch(route('admin.products.publish', $another_product->id))->assertNotFound();
-
-        $user->role = 3;
+        $user->role = User::ROLE_CLIENT;
         $user->save();
-        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id))->assertNotFound();
+        $this->actingAs($user)->patch($another_route)->assertNotFound();
         session()->flush();
 
-        $user->role = 2;
+        $user->role = User::ROLE_SALER;
         $user->save();
-        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id))->assertForbidden();
+        $this->actingAs($user)->patch($another_route)->assertForbidden();
         session()->flush();
 
         $this->withoutExceptionHandling();
@@ -468,23 +467,21 @@ class ProductTest extends TestCase
             $product->productTypes()->update(['is_published' => 1]);
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->patch(route('admin.products.publish', $product->id))->assertRedirect();
-            $this->assertEmpty($product->productTypes()->where('is_published', 1)->count());
+            $this->actingAs($user)->patch($route)->assertRedirect();
+            $this->assertFalse($product->productTypes()->where('is_published', 1)->exists());
             session()->flush();
-            $this->actingAs($user)->patch(route('admin.products.publish', $product->id),
-                ['publish' => 'on'])->assertRedirect();
-            $this->assertEmpty($product->productTypes()->where('is_published', 0)->count());
+            $this->actingAs($user)->patch($route, ['publish' => 'on'])->assertRedirect();
+            $this->assertFalse($product->productTypes()->where('is_published', 0)->exists());
             session()->flush();
         }
         $product->productTypes()->update(['is_published' => 1]);
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id))->assertRedirect();
-        $this->assertEmpty($another_product->productTypes()->where('is_published', 1)->count());
+        $this->actingAs($user)->patch($another_route)->assertRedirect();
+        $this->assertFalse($another_product->productTypes()->where('is_published', 1)->exists());
         session()->flush();
-        $this->actingAs($user)->patch(route('admin.products.publish', $another_product->id),
-            ['publish' => 'on'])->assertRedirect();
-        $this->assertEmpty($another_product->productTypes()->where('is_published', 0)->count());
+        $this->actingAs($user)->patch($another_route, ['publish' => 'on'])->assertRedirect();
+        $this->assertFalse($another_product->productTypes()->where('is_published', 0)->exists());
         session()->flush();
     }
 }

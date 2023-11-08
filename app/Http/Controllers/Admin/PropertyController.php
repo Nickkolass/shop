@@ -14,7 +14,11 @@ use Illuminate\Http\RedirectResponse;
 class PropertyController extends Controller
 {
 
-    public PropertyService $service;
+
+    public function __construct(private readonly PropertyService $service)
+    {
+        $this->authorizeResource(Property::class, 'property');
+    }
 
     /**
      * Display a listing of the resource.
@@ -25,12 +29,6 @@ class PropertyController extends Controller
     {
         $properties = Property::query()->pluck('title', 'id');
         return view('admin.property.index', compact('properties'));
-    }
-
-    public function __construct(PropertyService $service)
-    {
-        $this->authorizeResource(Property::class, 'property');
-        $this->service = $service;
     }
 
     /**

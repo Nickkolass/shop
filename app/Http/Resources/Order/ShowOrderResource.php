@@ -19,15 +19,14 @@ class ShowOrderResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
-            'product_types' =>
-                $request->route()->getName() == 'back.api.orders.index'
-                    ? OrdersProductsResource::collection($this->resource->productTypes)->resolve()
-                    : ShowOrderProductsResource::collection($this->resource->productTypes)->resolve(),
             'delivery' => $this->resource->delivery,
             'total_price' => $this->resource->total_price,
             'status' => $this->resource->status,
+            'dispatch_time' => $this->resource->orderPerformers->max('dispatch_time')->toDateString(),
             'created_at' => $this->resource->created_at->toDateString(),
-            'dispatch_time' => $this->resource->orderPerformers->max('dispatch_time'),
+            'refundable' => $this->resource->refundable,
+            'cancelable' => $this->resource->cancelable,
+            'order_performers' => ShowOrderPerformersResource::collection($this->resource->orderPerformers)->resolve(),
         ];
     }
 }

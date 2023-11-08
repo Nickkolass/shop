@@ -52,13 +52,13 @@
                                 @foreach($users as $user)
                                     <tr>
                                         <td>{{ $user->id }}</td>
-                                        <td>{{ User::getRoles()[$user->role] }}</td>
+                                        <td>{{ $user->getRoleTitleAttribute() }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->surname }}</td>
                                         <td><a href="{{ route('users.show', $user->id) }}">{{ $user->name }}</a></td>
                                         <td>{{ $user->patronymic }}</td>
                                         <td>{{ $user->age }}</td>
-                                        <td>{{ $user->gender }}</td>
+                                        <td>{{ $user->getGenderTitleAttribute() }}</td>
                                         <td>{{ $user->postcode }}</td>
                                         <td>{{ $user->address }}</td>
                                         <td>{{ $user->INN }}</td>

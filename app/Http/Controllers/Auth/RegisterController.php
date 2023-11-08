@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Components\Disk\DiskClientInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use Arhitector\Yandex\Disk;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +51,8 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm(): View
     {
-        $policy = (new Disk(config('services.yandexdisk.oauth_token')))->getResource('Policy.txt')->get('docviewer');
+        if (!config('services.yandexdisk.oauth_token')) $policy = 'https://disk.yandex.ru/d/IowD1shlYuOiFw';
+        else $policy = app(DiskClientInterface::class)->getResource('Policy.txt')->get('docviewer');
         return view('auth.register', compact('policy'));
     }
 

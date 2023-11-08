@@ -49,8 +49,8 @@ class InitProjectInsideDockerCommand extends Command
         $this->call('key:generate', ['--force' => true]);
         $this->call('jwt:secret', ['--force' => true]);
         $this->call('migrate', ['--seed' => true, '--force' => true]);
-        $this->call('optimize');
         if (Storage::getDefaultDriver() == 'public') shell_exec('chmod 777 -R ./storage/app/public');
+        $this->call('optimize:clear');
         shell_exec('npm run dev');
     }
 }

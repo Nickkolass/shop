@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Client\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\Order\StoreRequest;
+use App\Http\Requests\Client\Order\StoreRequest;
 use App\Http\Resources\Order\OrdersCollection;
 use App\Http\Resources\Order\ShowOrderResource;
 use App\Models\Order;
+use App\Models\OrderPerformer;
+use App\Services\Admin\OrderPerformer\OrderPerformerService;
 use App\Services\Client\API\Order\OrderDBService;
 use App\Services\Client\API\Order\OrderService;
 
@@ -33,12 +35,12 @@ class APIOrderController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreRequest $request
-     * @return void
+     * @return string $payment_url
      */
-    public function store(StoreRequest $request): void
+    public function store(StoreRequest $request): string
     {
         $data = $request->validated();
-        $this->DBservice->store($data);
+        return $this->DBservice->store($data);
     }
 
     /**
@@ -49,7 +51,7 @@ class APIOrderController extends Controller
      */
     public function show(Order $order): array
     {
-        $order = $this->service->show($order);
+        $this->service->show($order);
         return ShowOrderResource::make($order)->resolve();
     }
 
@@ -72,6 +74,18 @@ class APIOrderController extends Controller
      */
     public function destroy(Order $order): void
     {
-        $this->DBservice->delete($order);
+        $this->DBservice->delete($order, request()->input('due_to_payment', false));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param OrderPerformer $orderPerformer
+     * @return void
+     */
+    public function destroyOrderPerformer(OrderPerformer $orderPerformer): void
+    {
+        $this->authorize('delete', [$orderPerformer, true]);
+        app(OrderPerformerService::class)->delete($orderPerformer, true);
     }
 }

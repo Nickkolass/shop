@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -54,8 +55,14 @@
                     <div class="form-group">
                         <select name="gender" class="custom-select form-control" id="exampleSelectBorder" required>
                             <option disabled>Пол</option>
-                            <option @selected (old('gender') == 1) value="1">Мужской</option>
-                            <option @selected (old('gender') == 2) value="2">Женский</option>
+                            <option
+                                @selected(old('gender') == User::GENDER_MALE) value="{{User::GENDER_MALE}}">
+                                Мужской
+                            </option>
+                            <option
+                                @selected (old('gender') == User::GENDER_FEMALE) value="{{User::GENDER_FEMALE}}">
+                                Женский
+                            </option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -72,7 +79,7 @@
                     </div>
                     <input type="number" name="role" value="2" hidden>
                     <div class="form-group">
-                        <input type="submit" class="btn-btn-primary" value="Добавить">
+                        <input type="submit" class="btn-primary" value="Добавить">
                     </div>
                 </form>
             </div><!-- /.row -->

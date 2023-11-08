@@ -108,7 +108,7 @@
                     </div><!-- /.container-fluid -->
                 </div>
                 <div class="col" style="padding: 5px;">
-                    <input type="submit" class="btn-btn-primary" value="Создать">
+                    <input type="submit" class="btn-primary" value="Создать">
                 </div>
             </form>
         </div>

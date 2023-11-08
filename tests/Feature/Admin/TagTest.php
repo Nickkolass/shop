@@ -14,105 +14,107 @@ class TagTest extends TestCase
     /**@test */
     public function test_a_tag_can_be_viewed_any_with_premissions(): void
     {
-        Tag::factory()->create();
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        Tag::factory()->create();
+        $route = route('admin.tags.index');
 
-        $this->get(route('admin.tags.index'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
-            $this->actingAs($user)->get(route('admin.tags.index'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.tags.index'))->assertViewIs('admin.tag.index');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.tag.index');
     }
 
     /**@test */
     public function test_a_tag_can_be_created_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('admin.tags.create');
 
-        $this->get(route('admin.tags.create'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.tags.create'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.tags.create'))->assertViewIs('admin.tag.create');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.tag.create');
     }
 
     /**@test */
     public function test_a_tag_can_be_stored_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
         $data = Tag::factory()->raw();
+        $route = route('admin.tags.store');
 
-        $this->post(route('admin.tags.store'), $data)->assertNotFound();
+        $this->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->post(route('admin.tags.store'), $data)->assertNotFound();
+            $this->actingAs($user)->post($route, $data)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->post(route('admin.tags.store'), $data);
-        $this->assertDatabaseCount('tags', 1);
-
-        $tag = Tag::query()->first();
-        $this->assertEquals($data['title'], $tag['title']);
+        $this->actingAs($user)->post($route, $data);
+        $this->assertTrue(Tag::query()->where('title', $data['title'])->exists());
     }
 
     /**@test */
     public function test_a_tag_can_be_viewed_with_premissions(): void
     {
-        $tag = Tag::factory()->create();
         /** @var Tag $tag */
-        $user = User::factory()->create();
+        $tag = Tag::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('admin.tags.show', $tag->id);
 
-        $this->get(route('admin.tags.show', $tag->id))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.tags.show', $tag->id))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.tags.show', $tag->id))->assertViewIs('admin.tag.show');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.tag.show');
     }
 
     /**@test */
     public function test_a_tag_can_be_edited_with_premissions(): void
     {
-        $tag = Tag::factory()->create();
         /** @var Tag $tag */
-        $user = User::factory()->create();
+        $tag = Tag::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('admin.tags.edit', $tag->id);
 
         $this->get(route('admin.tags.edit', $tag->id))->assertNotFound();
 
@@ -125,7 +127,7 @@ class TagTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
         $this->actingAs($user)->get(route('admin.tags.edit', $tag->id))->assertViewIs('admin.tag.edit');
     }
@@ -133,55 +135,58 @@ class TagTest extends TestCase
     /**@test */
     public function test_a_tag_can_be_updated_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
-        $tag = Tag::factory()->create();
+        $user = User::factory()->create();
         /** @var Tag $tag */
+        $tag = Tag::factory()->create();
         $data = Tag::factory()->raw();
+        $route = route('admin.tags.update', $tag->id);
 
-        $this->patch(route('admin.tags.update', $tag->id), $data)->assertNotFound();
+        $this->patch($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->patch(route('admin.tags.update', $tag->id), $data)->assertNotFound();
+            $this->actingAs($user)->patch($route, $data)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->patch(route('admin.tags.update', $tag->id), $data);
+        $this->actingAs($user)->patch($route, $data);
         $this->assertEquals($data['title'], Tag::query()->first()->title);
     }
 
     /**@test */
     public function test_a_tag_can_be_deleted_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
-        $tag = Tag::factory()->create();
+        $user = User::factory()->create();
         /** @var Tag $tag */
+        $tag = Tag::factory()->create();
         Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
         /** @phpstan-ignore-next-line */
         Product::factory()->create()->tags()->attach($tag);
+        $route = route('admin.tags.destroy', $tag->id);
 
-        $this->delete('/admin/tags/' . $tag->id)->assertNotFound();
+        $this->delete($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->delete(route('admin.tags.destroy', $tag->id))->assertNotFound();
+            $this->actingAs($user)->delete($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.tags.destroy', $tag->id))->assertRedirect(route('admin.tags.index'));
-        $this->assertDatabaseCount('tags', 0);
-        $this->assertTrue($tag->products()->count() == 0);
+        $this->actingAs($user)->delete($route)->assertRedirectToRoute('admin.tags.index');
+
+        $this->assertModelMissing($tag)
+            ->assertFalse($tag->products()->exists());
     }
 }

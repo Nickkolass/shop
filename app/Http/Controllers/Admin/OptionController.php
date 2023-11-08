@@ -13,12 +13,9 @@ use Illuminate\Http\RedirectResponse;
 class OptionController extends Controller
 {
 
-    public OptionService $service;
-
-    public function __construct(OptionService $service)
+    public function __construct(private readonly OptionService $service)
     {
         $this->authorizeResource(Option::class, 'option');
-        $this->service = $service;
     }
 
     /**

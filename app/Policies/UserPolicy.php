@@ -3,22 +3,21 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Policies\Trait\PreAuthChecks;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
 {
-    use HandlesAuthorization, PreAuthChecks;
+    use HandlesAuthorization;
 
     /**
      * Determine whether the user can view any models.
      *
      * @param User $user
-     * @return false
+     * @return bool
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -30,18 +29,18 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->id == $model->id;
+        return $user->id == $model->id || $user->isAdmin();
     }
 
     /**
      * Determine whether the user can create models.
      *
      * @param User $user
-     * @return false
+     * @return bool
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -53,7 +52,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->id == $model->id;
+        return $user->id == $model->id || $user->isAdmin();
     }
 
     /**
@@ -65,7 +64,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->id == $model->id;
+        return $user->id == $model->id || $user->isAdmin();
     }
 
     /**
@@ -73,11 +72,11 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return false
+     * @return bool
      */
     public function restore(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -85,21 +84,44 @@ class UserPolicy
      *
      * @param User $user
      * @param User $model
-     * @return false
+     * @return bool
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
-     * Determine whether the user can like productTypes.
+     * Determine whether the user can action to productType.
      *
      * @param User $user
-     * @return true
+     * @return bool
+     */
+    public function password(User $user): bool
+    {
+        return $user->id == request()->route()->originalParameter('user');
+    }
+
+    /**
+     * Determine whether the user can action to productType.
+     *
+     * @param User $user
+     * @return bool
      */
     public function product(User $user): bool
     {
         return true;
+    }
+
+    /**
+     * Determine whether the user can action to productType.
+     *
+     * @param User $user
+     * @param int $role
+     * @return bool
+     */
+    public function role(User $user, int $role): bool
+    {
+        return $user->role <= $role;
     }
 }

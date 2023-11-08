@@ -2,51 +2,38 @@
 
 namespace Client\API;
 
-use App\Models\Category;
 use App\Models\CommentImage;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
+use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
 use Tests\TestCase;
 
 class APIUserActiveTest extends TestCase
 {
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->seed();
-        View::share('categories', Category::all()->toArray());
-    }
-
-    protected function tearDown(): void
-    {
-        foreach (Storage::directories() as $dir) if ($dir != 'factory') Storage::deleteDirectory($dir);
-        parent::tearDown();
-    }
+    use StorageDbPrepareForTestTrait;
 
     /**@test */
     public function test_a_product_can_be_liked(): void
     {
         $productType_id = ProductType::query()->first()->id;
         $user = User::query()->first();
-        $user->liked()->where('productType_id', $productType_id)->delete();
         $user->liked()->detach($productType_id);
-        $count_likes = $user->liked()->count();
+        $route = route('back.api.products.likedToggle', $productType_id);
 
-        $this->post('/api/products/liked/' . $productType_id)->assertUnauthorized();
+        $this->post($route)->assertUnauthorized();
 
         $this->withoutExceptionHandling();
 
-        $this->actingAs($user)->get('/');
-        $this->withHeader('Authorization', session('jwt'))->post('/api/products/liked/' . $productType_id)->assertOk();
-        $this->assertTrue($user->liked()->count() == ($count_likes + 1));
+        $this->actingAs($user)->get(route('home'));
+        $this->withHeader('Authorization', session('jwt'))->post($route)->assertOk();
+        $this->assertTrue($user->liked()->where('productType_id', $productType_id)->exists());
 
-        $this->withHeader('Authorization', session('jwt'))->post('/api/products/liked/' . $productType_id)->assertOk();
-        $this->assertTrue($user->liked()->count() == $count_likes);
+        $this->withHeader('Authorization', session('jwt'))->post($route)->assertOk();
+        $this->assertFalse($user->liked()->where('productType_id', $productType_id)->exists());
     }
 
     /**@test */
@@ -55,25 +42,27 @@ class APIUserActiveTest extends TestCase
         $user = User::query()->first();
         $user->ratingAndComments()->delete();
         $product_id = Product::query()->first()->id;
-        $data = ['product_id' => $product_id, 'rating' => 1];
+        $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1];
+        $route = route('back.api.products.commentStore', $product_id);
 
-        $this->post("/api/products/$product_id/comment", $data)->assertUnauthorized();
+        $this->post($route, $data)->assertUnauthorized();
 
-        $this->actingAs($user)->get('/');
-        $this->withHeader('Authorization', session('jwt'))->post("/api/products/$product_id/comment", $data);
-        $this->assertTrue($user->ratingAndComments()->count() == 1);
-        $this->withHeader('Authorization', session('jwt'))->post("/api/products/$product_id/comment", $data)->assertInvalid();
+        $this->actingAs($user)->get(route('home'));
+        $this->withHeader('Authorization', session('jwt'))->post($route, $data);
+        $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
+        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertInvalid();
         $user->ratingAndComments()->delete();
 
         $this->withoutExceptionHandling();
 
-        $this->withHeader('Authorization', session('jwt'))->post("/api/products/$product_id/comment", $data)->assertOk();
-        $this->assertTrue($user->ratingAndComments()->count() == 1);
+        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
 
         $product_id++;
-        $data = ['product_id' => $product_id, 'rating' => 1, 'message' => '1'];
-        $this->withHeader('Authorization', session('jwt'))->post("/api/products/$product_id/comment", $data)->assertOk();
-        $this->assertTrue($user->ratingAndComments()->count() == 2);
+        $route = route('back.api.products.commentStore', $product_id);
+        $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1, 'message' => '1'];
+        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
 
         $file = File::create('file.jpeg');
         $img = [
@@ -81,10 +70,12 @@ class APIUserActiveTest extends TestCase
             'originalName' => $file->getClientOriginalName(),
             'mimeType' => $file->getClientMimeType(),
         ];
+
         $product_id++;
-        $data = ['product_id' => $product_id, 'rating' => 1, 'message' => '1', 'comment_images' => [$img]];
-        $this->withHeader('Authorization', session('jwt'))->post("/api/products/$product_id/comment", $data)->assertOk();
-        $this->assertTrue($user->ratingAndComments()->count() == 3);
+        $route = route('back.api.products.commentStore', $product_id);
+        $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1, 'message' => '1', 'comment_images' => [$img]];
+        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
         $file_path = CommentImage::query()->latest('id')->first()->file_path;
         $this->assertTrue(Storage::exists($file_path));
     }

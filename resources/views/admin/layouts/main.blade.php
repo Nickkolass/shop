@@ -1,4 +1,4 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
+@php use App\Models\User;use Illuminate\Support\Facades\Storage; @endphp
     <!DOCTYPE html>
 <html lang="en">
 
@@ -25,8 +25,6 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <!-- rating -->
     <link rel="stylesheet" href="{{asset('assets/css/rating.css')}}">
-
-    @vite(['resources/sass/app.scss', 'resources/js/bootstrap.js'])
 
 </head>
 
@@ -56,11 +54,9 @@
                     <a class="nav-link" href="{{ route('client.products.index') }}">Перейти в магазин</a>
                 </li>
                 @guest
-                    @if (session()->has('user'))
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                        </li>
-                    @endif
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                    </li>
                 @else
                     <div>
                         <li class="nav-item">
@@ -197,8 +193,7 @@
                             <p>Продукты</p>
                         </a>
                     </li>
-
-                    @if (session('user.role') == 'admin')
+                    @can('role', [User::class, User::ROLE_ADMIN])
                         <li class="nav-item">
                             <a href="{{ route('admin.categories.index') }}" class="nav-link">
                                 <i class="nav-icon far fa-image"></i>
@@ -233,7 +228,7 @@
                                 <p>Пользователи</p>
                             </a>
                         </li>
-                    @endif
+                    @endcan
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

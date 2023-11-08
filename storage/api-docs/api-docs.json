@@ -242,9 +242,9 @@
                                         "type": "integer",
                                         "example": 1000
                                     },
-                                    "payment_status": {
-                                        "type": "boolean",
-                                        "example": true
+                                    "payment_id": {
+                                        "type": "null|string",
+                                        "example": "123a-dasi-wa5i"
                                     },
                                     "payment": {
                                         "type": "string",
@@ -307,67 +307,6 @@
                                             "type": "integer",
                                             "example": "1"
                                         },
-                                        "product_types": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": "1"
-                                                    },
-                                                    "amount": {
-                                                        "type": "integer",
-                                                        "example": "3"
-                                                    },
-                                                    "price": {
-                                                        "type": "integer",
-                                                        "example": "400"
-                                                    },
-                                                    "option_values": {
-                                                        "properties": {
-                                                            "Цвет": {
-                                                                "type": "string",
-                                                                "example": "красный"
-                                                            },
-                                                            "Размер": {
-                                                                "type": "string",
-                                                                "example": "300 грамм"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "title": {
-                                                        "type": "string",
-                                                        "example": "Cool chokolate"
-                                                    },
-                                                    "saler_id": {
-                                                        "type": "integer",
-                                                        "example": "1"
-                                                    },
-                                                    "saler": {
-                                                        "type": "string",
-                                                        "example": "Ivan Ivanov"
-                                                    },
-                                                    "preview_image": {
-                                                        "type": "string",
-                                                        "example": "preview_images/1.jpg"
-                                                    },
-                                                    "category": {
-                                                        "type": "string",
-                                                        "example": "chokolate"
-                                                    },
-                                                    "status": {
-                                                        "type": "string",
-                                                        "example": "Отправлен 2023-07-03 10:55:50"
-                                                    },
-                                                    "order_performer_id": {
-                                                        "type": "integer",
-                                                        "example": "1"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
                                         "delivery": {
                                             "type": "string",
                                             "example": "post. Получатель: Lebsack Clotilde Parker Cecelia DuBuque. Адрес: 522 Renner Isle\\nLake Demarco, ME 81738-5083"
@@ -380,13 +319,95 @@
                                             "type": "string",
                                             "example": "В работе"
                                         },
+                                        "dispatch_time": {
+                                            "format": "date",
+                                            "example": "2023-07-03"
+                                        },
                                         "created_at": {
                                             "format": "date",
                                             "example": "2023-07-03"
                                         },
-                                        "dispatch_time": {
-                                            "format": "date",
-                                            "example": "2023-07-25"
+                                        "refundable": {
+                                            "format": "bool",
+                                            "example": "true"
+                                        },
+                                        "cancelable": {
+                                            "format": "bool",
+                                            "example": "true"
+                                        },
+                                        "order_performers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "saler_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "saler_name": {
+                                                        "type": "string",
+                                                        "example": "Ivan"
+                                                    },
+                                                    "status": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "total_price": {
+                                                        "type": "integer",
+                                                        "example": "5000"
+                                                    },
+                                                    "dispatch_time": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-07-03"
+                                                    },
+                                                    "product_types": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "integer",
+                                                                    "example": "3"
+                                                                },
+                                                                "price": {
+                                                                    "type": "integer",
+                                                                    "example": "400"
+                                                                },
+                                                                "title": {
+                                                                    "type": "string",
+                                                                    "example": "Товар"
+                                                                },
+                                                                "preview_image": {
+                                                                    "type": "string",
+                                                                    "example": "preview_images/1.jpg"
+                                                                },
+                                                                "option_values": {
+                                                                    "properties": {
+                                                                        "Цвет": {
+                                                                            "type": "string",
+                                                                            "example": "красный"
+                                                                        },
+                                                                        "Размер": {
+                                                                            "type": "string",
+                                                                            "example": "300 грамм"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -436,6 +457,33 @@
                         "name": "order",
                         "in": "path",
                         "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/delete{orderPerformer}": {
+            "delete": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Отмена наряда заказчиком",
+                "parameters": [
+                    {
+                        "name": "orderPerformer",
+                        "in": "path",
+                        "description": "ID наряда",
                         "required": true,
                         "example": 1
                     }
@@ -1717,6 +1765,93 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/orders/{order}/payment": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Оплата заказа",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "type": "string",
+                                            "example": "https://yookassa.com/qwerty123"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/{order}/refund": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Возврат денежных средств",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "description": "ID заказа",
+                        "required": true,
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/payment/callback": {
+            "post": {
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Для входящих уведомлений от платежной системы",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    }
+                }
             }
         }
     },

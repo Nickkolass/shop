@@ -1,3 +1,4 @@
+@php use App\Models\OrderPerformer;use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -33,10 +34,10 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                     <tr style="text-align: center">
-                                        @if(session('user.role') == 'admin')
+                                        @can('role', [User::class, User::ROLE_ADMIN])
                                             <th>Заказ</th>
                                             <th>Заказчик</th>
-                                        @endif
+                                        @endcan
                                         <th>Продавец</th>
                                         <th>Наряд</th>
                                         <th>Статус</th>
@@ -51,30 +52,34 @@
                                     <tbody>
                                     @foreach($orders as $order)
                                         <tr style="text-align: center">
-                                            @if(session('user.role') == 'admin')
+                                            @can('role', [User::class, User::ROLE_ADMIN])
                                                 <td><a href="{{ route('client.orders.show', $order->order_id) }}">
                                                         {{ $order->order_id }}</a></td>
                                                 <td><a href="{{ route('users.show', $order->user->id) }}">
                                                         {{ $order->user->name }}</a></td>
-                                            @endif
+                                            @endcan
                                             <td>
-                                                <a href="{{ route('users.show', $order->saler->id) }}" @disabled(session('user.role') != 'admin')>
-                                                    {{ $order->saler->name }}</a></td>
+                                                @can('role', [User::class, User::ROLE_ADMIN])
+                                                    <a href="{{ route('users.show', $order->saler->id) }}">{{ $order->saler->name }}</a>
+                                                @else
+                                                    {{$order->saler->name}}
+                                                @endcan
+                                            </td>
                                             <td><a href="{{ route('admin.orders.show', $order->id) }}">
                                                     {{ $order->id }}</a></td>
                                             <td>
-                                                @if ($order->status == 'В работе')
+                                                @if ($order->status == OrderPerformer::STATUS_WAIT_DELIVERY)
                                                     <form action="{{ route('admin.orders.update', $order->id) }}"
                                                           method="post">
                                                         @csrf
                                                         @method('patch')
                                                         <div class="form-group">
-                                                            <input type="submit" class="btn-btn-primary"
+                                                            <input type="submit" class="btn-primary"
                                                                    value="Подтвердить отправку">
                                                         </div>
                                                         <form>
                                                 @else
-                                                    {{$order->status}}
+                                                    {{$order->getStatusTitleAttribute()}}
                                                 @endif
                                             </td>
                                             <td>@foreach($order->productTypes as $productType)

@@ -13,23 +13,16 @@ class HomeTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
 
-        $this->get(route('home'))->assertRedirect(route('login'));
+        $this->get(route('home'))->assertRedirectToRoute('login');
 
-        $user->role = 3;
-        $user->save();
-        $this->actingAs($user)->get(route('home'))->assertRedirect(route('client.products.index'));
-        session()->flush();
-
-        $user->role = 2;
-        $user->save();
-        $this->actingAs($user)->get(route('home'))->assertRedirect(route('admin.index'));
-        session()->flush();
-
-        $user->role = 1;
-        $user->save();
-        $this->actingAs($user)->get(route('home'))->assertRedirect(route('admin.index'));
+        for ($i = 1; $i <= 3; $i++) {
+            $user->role = $i;
+            $user->save();
+            $this->actingAs($user)->get(route('home'))->assertRedirectToRoute($i == User::ROLE_CLIENT ? 'client.products.index' : 'admin.index');
+            session()->flush();
+        }
     }
 }

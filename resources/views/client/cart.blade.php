@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('client.layouts.main')
 @section('content')
 
@@ -71,9 +72,50 @@
             </div>
             <div style="text-align: center">
                 <h4>Итого {{$i-1}} товаров общей стоимостью {{ $total_price }} рублей</h4><br>
-                @if(session()->has('user'))
-                    <form action="{{route('client.orders.create')}}" method="post">
+                @can('verify', User::class)
+                    <form action="{{route('client.orders.store')}}" method="post">
                         @csrf
+                        <div class="card-body table-responsive" style="width: 30%; margin-inline: auto">
+                            <table class="table table-striped">
+                                <tbody>
+                                <tr>
+                                    <td>Способ доставки</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cd-filter-block">
+                                            <ul class="cd-filter-content cd-filters list" required>
+                                                <li>
+                                                    <input class="filter" type="radio" name="delivery" value="post"
+                                                           checked>
+                                                    <label class="radio-label" for="radio">Почта России</label>
+                                                </li>
+                                                <li>
+                                                    <input class="filter" type="radio" name="delivery" value="point">
+                                                    <label class="radio-label" for="radio">Курьерская доставка</label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cd-filter-block">
+                                            <ul class="cd-filter-content cd-filters list">
+                                                <li>
+                                                    <input class="filter" type="radio" name="offer" value=true required>
+                                                    <label class="radio-label" for="radio">
+                                                        <a href="{{$policy}}" target="_blank">Согласен правилами
+                                                            <br> пользования торговой площадкой</a>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <input type="hidden" name="total_price" value="{{$total_price}}">
                         <input type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"
                                @disabled($block ?? false)
@@ -82,9 +124,9 @@
                 @else
                     <a type="submit" class="btn btn-primary btn-lg" style="height: 50px; width: 200px"
                        href="{{route('login')}}">
-                        <h4 style="padding: 10px; margin-left:-15px; text-align: center">Зарегистрируйтесь или
-                            войдите</h4></a>
-                @endif
+                        <h4>Зарегистрируйтесь, войдите <br>
+                            или подтвердите email</h4></a>
+                @endcan
             </div>
         @endif
     </main>

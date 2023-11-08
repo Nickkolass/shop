@@ -25,6 +25,7 @@ class ProductCreateController extends Controller
 
     public function relations(ProductRequest $request): View
     {
+        $this->authorize('create', Product::class);
         $data = $request->validated();
         session(['create.product' => $data]);
         $data = $this->service->relations($data['category_id']);
@@ -33,6 +34,7 @@ class ProductCreateController extends Controller
 
     public function types(ProductRelationsRequest $request): View
     {
+        $this->authorize('create', Product::class);
         $data = $request->validated();
         session(['create.relations' => $data]);
         $optionValues = $this->service->types($data['optionValues']);

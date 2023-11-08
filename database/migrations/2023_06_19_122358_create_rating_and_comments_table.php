@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::create('rating_and_comments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate();
             $table->text('message')->nullable();
             $table->unsignedTinyInteger('rating');
             $table->unique(['product_id', 'user_id']);

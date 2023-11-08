@@ -18,17 +18,12 @@ class ShowOrderProductsResource extends JsonResource
     public function toArray($request): array|Arrayable|JsonSerializable
     {
         return [
-            'id' => $this->resource['id'],
+            'id' => $this->resource['productType_id'],
             'amount' => (int)$this->resource['amount'],
             'price' => $this->resource['price'],
-            'option_values' => $this->resource['option_values'],
-            'title' => $this->resource['product']['title'],
-            'saler_id' => $this->resource['saler']['id'],
-            'saler' => $this->resource['saler']['name'],
+            'title' => $this->resource['title'],
             'preview_image' => $this->resource['preview_image'],
-            'status' => $this->resource['status'],
-            'order_performer_id' => $this->resource['orderPerformer_id'],
+            'option_values' => $this->resource['optionValues'],
         ];
-
     }
 }

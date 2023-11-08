@@ -1,4 +1,4 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
+@php use App\Models\User;use Illuminate\Support\Facades\Storage; @endphp
     <!DOCTYPE html>
 <html lang="en">
 
@@ -79,14 +79,12 @@
                         <a class="nav-link" href="{{ route('client.about') }}" style="white-space: pre">О нас</a>
                     </li>
                     @guest
-                        @if (!session()->has('user'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">Вход</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">Регистрация</a>
-                            </li>
-                        @endif
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Вход</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">Регистрация</a>
+                        </li>
                     @else
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('client.orders.index') }}">Заказы</a>
@@ -98,12 +96,12 @@
                             <a class="nav-link" href="{{ route('users.show', session('user.id')) }}"
                                style="white-space: pre">{{ session('user.name') }}</a>
                         </li>
-                        @if(session('user.role') == 'admin' || session('user.role') == 'saler')
+                        @can('role', [User::class, User::ROLE_SALER])
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.index') }}"
                                    style="white-space: pre">Админка</a>
                             </li>
-                        @endif
+                        @endcan
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
                 document.getElementById('logout-form').submit();">

@@ -29,9 +29,12 @@ class UserUpdateRequest extends FormRequest
             'surname' => 'required|string',
             'patronymic' => 'nullable|string',
             'age' => 'required|integer',
+
             'postcode' => 'nullable|integer',
             'address' => 'nullable|string',
+
             'INN' => 'nullable|integer|unique:users,INN,' . $this->input('id'),
+
             'registredOffice' => 'nullable|string',
         ];
     }
@@ -42,6 +45,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'email.unique' => 'Пользователь с таким email уже зарегистрирован',
             'INN.unique' => 'Пользователь с таким ИНН уже зарегистрирован',
+            'card.unique' => 'Указанная карта не может быть добавлена',
         ];
     }
 }

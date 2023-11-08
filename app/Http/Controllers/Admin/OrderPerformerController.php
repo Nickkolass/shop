@@ -60,6 +60,6 @@ class OrderPerformerController extends Controller
     public function destroy(OrderPerformer $order): RedirectResponse
     {
         $this->service->delete($order);
-        return redirect()->route('admin.orders.show', $order->id);
+        return back();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,22 +16,28 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'role' => 2,
+            'role' => User::ROLE_SALER,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make($this->faker->password(5)),
+            'password' => Hash::make($this->faker->password()),
             'name' => $this->faker->name(),
             'surname' => $this->faker->lastName(),
             'patronymic' => $this->faker->name(),
-            'gender' => $this->faker->numberBetween(1, 2),
+            'gender' => $this->faker->boolean(),
             'age' => $this->faker->numberBetween(20, 70),
 
-            'card' => $this->faker->numerify('################'),
             'postcode' => (int)$this->faker->postcode(),
             'address' => $this->faker->address(),
 
             'INN' => (int)$this->faker->unique()->numerify('#########'),
             'registredOffice' => $this->faker->address(),
+            'card' => [
+                'payout_token' => 'oam6D9csiLcfw7fA9j2C_rj-.SC.001.202310',
+                'first6' => '555555',
+                'last4' => '4477',
+                'card_type' => 'MasterCard',
+                'issuer_country' => 'US',
+            ],
         ];
     }
 

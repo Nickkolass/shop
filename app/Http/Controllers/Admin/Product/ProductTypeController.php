@@ -108,7 +108,7 @@ class ProductTypeController extends Controller
      */
     public function publish(ProductType $productType): RedirectResponse
     {
-        if ($productType->product()->pluck('saler_id')[0] != auth()->id() & session('user.role') != 'admin') abort(403);
+        $this->authorize('update', $productType);
         $productType->update(['is_published' => !$productType->is_published]);
         return back();
     }

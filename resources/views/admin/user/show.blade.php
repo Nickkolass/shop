@@ -1,11 +1,12 @@
+@php use App\Models\User; @endphp
 @extends(
-$user->isSaler() || session('admin.user.role') == 'admin'
-? 'admin.layouts.main'
-: 'client.layouts.main'
+    \Illuminate\Support\Facades\Gate::check('role', [User::class, User::ROLE_SALER])
+    ? 'admin.layouts.main'
+    : 'client.layouts.main'
 )
 @section('content')
     <!-- Content Header (Page header) -->
-    @if($user->isClient())
+    @cannot('role', [User::class, User::ROLE_SALER])
         <br><br><br><br><br><br>
     @else
         <div class="content-header">
@@ -23,7 +24,7 @@ $user->isSaler() || session('admin.user.role') == 'admin'
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
-    @endif
+    @endcannot
 
     <!-- Main content -->
     <section class="content">
@@ -40,12 +41,12 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                                     <td>ID</td>
                                     <td>{{ $user->id }}</td>
                                 </tr>
-                                @if(session('user.role') == 'admin')
+                                @can('role', [User::class, User::ROLE_ADMIN])
                                     <tr>
                                         <td>Статус</td>
                                         <td>{{ $user->getRoleTitleAttribute() }}</td>
                                     </tr>
-                                @endif
+                                @endcan
                                 <tr>
                                     <td>Email</td>
                                     <td>{{ $user->email }}</td>
@@ -70,7 +71,7 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                                     <td>Пол</td>
                                     <td>{{ $user->getGenderTitleAttribute() }}</td>
                                 </tr>
-                                @if($user->isAdmin() || $user->isSaler())
+                                @can('role', [User::class, User::ROLE_SALER])
                                     <tr>
                                         <td>ИНН</td>
                                         <td>{{ $user->INN }}</td>
@@ -78,6 +79,10 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                                     <tr>
                                         <td>Юр. Адрес</td>
                                         <td>{{ $user->registredOffice }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Карта для выплат</td>
+                                        <td>{{ $user->card['first6'] . '******' . $user->card['last4'] }}</td>
                                     </tr>
                                 @else
                                     <tr>
@@ -88,7 +93,7 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                                         <td>Адрес</td>
                                         <td>{{ $user->address }}</td>
                                     </tr>
-                                @endif
+                                @endcan
                             </table>
                         </div>
                     </div>
@@ -99,6 +104,10 @@ $user->isSaler() || session('admin.user.role') == 'admin'
                         <div class="mr-3">
                             <a href="{{ route('users.password.edit', $user->id) }}" class="btn btn-primary">Сменить
                                 пароль</a>
+                        </div>
+                        <div class="mr-3">
+                            <a href="{{ route('users.card.edit', $user->id) }}" class="btn btn-primary">Привязать
+                                карту</a>
                         </div>
                         <div class="mr-3">
                             <form action="{{route('users.destroy', $user->id) }}" method="post">

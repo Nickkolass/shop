@@ -16,9 +16,10 @@ class ProductViewedLikedService
      */
     public function getProductTypes(?array $viewed_product_type_ids = null): Collection
     {
-        $user = auth('api')->user();
         /** @var User|null $user */
-        $productTypes = ProductType::query()
+        $user = auth('api')->user();
+        /** @var Collection<ProductType> */
+        return ProductType::query()
             ->when(!isset($viewed_product_type_ids), fn() => $user->liked())/** @phpstan-ignore-next-line */
             ->when($user, fn(Builder $q) => $q->withExists(['liked' => fn(Builder $b) => $b->where('user_id', $user->id)]))
             ->with([
@@ -33,7 +34,5 @@ class ProductViewedLikedService
                 fn(Builder $b) => $b->get(),
                 fn(Builder $b) => $b->find($viewed_product_type_ids)
             );
-        /** @var Collection<ProductType> $productTypes */
-        return $productTypes;
     }
 }

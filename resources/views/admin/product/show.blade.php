@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -74,12 +75,12 @@
                                     <td>{{ $product->id }}</td>
                                 </tr>
 
-                                @if (session('user.role') == 'admin')
+                                @can('role', [User::class, User::ROLE_ADMIN])
                                     <tr>
                                         <td>Продавец</td>
                                         <td>{{ $product->saler_id }}</td>
                                     </tr>
-                                @endif
+                                @endcan
 
                                 <tr>
                                     <td>Наименование</td>

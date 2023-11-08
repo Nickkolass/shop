@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Events\OrderStored;
-use App\Notifications\SendEmailToSallersAboutStoredOrderNotificationQueue;
-use App\Notifications\SendEmailVerificationNotificationQueue;
-use App\Notifications\SendEmailWelcomeNotification;
+use App\Listeners\Payment\PaymentSubscriber;
+use App\Notifications\Auth\EmailVerificationNotificationQueue;
+use App\Notifications\Auth\WelcomeNotification;
+use App\Notifications\Order\OrderNotificationSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -17,12 +17,17 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         Registered::class => [
-            SendEmailVerificationNotificationQueue::class,
-            SendEmailWelcomeNotification::class,
+            EmailVerificationNotificationQueue::class,
+            WelcomeNotification::class,
         ],
-        OrderStored::class => [
-            SendEmailToSallersAboutStoredOrderNotificationQueue::class,
-        ],
+    ];
+
+    /**
+     * @var array<string>
+     */
+    protected $subscribe = [
+        OrderNotificationSubscriber::class,
+        PaymentSubscriber::class,
     ];
 
     /**

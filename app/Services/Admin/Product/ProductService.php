@@ -7,11 +7,13 @@ use App\Dto\Admin\Product\ProductRelationDto;
 use App\Dto\Admin\Product\ProductTypeDto;
 use App\Exceptions\Admin\ProductException;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -24,10 +26,9 @@ class ProductService
 
     public function index(): Paginator
     {
-        $user = session('user');
         return Product::query()
-            ->when($user['role'] != 'admin', function (Builder $q) use ($user) {
-                $q->whereHas('saler', fn(Builder $q) => $q->where('id', $user['id']));
+            ->when(!Gate::check('role', [User::class, User::ROLE_ADMIN]), function (Builder $q) {
+                $q->whereHas('saler', fn(Builder $q) => $q->where('id', session('user.id')));
             })
             ->select('id', 'title', 'saler_id', 'category_id', 'rating', 'count_rating', 'count_comments')
             ->latest()

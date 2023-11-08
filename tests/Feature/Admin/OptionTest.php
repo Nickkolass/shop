@@ -13,174 +13,178 @@ class OptionTest extends TestCase
     /**@test */
     public function test_a_option_can_be_viewed_any_with_premissions(): void
     {
-        Option::query()->create(['title' => 'sadfsdf']);
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        Option::query()->create(['title' => 'sadfsdf']);
+        $route = route('admin.options.index');
 
-        $this->get(route('admin.options.index'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.options.index'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.options.index'))->assertViewIs('admin.option.index');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.option.index');
     }
 
     /**@test */
     public function test_a_option_can_be_created_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $route = route('admin.options.create');
 
-        $this->get(route('admin.options.create'))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.options.create'))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.options.create'))->assertViewIs('admin.option.create');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.option.create');
     }
 
     /**@test */
     public function test_a_option_can_be_stored_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
+        $route = route('admin.options.store');
 
-        $this->post(route('admin.options.store'), $data)->assertNotFound();
+        $this->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->post(route('admin.options.store'), $data)->assertNotFound();
+            $this->actingAs($user)->post($route, $data)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->post(route('admin.options.store'), $data);
-        $this->assertDatabaseCount('options', 1);
-        $this->assertDatabaseCount('optionValues', 3);
-        $this->assertEquals($data['title'], Option::query()->first()->title);
+        $this->actingAs($user)->post($route, $data);
+        $this->assertModelExists($option = Option::query()->with('optionValues')->firstWhere('title', $data['title']))
+            ->assertTrue($option->optionValues->pluck('value')->diff($data['optionValues'])->isEmpty());
     }
 
     /**@test */
     public function test_a_option_can_be_viewed_with_premissions(): void
     {
-        $option = Option::query()->create(['title' => 'sadfsdf']);
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
+        $option = Option::query()->create(['title' => 'sadfsdf']);
+        $route = route('admin.options.show', $option->id);
 
-        $this->get(route('admin.options.show', $option->id))->assertNotFound();
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.options.show', $option->id))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.options.show', $option->id))->assertViewIs('admin.option.show');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.option.show');
     }
 
     /**@test */
     public function test_a_option_can_be_edited_with_premissions(): void
     {
-        $option = Option::query()->create(['title' => 'sadfsdf']);
-        $user = User::factory()->create();
         /** @var User $user */
-
-        $this->get(route('admin.options.edit', $option->id))->assertNotFound();
+        $user = User::factory()->create();
+        $option = Option::query()->create(['title' => 'sadfsdf']);
+        $route = route('admin.options.edit', $option->id);
+        $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->get(route('admin.options.edit', $option->id))->assertNotFound();
+            $this->actingAs($user)->get($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->get(route('admin.options.edit', $option->id))->assertViewIs('admin.option.edit');
+        $this->actingAs($user)->get($route)->assertViewIs('admin.option.edit');
     }
 
     /**@test */
     public function test_a_option_can_be_updated_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
         $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory(4)->create();
         $data = ['title' => 'asfas', 'optionValues' => ['1', '2', '3']];
+        $route = route('admin.options.update', $option->id);
 
-        $this->patch(route('admin.options.update', $option->id), $data)->assertNotFound();
+        $this->patch($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->patch(route('admin.options.update', $option->id), $data)->assertNotFound();
+            $this->actingAs($user)->patch($route, $data)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->patch(route('admin.options.update', $option->id), $data);
-
-        $option = Option::query()->first();
-        $this->assertEquals($data['title'], $option->title);
-        $optionValues = $option->optionValues()->pluck('value')->all();
-        $data['optionValues'] = array_column($data['optionValues'], 'value');
-        $this->assertEquals(sort($optionValues), sort($data['optionValues']));
+        $this->actingAs($user)
+            ->patch($route, $data);
+        $this->assertModelExists($option = Option::query()->with('optionValues')->firstWhere('title', $data['title']))
+            ->assertTrue($option->optionValues->pluck('value')->diff($data['optionValues'])->isEmpty());
     }
 
     /**@test */
     public function test_a_option_can_be_deleted_with_premissions(): void
     {
-        $user = User::factory()->create();
         /** @var User $user */
+        $user = User::factory()->create();
         $option = Option::query()->create(['title' => 'sadfsdf']);
         OptionValue::factory()->create();
+        $route = route('admin.options.destroy', $option->id);
 
-        $this->delete(route('admin.options.destroy', $option->id))->assertNotFound();
+        $this->delete($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
             $user->save();
-            $this->actingAs($user)->delete(route('admin.options.destroy', $option->id))->assertNotFound();
+            $this->actingAs($user)->delete($route)->assertNotFound();
             session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = 1;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
-        $this->actingAs($user)->delete(route('admin.options.destroy', $option->id))->assertRedirect(route('admin.options.index'));
-        $this->assertDatabaseCount('options', 0);
-        $this->assertTrue($option->optionValues()->count() == 0);
+        $this->actingAs($user)
+            ->delete($route)
+            ->assertRedirectToRoute('admin.options.index');
+        $this->assertModelMissing($option)
+            ->assertFalse($option->optionValues()->exists());
     }
 }

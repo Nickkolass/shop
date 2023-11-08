@@ -95,7 +95,7 @@ class ProductFilterService
                 ->whereHas('products', $whereHasProducts)
                 ->getAndGroupWithParentTitle();
 
-            $filterable['prices'] = (array)$data['category']->productTypes()->selectRaw('MAX(price) AS max, MIN(price) AS min')->toBase()->first();
+            $filterable['prices'] = (array)$data['category']->productTypes()->selectRaw('MIN(price) AS min, MAX(price) AS max')->toBase()->first();
 
             return $filterable;
         });

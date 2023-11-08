@@ -125,7 +125,7 @@
                     </div><!-- /.container-fluid -->
                 </div>
                 <div class="col" style="padding: 5px;">
-                    <input type="submit" class="btn-btn-primary" value="Редактировать">
+                    <input type="submit" class="btn-primary" value="Редактировать">
                 </div>
             </form>
             <form action="{{route('admin.productTypes.destroy', $productType->id) }}" method="post">
