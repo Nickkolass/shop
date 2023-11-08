@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('INN')->unique()->nullable();
             $table->string('registredOffice')->nullable();
+            $table->jsonb('card')->nullable();
         });
     }
 

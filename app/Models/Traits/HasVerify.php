@@ -6,8 +6,9 @@ use App\Models\User;
 
 trait HasVerify
 {
-    public function verify(?int &$role): void
+    public function verify(): ?int
     {
+        $role = session('user.role');
         if (!$role && $user = auth()->user()) {
             /** @var User $user */
             /** @noinspection PhpUndefinedMethodInspection */
@@ -22,5 +23,6 @@ trait HasVerify
                 ],
             ]);
         }
+        return $role;
     }
 }

@@ -39,8 +39,6 @@ class OrderFactory extends Factory
             'productTypes' => $productTypes->all(),
             'delivery' => $user->address,
             'total_price' => $productTypes->pluck('price')->sum(),
-            'payment' => (string)$user->card,
-            'payment_status' => true,
         ];
     }
 }

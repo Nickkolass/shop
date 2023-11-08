@@ -17,7 +17,7 @@ class OrdersCollection extends ResourceCollection
      */
     public function toArray($request): array|Arrayable|JsonSerializable
     {
-        $data['data'] = ShowOrderResource::collection($this->resource)->resolve();
+        $data['data'] = OrdersResource::collection($this->resource)->resolve();
         $meta = $this->resource->setCollection(collect())->toArray();
         unset($meta['data']);
         foreach ($meta as $k => $v) $data[$k] = $v;

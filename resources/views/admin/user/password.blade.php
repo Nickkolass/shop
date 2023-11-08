@@ -1,13 +1,14 @@
 @extends(
-in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_SALER])
-? 'admin.layouts.main'
-: 'client.layouts.main'
+    \Illuminate\Support\Facades\Gate::check('role', [User::class, User::ROLE_SALER])
+    ? 'admin.layouts.main'
+    : 'client.layouts.main'
 )
+
 @section('content')
-    <!-- Content Header (Page header) -->
-    @if(in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_SALER]))
+    @cannot('role', [User::class, User::ROLE_SALER])
         <br><br><br><br><br><br>
-    @endif
+    @endcannot
+    <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -34,8 +35,7 @@ in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::
                 </div><!-- /.container-fluid -->
             @endif
             <div class="row">
-                <form action="{{ route('users.password.update', session('user.id')) }}"
-                      method="post">
+                <form action="{{ route('users.password.update', session('user.id')) }}" method="post">
                     @csrf
                     @method('patch')
                     <div>
@@ -52,7 +52,7 @@ in_array(session('user.role'), [\App\Models\User::ROLE_ADMIN, \App\Models\User::
                                    class="form-control" placeholder="Повторите новый пароль" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="submit" class="btn-btn-primary" value="Редактировать">
+                            <input type="submit" class="btn-primary" value="Редактировать">
                         </div>
                     </div>
                 </form>

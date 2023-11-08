@@ -4,12 +4,12 @@ namespace App\Policies;
 
 use App\Models\Product;
 use App\Models\User;
-use App\Policies\Trait\PreAuthChecks;
+use App\Policies\Trait\IsAdmin;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProductPolicy
 {
-    use HandlesAuthorization, PreAuthChecks;
+    use HandlesAuthorization, IsAdmin;
 
     /**
      * Determine whether the user can view any models.

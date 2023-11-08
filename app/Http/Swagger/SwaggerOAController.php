@@ -113,7 +113,7 @@ use App\Http\Controllers\Controller;
  *     @OA\RequestBody(
  *         @OA\JsonContent(
  *             @OA\Property(property="total_price", type="integer", example=1000),
- *             @OA\Property(property="payment_status", type="bool", example=true),
+ *             @OA\Property(property="payment_id", type="null|string", example="123a-dasi-wa5i"),
  *             @OA\Property(property="payment", type="string", example="card"),
  *             @OA\Property(property="cart", type="object",
  *                 @OA\Property(property="662341", type="integer", example="2"),
@@ -148,29 +148,36 @@ use App\Http\Controllers\Controller;
  *         description="ok",
  *         @OA\JsonContent(
  *             @OA\Property(property="id", type="integer", example="1"),
- *             @OA\Property(property="product_types", type="array",
- *                 @OA\Items(type="object",
- *                     @OA\Property(property="id", type="integer", example="1"),
- *                     @OA\Property(property="amount", type="integer", example="3"),
- *                     @OA\Property(property="price", type="integer", example="400"),
- *                     @OA\Property(property="option_values", type="object",
- *                         @OA\Property(property="Цвет", type="string", example="красный"),
- *                         @OA\Property(property="Размер", type="string", example="300 грамм"),
- *                     ),
- *                     @OA\Property(property="title", type="string", example="Cool chokolate"),
- *                     @OA\Property(property="saler_id", type="integer", example="1"),
- *                     @OA\Property(property="saler", type="string", example="Ivan Ivanov"),
- *                     @OA\Property(property="preview_image", type="string", example="preview_images/1.jpg"),
- *                     @OA\Property(property="category", type="string", example="chokolate"),
- *                     @OA\Property(property="status", type="string", example="Отправлен 2023-07-03 10:55:50"),
- *                     @OA\Property(property="order_performer_id", type="integer", example="1"),
- *                 ),
- *             ),
  *             @OA\Property(property="delivery", type="string", example="post. Получатель: Lebsack Clotilde Parker Cecelia DuBuque. Адрес: 522 Renner Isle\nLake Demarco, ME 81738-5083"),
  *             @OA\Property(property="total_price", type="integer", example="5000"),
  *             @OA\Property(property="status", type="string", example="В работе"),
+ *             @OA\Property(property="dispatch_time", format="date", example="2023-07-03"),
  *             @OA\Property(property="created_at", format="date", example="2023-07-03"),
- *             @OA\Property(property="dispatch_time", format="date", example="2023-07-25"),
+ *             @OA\Property(property="refundable", format="bool", example="true"),
+ *             @OA\Property(property="cancelable", format="bool", example="true"),
+ *             @OA\Property(property="order_performers", type="array",
+ *                 @OA\Items(type="object",
+ *                     @OA\Property(property="id", type="integer", example="1"),
+ *                     @OA\Property(property="saler_id", type="integer", example="1"),
+ *                     @OA\Property(property="saler_name", type="string", example="Ivan"),
+ *                     @OA\Property(property="status", type="integer", example="1"),
+ *                     @OA\Property(property="total_price", type="integer", example="5000"),
+ *                     @OA\Property(property="dispatch_time", type="date", example="2023-07-03"),
+ *                     @OA\Property(property="product_types", type="array",
+ *                         @OA\Items(type="object",
+ *                             @OA\Property(property="id", type="integer", example="1"),
+ *                             @OA\Property(property="amount", type="integer", example="3"),
+ *                             @OA\Property(property="price", type="integer", example="400"),
+ *                             @OA\Property(property="title", type="string", example="Товар"),
+ *                             @OA\Property(property="preview_image", type="string", example="preview_images/1.jpg"),
+ *                             @OA\Property(property="option_values", type="object",
+ *                                 @OA\Property(property="Цвет", type="string", example="красный"),
+ *                                 @OA\Property(property="Размер", type="string", example="300 грамм"),
+ *                             ),
+ *                         ),
+ *                     ),
+ *                 ),
+ *             ),
  *         ),
  *     ),
  * ),
@@ -205,6 +212,26 @@ use App\Http\Controllers\Controller;
  *         description="ID заказа",
  *         in="path",
  *         name="order",
+ *         required=true,
+ *         example=1,
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="ok",
+ *     ),
+ * ),
+ *
+ * @OA\Delete(
+ *     path="/api/orders/delete{orderPerformer}",
+ *     summary="Отмена наряда заказчиком",
+ *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Parameter(
+ *         description="ID наряда",
+ *         in="path",
+ *         name="orderPerformer",
  *         required=true,
  *         example=1,
  *     ),
@@ -648,6 +675,64 @@ use App\Http\Controllers\Controller;
  *                 ),
  *             ),
  *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="ok",
+ *     ),
+ * ),
+ *
+ * @OA\Post(
+ *     path="/api/orders/{order}/payment",
+ *     summary="Оплата заказа",
+ *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Parameter(
+ *         description="ID заказа",
+ *         in="path",
+ *         name="order",
+ *         required=true,
+ *         example=1,
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="ok",
+ *         @OA\JsonContent(
+ *             @OA\Property(type="string", example="https://yoomoney.ru/qwerty123"),
+ *         ),
+ *     ),
+ * ),
+ *
+ * @OA\Post(
+ *     path="/api/orders/{order}/refund",
+ *     summary="Возврат денежных средств",
+ *     tags={"orders"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Parameter(
+ *         description="ID заказа",
+ *         in="path",
+ *         name="order",
+ *         required=true,
+ *         example=1,
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="ok",
+ *     ),
+ * )
+ *
+ * @OA\Post(
+ *     path="/api/orders/payment/callback",
+ *     summary="Для входящих уведомлений от платежной системы",
+ *     tags={"orders"},
+ *
+ *     @OA\RequestBody(
+ *         @OA\JsonContent(),
  *     ),
  *
  *     @OA\Response(

@@ -38,9 +38,9 @@
                     <!-- small box -->
                     <div class="small-box w-100 bg-success">
                         <div class="inner">
-                            <h3>Выручка
-                                за {{$data['revenue']['month'] . ' ' . $data['revenue']['revenue'] . ' р. ( ' . $data['revenue']['count_orders'] . ' заказов )' }}</h3>
-                            <h5>@foreach($data['revenue']['orders'] as $order)
+                            <h3>Выручка за {{now()->previous('month')->monthName . "{$data['month_payout']['payout']->revenue} р.
+                                ({$data['month_payout']['payout']->count} заказов)"}}</h3>
+                            <h5>@foreach($data['month_payout']['orders'] as $order)
                                     * <a style="color: inherit" href="{{ route('admin.orders.show', $order->id) }}"
                                          class="small-box-footer">{{'На ' . $order->total_price}}</a><br>
                                 @endforeach</h5>
@@ -98,7 +98,7 @@
                     <!-- small box -->
                     <div class="small-box w-100 bg-teal">
                         <div class="inner">
-                            <h3>Самые продаваемые товары</h3>
+                            <h3>Продаваемые товары</h3>
                             <h5>@foreach($data['productTypes_ordered'] as $product)
                                     * <a style="color: inherit"
                                          href="{{ route('admin.products.show', $product['productType_id']) }}"
@@ -117,8 +117,8 @@
                     <!-- small box -->
                     <div class="small-box w-100 bg-secondary">
                         <div class="inner">
-                            <h3>Неопубликованные товары ( {{$data['product_published_count']}} )</h3>
-                            <h5>@foreach($data['product_published'] as $product)
+                            <h3>Неопубликованные товары ( {{$data['unpublished']['count']}} )</h3>
+                            <h5>@foreach($data['unpublished']['productTypes'] as $product)
                                     * <a style="color: inherit"
                                          href="{{ route('admin.products.show', $product->product_id) }}"
                                          class="small-box-footer">{{$product->title}}</a><br>

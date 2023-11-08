@@ -24,8 +24,8 @@ class SeederFactoryService
 {
     public function factory(): void
     {
-        $tags = Tag::factory(10)->create();
         /** @var Collection<Tag> $tags */
+        $tags = Tag::factory(10)->create();
         for ($k = 1; $k <= 10; $k++) {
             Property::factory()
                 ->has(PropertyValue::factory(rand(2, 4)))

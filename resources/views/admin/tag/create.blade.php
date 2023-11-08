@@ -42,7 +42,7 @@
                                value="{{ old('title') }}">
                     </div>
                     <div class="form-group">
-                        <input type="submit" class="btn-btn-primary" value="Добавить">
+                        <input type="submit" class="btn-primary" value="Добавить">
                     </div>
 
 

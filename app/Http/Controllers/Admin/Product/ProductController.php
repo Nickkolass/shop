@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\ProductTypesRequest;
 use App\Http\Requests\Admin\Product\UpdateRelationsRequest;
 use App\Models\Product;
-use App\Models\User;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -105,7 +104,7 @@ class ProductController extends Controller
      */
     public function publish(Product $product): RedirectResponse
     {
-        if ($product->saler_id != session('user.id') && session('user.role') != User::ROLE_ADMIN) abort(403);
+        $this->authorize('update', $product);
         $this->service->publish($product);
         return back();
     }

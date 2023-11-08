@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\User;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Password;
 
 class UserPasswordRequest extends FormRequest
@@ -14,15 +16,8 @@ class UserPasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('password', User::class);
         return true;
-    }
-
-    /**
-     * Handle a passed validation attempt.
-     */
-    protected function prepareForValidation(): void
-    {
-        if ($this->route()->parameter('user.id') != session('user.id')) abort(401);
     }
 
     /**

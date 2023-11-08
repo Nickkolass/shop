@@ -25,13 +25,13 @@ class ProductImageFactory extends Factory
         $counter = Cache::increment('imageCounter') - 1;
         $filePath = Cache::get('factory')[$counter];
 
+        /** @var string $productImagePath */
         $productImagePath = Storage::putFile(
             'product_images/' . $productType->product_id,
             new File('storage/app/testing/' . $filePath),
             'public'
         );
 
-        /** @var string $productImagePath */
         return [
             'file_path' => $productImagePath,
             'size' => Storage::size($productImagePath),

@@ -28,5 +28,4 @@ class SeederStorageService
             ->each(fn(Category $category) => (new ProductFilterService)->getProductFilterAggregateDataCache([], $category));
         cache()->forever('categories', $categories->toArray());
     }
-
 }

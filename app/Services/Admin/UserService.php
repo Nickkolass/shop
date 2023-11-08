@@ -15,12 +15,12 @@ class UserService
     {
         $password_generated = Str::random(10);
         DB::beginTransaction();
+        /** @var User $user */
         $user = User::query()
             ->firstOrCreate(
                 ['email' => $dto->email, 'INN' => $dto->INN],
                 (array)$dto + ['password' => Hash::make($password_generated)])
             ->setAttribute('password_generated', $password_generated);
-        /** @var User $user */
         event(new Registered($user));
         DB::commit();
     }
@@ -33,5 +33,15 @@ class UserService
     public function passwordUpdate(User $user, string $new_password): void
     {
         $user->update(['password' => Hash::make($new_password)]);
+    }
+
+    /**
+     * @param User $user
+     * @param array{payout_token: string, first6: int, last4: int, card_type: string, issuer_country: string} $card
+     * @return void
+     */
+    public function cardUpdate(User $user, array $card): void
+    {
+        $user->update(['card' => $card]);
     }
 }

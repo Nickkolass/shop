@@ -16,8 +16,9 @@
                 <li>
                     @foreach($data['filterable']['prices'] as $key => $price)
                         <input class="filter" style="width:125px; padding: 5px;" name="filter[prices][{{$key}}]"
-                               type="number" min="0" max="{{$data['filterable']['prices']['max']}}"
-                               value="{{ $data['filter']['prices'][$key] ?? '' }}"
+                               type="number" value="{{ $data['filter']['prices'][$key] ?? '' }}"
+                               min="{{$data['filterable']['prices']['min']}}"
+                               max="{{$data['filterable']['prices']['max']}}"
                                placeholder="{{$data['filterable']['prices'][$key]}}">
                     @endforeach
                 </li>
@@ -131,8 +132,8 @@
         </div>
 
         <div class="form-group">
-            <input type="submit" class="btn-btn-primary" value="Применить">
-            <a type="button" class="btn-btn-primary"
+            <input type="submit" class="btn-primary" value="Применить">
+            <a type="button" class="btn-primary"
                href="{{ route('client.products.filter', $data['category']['title']) }}">Очистить</a>
         </div>
     </form>

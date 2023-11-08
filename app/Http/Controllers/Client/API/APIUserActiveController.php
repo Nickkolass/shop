@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\RatingAndComment\StoreRequest;
+use App\Http\Requests\Client\RatingAndComment\StoreRequest;
 use App\Models\ProductType;
 use App\Models\User;
 use App\Services\Client\API\UserActiveService;

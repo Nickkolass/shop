@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Dto\Admin\UserDto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\UserCardRequest;
 use App\Http\Requests\Admin\User\UserPasswordRequest;
 use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
@@ -19,8 +20,8 @@ class UserController extends Controller
 
     public function __construct(UserService $service)
     {
-        $this->middleware('client')->only(['edit', 'show', 'update', 'destroy', 'passwordEdit', 'passwordUpdate']);
-        $this->middleware('admin')->only(['index', 'create', 'store']);
+        $this->middleware('role:' . User::ROLE_CLIENT)->only(['edit', 'show', 'update', 'destroy', 'passwordEdit', 'passwordUpdate']);
+        $this->middleware('role:' . User::ROLE_ADMIN)->only(['index', 'create', 'store']);
         $this->authorizeResource(User::class, 'user');
         $this->service = $service;
     }
@@ -110,13 +111,13 @@ class UserController extends Controller
     /**
      * Edit the specified resource in storage.
      *
-     * @param int $user_id
+     * @param User $user
      * @return View
      */
-    public function passwordEdit(int $user_id): View
+    public function passwordEdit(User $user): View
     {
-        if ($user_id != session('user.id')) abort(401);
-        return view('admin.user.password');
+        $this->authorize('password', $user);
+        return view('admin.user.password', compact('user'));
     }
 
     /**
@@ -130,6 +131,33 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $this->service->passwordUpdate($user, $data['new_password']);
+        return redirect()->route('users.show', $user->id);
+    }
+
+    /**
+     * Bind card to user.
+     *
+     * @param User $user
+     * @return View
+     */
+    public function cardEdit(User $user): View
+    {
+        $this->authorize('update', $user);
+        return view('admin.user.card', compact('user'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param UserCardRequest $request
+     * @param User $user
+     * @return RedirectResponse
+     */
+    public function cardUpdate(UserCardRequest $request, User $user): RedirectResponse
+    {
+        $this->authorize('update', $user);
+        $card = $request->validated()['card'];
+        $this->service->cardUpdate($user, $card);
         return redirect()->route('users.show', $user->id);
     }
 }

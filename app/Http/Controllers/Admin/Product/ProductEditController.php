@@ -25,13 +25,13 @@ class ProductEditController extends Controller
 
     public function relations(Product $product, ProductRequest $request): View
     {
+        $this->authorize('update', $product);
         $data = $request->validated();
         session(['edit' => $data]);
         $product->setRelations([
             'propertyValues' => $product->propertyValues()->pluck('property_values.id'),
             'optionValues' => $product->optionValues()->pluck('optionValues.id')]);
         $data = $this->service->relations($data['category_id']);
-//        dd($data['optionValues']);
         return view('admin.product.edit.relations', compact('product', 'data'));
     }
 }

@@ -1,3 +1,4 @@
+@php use App\Models\Order;use App\Models\OrderPerformer;use App\Models\User; @endphp
 @extends('admin.layouts.main')
 @section('content')
     <!-- Content Header (Page header) -->
@@ -37,7 +38,7 @@
                         </tr>
                         <tr>
                             <td>Статус</td>
-                            <td>{{ $order->status }}</td>
+                            <td>{{ $order->getStatusTitleAttribute() }}</td>
                         </tr>
                         <tr>
                             <td>Способ доставки, получатель</td>
@@ -67,7 +68,7 @@
                                                 Количество: {{ $productType['amount'] }}<br>
                                                 Стоимость: {{ $productType['price'] }}<br>
                                                 Продавец:
-                                                @if(session('user.role') == \App\Models\User::ROLE_ADMIN)
+                                                @can('role', [User::class, User::ROLE_ADMIN])
                                                     <a class="linkclass disabled"
                                                        href="{{ route('users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a>
                                                     <br>
@@ -76,7 +77,7 @@
                                                         заказу</a>
                                                 @else
                                                     {{ $order->saler->name }}
-                                                @endif
+                                                @endcan
                                             </td>
                                             <td>@foreach($productType['option_values'] as $option => $value)
                                                     {{$option . ': '. $value}}<br>
@@ -93,22 +94,27 @@
                     </table>
                 </div>
                 <div class="card-header d-flex p-3" style="text-align:center">
-                    <div class="mr-3">
-                        <form action="{{ route('admin.orders.update', $order->id) }}" method="post">
+                    @if($order->status == OrderPerformer::STATUS_WAIT_DELIVERY)
+                        <div class="mr-3">
+                            <form action="{{ route('admin.orders.update', $order->id) }}" method="post">
+                                @csrf
+                                @method('patch')
+                                <div class="form-group">
+                                    <input type="submit" class="btn btn-primary" value="Подтвердить отправку">
+                                </div>
+                            </form>
+                        </div>
+                        <form action="{{route('admin.orders.destroy', $order->id) }}" method="post">
                             @csrf
-                            @method('patch')
-                            <div class="form-group">
-                                <input type="submit" class="btn btn-primary" value="Подтвердить отправку"
-                                       title="{{$order->status != 'В работе' ? 'Отправка уже подтверждена' : ''}}" @disabled($order->status != 'В работе')>
-                            </div>
+                            @method('delete')
+                            <input type="submit" class="btn btn-danger" value="Отказаться">
                         </form>
-                    </div>
-                    <form action="{{route('admin.orders.destroy', $order->id) }}" method="post">
-                        @csrf
-                        @method('delete')
-                        <input type="submit" class="btn btn-danger" value="Отказаться"
-                               title="{{$order->status != 'В работе' ? 'Товар уже отправлен' : ''}}" @disabled($order->status != 'В работе')>
-                    </form>
+                    @elseif(empty($order->payout_id) && in_array($order->order->status, [Order::STATUS_CANCELED, Order::STATUS_COMPLETED]))
+                        <form action="{{route('admin.orders.payout', $order->id) }}" method="post">
+                            @csrf
+                            <input type="submit" class="btn btn-primary" value="Запросить выплату">
+                        </form>
+                    @endif
                 </div>
             </div>
         </div><!-- /.container-fluid -->

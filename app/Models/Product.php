@@ -33,7 +33,7 @@ use Laravel\Scout\Searchable;
  * @property ?Collection<RatingAndComment> $ratingAndComments
  * @property ?Collection<Tag> $tags
  * @property ?Collection<PropertyValue> $propertyValues
- * @property ?Collection<OptionValue> $optionValues
+ * @property null|Collection<OptionValue>|Collection<string, string> $optionValues
  * @method static static|Builder filter(FilterInterface $filter)
  * @method static ScoutBuilder search(string $search)
  */

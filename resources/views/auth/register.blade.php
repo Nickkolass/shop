@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends('auth.layouts.app')
 
 @section('content')
@@ -119,8 +120,14 @@
                                         <select name="gender" class="custom-select form-control"
                                                 id="exampleSelectBorder">
                                             <option disabled selected></option>
-                                            <option value="{{\App\Models\User::GENDER_MALE}}">Мужской</option>
-                                            <option @selected (old('gender') == \App\Models\User::GENDER_FEMALE) value="{{\App\Models\User::GENDER_FEMALE}}">Женский</option>
+                                            <option
+                                                @selected(old('gender') == User::GENDER_MALE) value="{{User::GENDER_MALE}}">
+                                                Мужской
+                                            </option>
+                                            <option
+                                                @selected (old('gender') == User::GENDER_FEMALE) value="{{User::GENDER_FEMALE}}">
+                                                Женский
+                                            </option>
                                         </select>
                                     </div>
                                     @error('gender')
@@ -180,8 +187,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="radio-label" for="radio">
-                                        <a href="{{$policy}}" target="_blank">Согласен с условиями правил пользования
-                                            торговой площадкой</a>
+                                        <a href="{{$policy}}" target="_blank">Согласен правилами пользования торговой
+                                            площадкой</a>
                                     </label>
                                 </div>
                             </div>

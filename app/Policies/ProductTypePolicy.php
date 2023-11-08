@@ -4,12 +4,12 @@ namespace App\Policies;
 
 use App\Models\ProductType;
 use App\Models\User;
-use App\Policies\Trait\PreAuthChecks;
+use App\Policies\Trait\IsAdmin;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProductTypePolicy
 {
-    use HandlesAuthorization, PreAuthChecks;
+    use HandlesAuthorization, IsAdmin;
 
     /**
      * Determine whether the user can update the model.
