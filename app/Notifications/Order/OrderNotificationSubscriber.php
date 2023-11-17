@@ -2,24 +2,25 @@
 
 namespace App\Notifications\Order;
 
-use App\Events\Order\OrderCanceled;
-use App\Events\Order\OrderPaid;
-use App\Events\Order\OrderPerformerCanceled;
-use App\Events\Order\OrderPerformerPaid;
-use App\Events\Order\OrderPerformerReceived;
-use App\Events\Order\OrderReceived;
+use App\Events\OrderCanceled;
+use App\Events\OrderPaid;
+use App\Events\OrderPerformerCanceled;
+use App\Events\OrderPerformerPaid;
+use App\Events\OrderPerformerReceived;
+use App\Events\OrderReceived;
 use App\Mail\MailOrderStoredReceivedCanceled;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Mail;
 
-class OrderNotificationSubscriber
+class OrderNotificationSubscriber implements ShouldQueue
 {
     public function handleOrderPaid(OrderPaid $event): void
     {
         //заказчиком оплачен заказ, уведомление на email заказчика
         $text = "Оформлен новый заказ в Lumos № {$event->order->id} от {$event->order->created_at} на сумму {$event->order->total_price}";
         $mail = new MailOrderStoredReceivedCanceled($text, $event->order->productTypes);
-        Mail::to(session('user.email'))->send($mail);
+        Mail::to($event->order->user->email)->send($mail);
     }
 
     public function handleOrderPerformerPaid(OrderPerformerPaid $event): void
@@ -37,7 +38,7 @@ class OrderNotificationSubscriber
         $text = "Ваш заказ в Lumos № {$event->order->id} от {$event->order->created_at} выполнен";
         $productTypes = $event->order->orderPerformers->pluck('productTypes')->flatten(1);
         $mail = new MailOrderStoredReceivedCanceled($text, $productTypes);
-        Mail::to(session('user.email'))->send($mail);
+        Mail::to($event->order->user->email)->send($mail);
     }
 
     public function handleOrderPerformerReceived(OrderPerformerReceived $event): void
@@ -56,7 +57,7 @@ class OrderNotificationSubscriber
             Мы уже отправили денежные средства по реквизитам, с которых произведена оплата.";
         $productTypes = $event->order->orderPerformers->pluck('productTypes')->flatten(1);
         $mail = new MailOrderStoredReceivedCanceled($text, $productTypes);
-        Mail::to(session('user.email'))->send($mail);
+        Mail::to($event->order->user->email)->send($mail);
     }
 
     public function handleOrderPerformerCanceled(OrderPerformerCanceled $event): void

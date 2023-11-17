@@ -50,7 +50,7 @@
                                         <td>
                                             <a href="{{ route('admin.products.show', $product->id) }}">{{ $product->title }}</a>
                                         </td>
-                                        <td>{{ $product->category->title_rus }}</td>
+                                        <td>{{ $product->category->title }}</td>
                                         @can('role', [User::class, User::ROLE_ADMIN])
                                             <td>
                                                 <a href="{{ route('users.show', $product->saler_id) }}">{{$product->saler_id}}</a>

@@ -43,7 +43,7 @@
                                                 @foreach($values as $value)
                                                     <option value="{{ $value->id }}"
                                                         @selected(
-                                                            session()->has('_old_input')
+                                                            session()->exists('_old_input')
                                                             ? in_array($value->id, old('relations.optionValues'))
                                                             : $productType->optionValues->contains($value->id)
                                                         )>{{ $value->value }}</option>
@@ -65,7 +65,7 @@
                                 <tr>
                                     <td>Опубликовать</td>
                                     <td><input style="width:50px;" type="checkbox" name="is_published" value='1'
-                                               class="form-control" @checked(session()->has('_old_input') ? old('is_published') : $productType->is_published)>
+                                               class="form-control" @checked(session()->exists('_old_input') ? old('is_published') : $productType->is_published)>
                                     </td>
                                 </tr>
                                 <tr>

@@ -51,9 +51,9 @@
                             <label>Категории</label>
                             <select name="category_ids[]" class="categories" multiple="multiple" style="width: 100%;"
                                     required>
-                                @foreach($categories as $category_id => $category_title_rus)
+                                @foreach($categories as $category_id => $category_title)
                                     <option
-                                        value="{{ $category_id }}" @selected($property->categories->contains($category_id))>{{ $category_title_rus }}</option>
+                                        value="{{ $category_id }}" @selected($property->categories->contains($category_id))>{{ $category_title }}</option>
                                 @endforeach
                             </select>
                         </div>

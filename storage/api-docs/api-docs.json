@@ -242,7 +242,7 @@
                                         "type": "integer",
                                         "example": 1000
                                     },
-                                    "payment_id": {
+                                    "pay_id": {
                                         "type": "null|string",
                                         "example": "123a-dasi-wa5i"
                                     },
@@ -473,7 +473,7 @@
                 ]
             }
         },
-        "/api/orders/delete{orderPerformer}": {
+        "/api/orders/delete/{orderPerformer}": {
             "delete": {
                 "tags": [
                     "orders"
@@ -1243,10 +1243,6 @@
                                                     "type": "string",
                                                     "example": "chokolate"
                                                 },
-                                                "title_rus": {
-                                                    "type": "string",
-                                                    "example": "Шоколад ручной работы"
-                                                },
                                                 "created_at": {
                                                     "format": "date",
                                                     "example": "2023-06-28T12:03:41.000000Z"
@@ -1584,10 +1580,6 @@
                                                         "title": {
                                                             "type": "string",
                                                             "example": "chokolate"
-                                                        },
-                                                        "title_rus": {
-                                                            "type": "string",
-                                                            "example": "Шоколад ручной работы"
                                                         }
                                                     },
                                                     "type": "object"
@@ -1791,7 +1783,7 @@
                                     "properties": {
                                         "": {
                                             "type": "string",
-                                            "example": "https://yookassa.com/qwerty123"
+                                            "example": "https://yoomoney.ru/qwerty123"
                                         }
                                     },
                                     "type": "object"

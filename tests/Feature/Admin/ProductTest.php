@@ -14,13 +14,13 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
+use Tests\Feature\Trait\PrepareForTestWithSeedTrait;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
 
-    use StorageDbPrepareForTestTrait;
+    use PrepareForTestWithSeedTrait;
 
     /**@test */
     public function test_a_product_can_be_viewed_any_with_premissions(): void
@@ -30,18 +30,16 @@ class ProductTest extends TestCase
 
         $this->get($route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($route)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertViewIs('admin.product.index');
-            session()->flush();
         }
     }
 
@@ -56,23 +54,20 @@ class ProductTest extends TestCase
 
         $this->get($another_route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($another_route)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertViewIs('admin.product.show');
-            session()->flush();
         }
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($another_route)->assertViewIs('admin.product.show');
-        session()->flush();
     }
 
     /**@test */
@@ -83,18 +78,16 @@ class ProductTest extends TestCase
 
         $this->get($route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($route)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertViewIs('admin.product.create.index');
-            session()->flush();
         }
     }
 
@@ -113,18 +106,16 @@ class ProductTest extends TestCase
 
         $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route . '?' . $data)->assertViewIs('admin.product.create.relations');
-            session()->flush();
         }
     }
 
@@ -142,20 +133,18 @@ class ProductTest extends TestCase
 
         $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->from(route('admin.products.create.relations'))
                 ->get($route . '?' . $data)
                 ->assertViewIs('admin.product.create.types');
-            session()->flush();
         }
     }
 
@@ -206,19 +195,17 @@ class ProductTest extends TestCase
 
         session($session);
         $this->post($route, $data)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         session($session);
         $this->actingAs($user)->post($route, $data)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $session['create']['product']['title'] = Str::random(5);
             session($session);
             $this->actingAs($user)->post($route, $data);
@@ -238,12 +225,12 @@ class ProductTest extends TestCase
                 ->each(function (ProductType $productType) {
                     $this->assertModelExists($productType);
                     /** @phpstan-ignore-next-line */
+                    /** @noinspection PhpUndefinedFieldInspection */
                     $this->assertTrue($productType->product_images_exists && $productType->option_values_exists);
-                    $this->assertTrue(Storage::exists($productType->preview_image));
+                    Storage::assertExists($productType->preview_image);
                 });
             $this->actingAs($user)->delete(route('admin.products.destroy', $product->id));
             $this->assertModelMissing($product);
-            session()->flush();
         }
     }
 
@@ -257,28 +244,25 @@ class ProductTest extends TestCase
         $another_route = route('admin.products.edit', $another_product->id);
         $this->get($another_route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($another_route)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_SALER;
-        $user->save();
+        session(['user.role' => User::ROLE_SALER]);
+        $user->update(['role' => User::ROLE_SALER]);
         $this->actingAs($user)->get($another_route)->assertForbidden();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)
                 ->assertViewIs('admin.product.edit.index');
-            session()->flush();
         }
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($another_route)
             ->assertViewIs('admin.product.edit.index');
     }
@@ -299,19 +283,17 @@ class ProductTest extends TestCase
 
         $this->get($route . '?' . $data)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->get($route . '?' . $data)->assertNotFound();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route . '?' . $data)
                 ->assertViewIs('admin.product.edit.relations');
-            session()->flush();
         }
     }
 
@@ -338,25 +320,22 @@ class ProductTest extends TestCase
 
         session($session);
         $this->patch($route, $data)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         session($session);
         $this->actingAs($user)->patch($route, $data)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_SALER;
-        $user->save();
+        session(['user.role' => User::ROLE_SALER]);
+        $user->update(['role' => User::ROLE_SALER]);
         session($session);
         $this->actingAs($user)->patch($route, $data)->assertForbidden();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $data['tags'] = Tag::query()->inRandomOrder()->take(3)->pluck('id')->all();
             $data['propertyValues'] = PropertyValue::query()->inRandomOrder()->groupBy('property_id')->take(2)->pluck('value',
                 'property_id')->all();
@@ -369,12 +348,11 @@ class ProductTest extends TestCase
                 ->assertRedirectToRoute('admin.products.show', $product->id);
             $product->refresh()->load('propertyValues', 'optionValues');
             $this->assertEquals($session['edit']['title'], $product->title);
-            $this->assertTrue($product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues'])->isEmpty());
-            $this->assertTrue($product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1))->isEmpty());
-            session()->flush();
+            $this->assertEmpty($product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues']));
+            $this->assertEmpty($product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1)));
         }
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $data['tags'] = Tag::query()->inRandomOrder()->take(3)->pluck('id')->all();
         $data['propertyValues'] = PropertyValue::query()->inRandomOrder()->groupBy('property_id')->take(2)->pluck('value',
             'property_id')->all();
@@ -387,10 +365,9 @@ class ProductTest extends TestCase
 
         $another_product->refresh()->load('propertyValues', 'optionValues');
         $this->assertEquals($session['edit']['title'], $another_product->title);
-        $this->assertTrue($another_product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues'])->isEmpty());
-        $this->assertTrue($another_product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1))->isEmpty());
+        $this->assertEmpty($another_product->propertyValues->pluck('value', 'property_id')->diffAssoc($data['propertyValues']));
+        $this->assertEmpty($another_product->optionValues->pluck('id')->diff(Arr::flatten($data['optionValues'], 1)));
 
-        session()->flush();
     }
 
     /**@test */
@@ -404,24 +381,21 @@ class ProductTest extends TestCase
 
         $this->delete($another_route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->delete($another_route)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_SALER;
-        $user->save();
+        session(['user.role' => User::ROLE_SALER]);
+        $user->update(['role' => User::ROLE_SALER]);
         $this->actingAs($user)->delete($another_route)->assertForbidden();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $product = $user->products()->first();
             $this->actingAs($user)->delete(route('admin.products.destroy', $product->id))->assertViewIs('admin.product.index');
-            session()->flush();
             $product->load(['optionValues', 'propertyValues', 'tags', 'productTypes']);
             $this->assertEmpty($product->optionValues);
             $this->assertEmpty($product->propertyValues);
@@ -429,10 +403,9 @@ class ProductTest extends TestCase
             $this->assertEmpty($product->productTypes);
             $this->assertModelMissing($product);
         }
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->delete($another_route)->assertViewIs('admin.product.index');
-        session()->flush();
         $another_product->load(['optionValues', 'propertyValues', 'tags', 'productTypes']);
         $this->assertEmpty($another_product->optionValues);
         $this->assertEmpty($another_product->propertyValues);
@@ -451,37 +424,31 @@ class ProductTest extends TestCase
         $another_route = route('admin.products.publish', $another_product->id);
         $this->patch($another_route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
+        session(['user.role' => User::ROLE_CLIENT]);
+        $user->update(['role' => User::ROLE_CLIENT]);
         $this->actingAs($user)->patch($another_route)->assertNotFound();
-        session()->flush();
 
-        $user->role = User::ROLE_SALER;
-        $user->save();
+        session(['user.role' => User::ROLE_SALER]);
+        $user->update(['role' => User::ROLE_SALER]);
         $this->actingAs($user)->patch($another_route)->assertForbidden();
-        session()->flush();
 
         $this->withoutExceptionHandling();
 
         for ($i = 1; $i <= 2; $i++) {
             $product->productTypes()->update(['is_published' => 1]);
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->patch($route)->assertRedirect();
             $this->assertFalse($product->productTypes()->where('is_published', 1)->exists());
-            session()->flush();
             $this->actingAs($user)->patch($route, ['publish' => 'on'])->assertRedirect();
             $this->assertFalse($product->productTypes()->where('is_published', 0)->exists());
-            session()->flush();
         }
         $product->productTypes()->update(['is_published' => 1]);
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->patch($another_route)->assertRedirect();
         $this->assertFalse($another_product->productTypes()->where('is_published', 1)->exists());
-        session()->flush();
         $this->actingAs($user)->patch($another_route, ['publish' => 'on'])->assertRedirect();
         $this->assertFalse($another_product->productTypes()->where('is_published', 0)->exists());
-        session()->flush();
     }
 }

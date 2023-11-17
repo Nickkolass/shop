@@ -55,9 +55,9 @@
                                         required>
                                     <option selected disabled>Категория</option>
                                     <h4 hidden>{{$old_category = old('category_id', $product->category_id)}}</h4>
-                                    @foreach($data['categories'] as $category_id => $category_title_rus)
+                                    @foreach($data['categories'] as $category_id => $category_title)
                                         <option
-                                            value="{{ $category_id }}" @selected($old_category == $category_id)>{{ $category_title_rus }}</option>
+                                            value="{{ $category_id }}" @selected($old_category == $category_id)>{{ $category_title }}</option>
                                     @endforeach
                                 </select>
                             </div>

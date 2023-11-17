@@ -21,7 +21,7 @@ class ProductShowService
                 'product' => function ($product) {
                     $product
                         ->with([
-                            'category:id,title,title_rus',
+                            'category:id,title',
                             'productTypes:id,product_id,is_published,preview_image',
                             'propertyValues' => function (Builder $q) {
                                 /** @phpstan-ignore-next-line */

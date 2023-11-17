@@ -42,11 +42,6 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="text" name="title_rus" , value="{{ $category->title_rus }}" class="form-control"
-                               placeholder="Наименование">
-                    </div>
-
-                    <div class="form-group">
                         <input type="submit" class="btn-primary" value="Редактировать">
                     </div>
 

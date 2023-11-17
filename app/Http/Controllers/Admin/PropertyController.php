@@ -38,7 +38,7 @@ class PropertyController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::query()->pluck('title_rus', 'id');
+        $categories = Category::query()->pluck('title', 'id');
         return view('admin.property.create', compact('categories'));
     }
 
@@ -63,8 +63,8 @@ class PropertyController extends Controller
      */
     public function edit(Property $property): View
     {
-        $property->load('propertyValues:property_id,value', 'categories:id,title_rus');
-        $categories = Category::query()->pluck('title_rus', 'id');
+        $property->load('propertyValues:property_id,value', 'categories:id,title');
+        $categories = Category::query()->pluck('title', 'id');
         return view('admin.property.edit', compact('property', 'categories'));
     }
 
@@ -90,7 +90,7 @@ class PropertyController extends Controller
      */
     public function show(Property $property): View
     {
-        $property->load('propertyValues:property_id,value', 'categories:title_rus');
+        $property->load('propertyValues:property_id,value', 'categories:title');
         return view('admin.property.show', compact('property'));
     }
 

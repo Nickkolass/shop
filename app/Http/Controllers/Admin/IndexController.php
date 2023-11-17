@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OrderPerformer;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -15,8 +14,7 @@ class IndexController extends Controller
 
     public function __invoke(): View
     {
-        /** @var User $user */
-        $user = auth()->user();
+        $user = auth()->user()->getModel();
 
         $data['orders'] = $user->orderPerformers()
             ->toBase()

@@ -24,7 +24,6 @@ services:
             - PHP_IDE_CONFIG=serverName=xdebug
         depends_on:
             - db
-            - db_testing
         container_name: shop_app
 
     db:
@@ -40,19 +39,6 @@ services:
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         container_name: shop_db
 
-    db_testing:
-        image: mysql:8.0
-        restart: always
-        volumes:
-            - ./tmp/db_testing:/var/lib/mysql_testing
-        environment:
-            MYSQL_DATABASE: ${DB_USERNAME}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - 8102:${DB_PORT}
-        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-        container_name: shop_db_testing
-
     phpmyadmin:
         image: phpmyadmin:latest
         restart: always
@@ -62,7 +48,6 @@ services:
             - PMA_ARBITRARY=1
         depends_on:
             - db
-            - db_testing
         container_name: shop_phpmyadmin
 
     redis:

@@ -11,7 +11,7 @@
                                 alt="">
                             <div class="text-content">
                                 <p><strong>
-                                        <h2>{{$category['title_rus']}}</h2>
+                                        <h2>{{$category['title']}}</h2>
                                     </strong></p>
                             </div>
                         </a>

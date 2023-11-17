@@ -2,8 +2,8 @@
 
 namespace App\Services\Admin\OrderPerformer;
 
-use App\Events\Order\OrderCanceled;
-use App\Events\Order\OrderPerformerCanceled;
+use App\Events\OrderCanceled;
+use App\Events\OrderPerformerCanceled;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\ProductType;
@@ -38,13 +38,15 @@ class OrderPerformerService
 
     public function show(OrderPerformer $order): void
     {
-        $order->load('saler:users.id,name', 'order:id,status');
+        $order->load(['saler:users.id,name', 'order' => function ($q) {
+            $q->select('id', 'status')->withTrashed();
+        }]);
         $this->service->getProductsForShow($order);
     }
 
     public function update(OrderPerformer $order): void
     {
-        $order->increment('status');
+        $order->newQuery()->increment('status');
     }
 
     public function delete(OrderPerformer $order, bool $canceler_is_client = false): void
@@ -71,7 +73,7 @@ class OrderPerformerService
                 return ['id' => $id, 'count' => $count + (int)$productTypes[$id], 'is_published' => true];
             })
             ->all();
-        ProductType::upsert($type_upd, 'id');
+        ProductType::query()->upsert($type_upd, 'id');
         return $this;
     }
 

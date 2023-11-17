@@ -34,14 +34,4 @@ class UserService
     {
         $user->update(['password' => Hash::make($new_password)]);
     }
-
-    /**
-     * @param User $user
-     * @param array{payout_token: string, first6: int, last4: int, card_type: string, issuer_country: string} $card
-     * @return void
-     */
-    public function cardUpdate(User $user, array $card): void
-    {
-        $user->update(['card' => $card]);
-    }
 }

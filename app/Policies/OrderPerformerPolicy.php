@@ -2,14 +2,14 @@
 
 namespace App\Policies;
 
+use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\User;
-use App\Policies\Trait\IsAdmin;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OrderPerformerPolicy
 {
-    use HandlesAuthorization, IsAdmin;
+    use HandlesAuthorization;
 
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class OrderPerformerPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isSaler();
+        return true;
     }
 
     /**
@@ -31,7 +31,7 @@ class OrderPerformerPolicy
      */
     public function view(User $user, OrderPerformer $orderPerformer): bool
     {
-        return $orderPerformer->saler_id == $user->id;
+        return $user->isAdmin() || $orderPerformer->saler_id == $user->id;
     }
 
     /**
@@ -43,7 +43,7 @@ class OrderPerformerPolicy
      */
     public function update(User $user, OrderPerformer $orderPerformer): bool
     {
-        return $orderPerformer->saler_id == $user->id;
+        return $user->isAdmin() || $orderPerformer->saler_id == $user->id;
     }
 
     /**
@@ -57,7 +57,7 @@ class OrderPerformerPolicy
     public function delete(User $user, OrderPerformer $orderPerformer, bool $canceler_is_client = false): bool
     {
         $id = $canceler_is_client ? $orderPerformer->user_id : $orderPerformer->saler_id;
-        return $user->id == $id;
+        return $user->isAdmin() || $user->id == $id;
     }
 
     /**
@@ -65,11 +65,11 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return false
+     * @return bool
      */
     public function restore(User $user, OrderPerformer $orderPerformer): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -77,10 +77,27 @@ class OrderPerformerPolicy
      *
      * @param User $user
      * @param OrderPerformer $orderPerformer
-     * @return false
+     * @return bool
      */
     public function forceDelete(User $user, OrderPerformer $orderPerformer): bool
     {
-        return false;
+        return $user->isAdmin();
+    }
+
+    /**
+     * Determine whether the saler can permanently payout.
+     *
+     * @param User $user
+     * @param OrderPerformer $orderPerformer
+     * @return bool
+     */
+    public function payout(User $user, OrderPerformer $orderPerformer): bool
+    {
+        return
+            !$orderPerformer->payout_id
+            && !$orderPerformer->trashed()
+            && ($user->id == $orderPerformer->saler_id || ($user->isAdmin() && app()->environment('local')))
+            && $orderPerformer->status == OrderPerformer::STATUS_RECEIVED
+            && ($orderPerformer->order->status ?? $orderPerformer->order()->pluck('status')[0]) == Order::STATUS_COMPLETED;
     }
 }

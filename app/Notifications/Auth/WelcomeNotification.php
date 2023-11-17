@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Mail;
 class WelcomeNotification
 {
 
-    public function handle(Registered $event): void
+    public function __construct(public readonly Registered $event)
     {
-        Mail::to($event->user)->send(new MailWelcomeQueue($event->user->password_generated ?? null));
+    }
+
+    public function handle(): void
+    {
+        Mail::to($this->event->user)->send(new MailWelcomeQueue($this->event->user->password_generated ?? null));
     }
 }

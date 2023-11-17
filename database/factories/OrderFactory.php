@@ -15,7 +15,7 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $user = User::query()->inRandomOrder()->select('id', 'address', 'card')->first();
+        $user = User::query()->inRandomOrder()->select('id', 'address')->first();
         $productTypes = ProductType::query()
             ->with('product:id,saler_id')
             ->select('id', 'product_id', 'price')
@@ -38,7 +38,7 @@ class OrderFactory extends Factory
             'user_id' => $user->id,
             'productTypes' => $productTypes->all(),
             'delivery' => $user->address,
-            'total_price' => $productTypes->pluck('price')->sum(),
+            'total_price' => $productTypes->sum('price'),
         ];
     }
 }

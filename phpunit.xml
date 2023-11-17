@@ -21,7 +21,7 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_HOST" value="db_testing"/>
+        <env name="DB_DATABASE" value="shop_testing"/>
         <env name="FILESYSTEM_DISK" value="testing"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

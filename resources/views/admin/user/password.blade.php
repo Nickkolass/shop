@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends(
     \Illuminate\Support\Facades\Gate::check('role', [User::class, User::ROLE_SALER])
     ? 'admin.layouts.main'

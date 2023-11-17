@@ -88,43 +88,6 @@ a.filled-button:hover {
 	margin-bottom: 15px;
 }
 
-
-.chokolate {
-	background-image: url(../../storage/view/chokolate.jpg);
-}
-
-.candle {
-	background-image: url(../../storage/view/candle.jpg);
-}
-
-.soap {
-	background-image: url(../../storage/view/soap.jpg);
-}
-
-.aromahome {
-	background-image: url(../../storage/view/aromahome.jpg);
-}
-
-.aroma {
-	background-image: url(../../storage/view/aroma.jpg);
-}
-
-.about {
-	background-image: url(../../storage/view/about.jpg);
-}
-
-.cart {
-	background-image: url(../../storage/view/cart.jpg);
-}
-
-.orders {
-	background-image: url(../../storage/view/orders.jpg);
-}
-
-.liked {
-    background-image: url(../../storage/view/liked.jpg);
-}
-
 .page-heading {
 	padding: 210px 0px 130px 0px;
 	text-align: center;
@@ -146,6 +109,42 @@ a.filled-button:hover {
 	font-size: 62px;
 	text-transform: uppercase;
 	letter-spacing: 5px;
+}
+
+.header-chokolate {
+    background-image: url(../../storage/view/chokolate.jpg);
+}
+
+.header-candle {
+    background-image: url(../../storage/view/candle.jpg);
+}
+
+.header-soap {
+    background-image: url(../../storage/view/soap.jpg);
+}
+
+.header-aromahome {
+    background-image: url(../../storage/view/aromahome.jpg);
+}
+
+.header-aroma {
+    background-image: url(../../storage/view/aroma.jpg);
+}
+
+.header-about {
+    background-image: url(../../storage/view/about.jpg);
+}
+
+.header-cart {
+    background-image: url(../../storage/view/cart.jpg);
+}
+
+.header-orders {
+    background-image: url(../../storage/view/orders.jpg);
+}
+
+.header-liked {
+    background-image: url(../../storage/view/liked.jpg);
 }
 
 #preloader {

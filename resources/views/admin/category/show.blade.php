@@ -48,13 +48,8 @@
                                 </tr>
 
                                 <tr>
-                                    <td>title</td>
-                                    <td>{{ $category->title }}</td>
-                                </tr>
-
-                                <tr>
                                     <td>Наименование</td>
-                                    <td>{{ $category->title_rus }}</td>
+                                    <td>{{ $category->title }}</td>
                                 </tr>
 
                             </table>

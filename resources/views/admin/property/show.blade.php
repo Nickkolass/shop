@@ -48,14 +48,14 @@
                                 </tr>
 
                                 <tr>
-                                    <td>Характеристика</td>
+                                    <td>Наименование</td>
                                     <td>{{ $property->title }}</td>
                                 </tr>
 
                                 <tr>
                                     <td>Категории</td>
                                     <td>@foreach ($property->categories as $category)
-                                            {{$category->title_rus}}<br>
+                                            {{$category->title}}<br>
                                         @endforeach
                                     </td>
                                 </tr>

@@ -3,7 +3,6 @@
 namespace App\Services\Client\API\Order;
 
 use App\Models\Order;
-use App\Models\OrderPerformer;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -48,15 +47,9 @@ class OrderService
                 }, 'saler_name')
                 ->withTrashed();
         }])
-            ->setAttribute('refundable',
-                isset($order->payment_id)
-                && is_null($order->refund_id)
-                && ($order->status == Order::STATUS_COMPLETED || $order->status == Order::STATUS_CANCELED)
-                && !empty($order->orderPerformers->firstWhere('status', OrderPerformer::STATUS_CANCELED)))
-            ->setAttribute('cancelable',
-                is_null($order->refund_id)
-                && ($order->status == Order::STATUS_WAIT_PAYMENT || $order->status == Order::STATUS_PAID)
-                && empty($order->orderPerformers->firstWhere('status', OrderPerformer::STATUS_SENT)));
+            ->setAttribute('refundable', Gate::check('refund', $order))
+            ->setAttribute('cancelable', Gate::check('delete', $order));
+
         $this->service->getProductsForShow2($order);
     }
 }

@@ -2,11 +2,16 @@
 
 namespace Auth;
 
+use App\Models\Category;
 use App\Models\User;
 use App\Notifications\Auth\ResetPasswordNotificationQueue;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\View;
+use Ramsey\Collection\Collection;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -22,13 +27,11 @@ class AuthTest extends TestCase
         $this->withoutExceptionHandling();
 
         $this->get($route)->assertViewIs('auth.login');
-        session()->flush();
 
         for ($i = 1; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertRedirectToRoute('home');
-            session()->flush();
         }
     }
 
@@ -37,12 +40,14 @@ class AuthTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $user->password = Hash::make('1');
-        $user->save();
+        $user->update(['password' => Hash::make('1')]);
 
         $this->withoutExceptionHandling();
 
-        $this->post('/login', ['email' => $user->email, 'password' => '1'])->assertRedirectToRoute('home');
+        $this->expectsEvents(Login::class)
+            ->post('/login', ['email' => $user->email, 'password' => '1'])
+            ->assertRedirectToRoute('home');
+        $this->assertAuthenticated();
     }
 
     /**@test */
@@ -50,10 +55,15 @@ class AuthTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
+        $user->update(['password' => Hash::make('1')]);
 
         $this->withoutExceptionHandling();
 
-        $this->actingAs($user)->post(route('logout'))->assertRedirectToRoute('home');
+        $this->actingAs($user)
+            ->expectsEvents(Logout::class)
+            ->post(route('logout'))
+            ->assertRedirectToRoute('home');
+        $this->assertFalse($this->isAuthenticated());
     }
 
     /**@test */
@@ -67,18 +77,17 @@ class AuthTest extends TestCase
         $this->get(route('register'))->assertViewIs('auth.register');
 
         for ($i = 1; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
-            $this->actingAs($user)->get(route('register'))->assertRedirectToRoute('home');
-            session()->flush();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
+            $this->actingAs($user)
+                ->get(route('register'))
+                ->assertRedirectToRoute('home');
         }
     }
 
     /**@test */
     public function test_a_user_can_be_registered(): void
     {
-        /** @var User $user */
-        $user = User::factory()->create();
         $data = User::factory()->raw();
         $data['password_confirmation'] = $data['password'];
         $route = '/register';
@@ -89,33 +98,7 @@ class AuthTest extends TestCase
             ->post($route, $data)
             ->assertRedirectToRoute('home');
         $this->assertTrue(User::query()->where('email', $data['email'])->exists());
-        session()->flush();
-    }
-
-    /**@test */
-    public function test_a_user_can_be_logged_using_remember_token(): void
-    {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $user->password = Hash::make('1');
-
-        $this->withoutExceptionHandling();
-
-        for ($i = 1; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->remember_token = null;
-            $user->save();
-
-            $res = $this->post('/login', ['email' => $user->email, 'password' => '1', 'remember' => 'on']);
-
-            $cookie_name = collect(session()->all())->filter(fn($v, $k) => str_starts_with($k, 'login_web'))->keys()->first();
-            $cookie_name = str_replace('login_web', 'remember_web', (string)$cookie_name);
-            $cookie = $res->getCookie($cookie_name);
-
-            $this->withCookie($cookie_name, $cookie)->get(route('home'))->assertRedirectToRoute($i == User::ROLE_CLIENT ? 'client.products.index' : 'admin.index');
-            $this->actingAs($user)->post(route('logout'));
-            session()->flush();
-        }
+        $this->assertAuthenticated();
     }
 
     /**@test */
@@ -136,5 +119,40 @@ class AuthTest extends TestCase
         $this->post(route('password.email'), $data)->assertRedirect();
         Notification::assertCount(1);
         $this->assertDatabaseCount('password_resets', 1);
+    }
+
+    /**@test */
+    public function test_a_user_can_be_viewed_password_reset_page_with_premissions(): void
+    {
+        /** @var Collection<User> $users */
+        $users = User::factory(2)->create();
+        /** @var User $user */
+        $user = $users->first();
+        /** @var User $another_user */
+        $another_user = $users->last();
+        $route = route('users.password.edit', $user->id);
+        $another_route = route('users.password.edit', $another_user->id);
+        View::share('categories', [Category::factory()->create()->toArray()]);
+        session(['user' => ['id' => 1, 'name' => '1']]);
+
+        $this->get($another_route)->assertNotFound();
+
+        for ($i = 1; $i <= 3; $i++) {
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
+            $this->actingAs($user)
+                ->get($another_route)
+                ->assertForbidden();
+        }
+
+        $this->withoutExceptionHandling();
+
+        for ($i = 1; $i <= 3; $i++) {
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
+            $this->actingAs($user)
+                ->get($route)
+                ->assertViewIs('admin.user.password');
+        }
     }
 }

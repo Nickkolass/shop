@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -11,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 class MailWelcomeQueue extends Mailable implements ShouldQueue
 {
-    use SerializesModels, Queueable;
+    use SerializesModels;
 
     public function __construct(public readonly ?string $password)
     {

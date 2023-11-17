@@ -33,7 +33,7 @@ class ProductService
             ->select('id', 'title', 'saler_id', 'category_id', 'rating', 'count_rating', 'count_comments')
             ->latest()
             ->with([
-                'category:id,title_rus',
+                'category:id,title',
                 'productTypes:id,product_id,preview_image',
             ])
             ->simplePaginate(4);
@@ -71,7 +71,7 @@ class ProductService
     public function show(Product $product): void
     {
         $product->load([
-            'category:id,title,title_rus',
+            'category:id,title',
             'tags:id,title',
             'propertyValues' => function (Builder $q) {
                 /** @phpstan-ignore-next-line */
@@ -130,6 +130,6 @@ class ProductService
             ->productTypes()
             ->where('count', '!=', 0)
             ->whereHas('optionValues', fn(Builder $q) => $q->whereIn('optionValues.id', $product->optionValues))
-            ->update(['is_published' => request()->has('publish')]);
+            ->update(['is_published' => request()->exists('publish')]);
     }
 }

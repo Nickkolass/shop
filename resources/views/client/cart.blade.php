@@ -2,7 +2,7 @@
 @extends('client.layouts.main')
 @section('content')
 
-    <div class="page-heading cart header-text">
+    <div class="page-heading header-cart header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">

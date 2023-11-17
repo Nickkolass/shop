@@ -6,10 +6,13 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\User;
+use Tests\Feature\Trait\PrepareForTestTrait;
 use Tests\TestCase;
 
 class TagTest extends TestCase
 {
+
+    use PrepareForTestTrait;
 
     /**@test */
     public function test_a_tag_can_be_viewed_any_with_premissions(): void
@@ -23,14 +26,14 @@ class TagTest extends TestCase
 
         for ($i = 2; $i <= 3; $i++) {
             $user->role = $i;
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.tag.index');
     }
 
@@ -44,16 +47,15 @@ class TagTest extends TestCase
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.tag.create');
     }
 
@@ -68,16 +70,15 @@ class TagTest extends TestCase
         $this->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->post($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->post($route, $data);
         $this->assertTrue(Tag::query()->where('title', $data['title'])->exists());
     }
@@ -94,16 +95,15 @@ class TagTest extends TestCase
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.tag.show');
     }
 
@@ -119,17 +119,16 @@ class TagTest extends TestCase
         $this->get(route('admin.tags.edit', $tag->id))->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
-            $this->actingAs($user)->get(route('admin.tags.edit', $tag->id))->assertNotFound();
-            session()->flush();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
+            $this->actingAs($user)->get($route)->assertNotFound();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
-        $this->actingAs($user)->get(route('admin.tags.edit', $tag->id))->assertViewIs('admin.tag.edit');
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
+        $this->actingAs($user)->get($route)->assertViewIs('admin.tag.edit');
     }
 
     /**@test */
@@ -145,16 +144,15 @@ class TagTest extends TestCase
         $this->patch($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->patch($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->patch($route, $data);
         $this->assertEquals($data['title'], Tag::query()->first()->title);
     }
@@ -166,7 +164,7 @@ class TagTest extends TestCase
         $user = User::factory()->create();
         /** @var Tag $tag */
         $tag = Tag::factory()->create();
-        Category::query()->create(['title' => 'assdg', 'title_rus' => 'asdasd']);
+        Category::factory()->create();
         /** @phpstan-ignore-next-line */
         Product::factory()->create()->tags()->attach($tag);
         $route = route('admin.tags.destroy', $tag->id);
@@ -174,16 +172,15 @@ class TagTest extends TestCase
         $this->delete($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->delete($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->delete($route)->assertRedirectToRoute('admin.tags.index');
 
         $this->assertModelMissing($tag)
