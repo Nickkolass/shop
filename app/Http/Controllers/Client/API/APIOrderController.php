@@ -35,7 +35,7 @@ class APIOrderController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreRequest $request
-     * @return string $payment_url
+     * @return string $pay_url
      */
     public function store(StoreRequest $request): string
     {
@@ -74,7 +74,7 @@ class APIOrderController extends Controller
      */
     public function destroy(Order $order): void
     {
-        $this->DBservice->delete($order, request()->input('due_to_payment', false));
+        $this->DBservice->delete($order, request()->input('due_to_pay', false));
     }
 
     /**

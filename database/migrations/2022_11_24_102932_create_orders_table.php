@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('delivery');
             $table->unsignedMediumInteger('total_price');
             $table->unsignedTinyInteger('status')->default(Order::STATUS_WAIT_PAYMENT);
-            $table->string('payment_id')->nullable();
+            $table->string('pay_id')->nullable();
             $table->string('refund_id')->nullable();
             $table->softDeletes();
             $table->timestamps();

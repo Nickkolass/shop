@@ -92,18 +92,31 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can action to productType.
+     * Determine whether the user can action different password.
      *
      * @param User $user
+     * @param User $model
      * @return bool
      */
-    public function password(User $user): bool
+    public function password(User $user, User $model): bool
     {
-        return $user->id == request()->route()->originalParameter('user');
+        return $user->id == $model->id;
     }
 
     /**
-     * Determine whether the user can action to productType.
+     * Determine whether the user can action different card.
+     *
+     * @param User $user
+     * @param User $model
+     * @return bool
+     */
+    public function card(User $user, User $model): bool
+    {
+        return $user->id == $model->id;
+    }
+
+    /**
+     * Determine whether the user can action to product.
      *
      * @param User $user
      * @return bool
@@ -114,7 +127,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can action to productType.
+     * Determine whether the user can role action.
      *
      * @param User $user
      * @param int $role
@@ -123,5 +136,16 @@ class UserPolicy
     public function role(User $user, int $role): bool
     {
         return $user->role <= $role;
+    }
+
+    /**
+     * Determine whether the user is verified.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function verify(User $user): bool
+    {
+        return $user->hasVerifiedEmail();
     }
 }

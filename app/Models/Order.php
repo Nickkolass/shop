@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
  * @property string $delivery
  * @property int $total_price
  * @property int $status
- * @property ?string $payment_id
+ * @property ?string $pay_id
  * @property ?string $refund_id
  * @property ?Carbon $deleted_at
  * @property Carbon $created_at

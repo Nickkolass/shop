@@ -29,7 +29,13 @@
                         <tbody>
                         <tr>
                             <td>Номер заказа</td>
-                            <td>{{ $order->id }}</td>
+                            <td>
+                                @can('role', [User::class, User::ROLE_ADMIN])
+                                    <a href="{{ route('client.orders.show', $order->order_id) }}">{{ $order->id }}</a>
+                                @else
+                                    {{ $order->id }}
+                                @endcan
+                            </td>
                         </tr>
 
                         <tr>
@@ -64,7 +70,7 @@
                                                         src="{{Storage::url($productType['preview_image'])}}"
                                                         style="height: 140px"></a></td>
                                             <td>Название: {{ $productType['product']['title'] }}<br>
-                                                Категория: {{ $productType['category']['title_rus'] }}<br>
+                                                Категория: {{ $productType['category']['title'] }}<br>
                                                 Количество: {{ $productType['amount'] }}<br>
                                                 Стоимость: {{ $productType['price'] }}<br>
                                                 Продавец:
@@ -72,9 +78,6 @@
                                                     <a class="linkclass disabled"
                                                        href="{{ route('users.show', $order->saler->id) }}"> {{ $order->saler->name }} </a>
                                                     <br>
-                                                    <a href="{{ route('client.orders.show', $order->order_id) }}">Перейти
-                                                        к
-                                                        заказу</a>
                                                 @else
                                                     {{ $order->saler->name }}
                                                 @endcan
@@ -109,7 +112,7 @@
                             @method('delete')
                             <input type="submit" class="btn btn-danger" value="Отказаться">
                         </form>
-                    @elseif(empty($order->payout_id) && in_array($order->order->status, [Order::STATUS_CANCELED, Order::STATUS_COMPLETED]))
+                    @elsecan('payout', $order)
                         <form action="{{route('admin.orders.payout', $order->id) }}" method="post">
                             @csrf
                             <input type="submit" class="btn btn-primary" value="Запросить выплату">

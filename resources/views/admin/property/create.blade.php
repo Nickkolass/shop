@@ -47,9 +47,9 @@
                             <label>Категория</label>
                             <select name="category_ids[]" id="categories" multiple="multiple" class="categories"
                                     style="width: 100%;" required>
-                                @foreach($categories as $category_id => $category_title_rus)
+                                @foreach($categories as $category_id => $category_title)
                                     <option
-                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids', [])))>{{ $category_title_rus }}
+                                        value="{{ $category_id }}" @selected(in_array($category_id, old('category_ids', [])))>{{ $category_title }}
                                     </option>
                                 @endforeach
                             </select>

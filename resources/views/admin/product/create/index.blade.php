@@ -50,9 +50,9 @@
                                 <select name="category_id" id="category_id" class="categories" style="width: 100%;"
                                         required>
                                     <option selected disabled>Категория</option>
-                                    @foreach($data['categories'] as $category_id => $category_title_rus)
+                                    @foreach($data['categories'] as $category_id => $category_title)
                                         <option
-                                            value="{{ $category_id }}" @selected(old('category_id')==$category_id)>{{ $category_title_rus }}</option>
+                                            value="{{ $category_id }}" @selected(old('category_id')==$category_id)>{{ $category_title }}</option>
                                     @endforeach
                                 </select>
                             </div>

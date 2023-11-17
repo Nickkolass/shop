@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Dto\Admin\UserDto;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\User\UserCardRequest;
 use App\Http\Requests\Admin\User\UserPasswordRequest;
 use App\Http\Requests\Admin\User\UserStoreRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
@@ -131,33 +130,6 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $this->service->passwordUpdate($user, $data['new_password']);
-        return redirect()->route('users.show', $user->id);
-    }
-
-    /**
-     * Bind card to user.
-     *
-     * @param User $user
-     * @return View
-     */
-    public function cardEdit(User $user): View
-    {
-        $this->authorize('update', $user);
-        return view('admin.user.card', compact('user'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UserCardRequest $request
-     * @param User $user
-     * @return RedirectResponse
-     */
-    public function cardUpdate(UserCardRequest $request, User $user): RedirectResponse
-    {
-        $this->authorize('update', $user);
-        $card = $request->validated()['card'];
-        $this->service->cardUpdate($user, $card);
         return redirect()->route('users.show', $user->id);
     }
 }

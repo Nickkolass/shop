@@ -1,11 +1,11 @@
 @extends('client.layouts.main')
 @section('content')
-    <div class="page-heading {{$product_type['product']['category']['title']}} header-text">
+    <div class="page-heading header-{{$product_type['product']['category']['title']}} header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-content">
-                        <h4>{{$product_type['product']['category']['title_rus']}}</h4>
+                        <h4>{{$product_type['product']['category']['title']}}</h4>
                         <h2>LUMOS</h2>
                     </div>
                 </div>

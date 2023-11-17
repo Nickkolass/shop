@@ -8,13 +8,13 @@ use App\Models\ProductType;
 use App\Models\User;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
-use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
+use Tests\Feature\Trait\PrepareForTestWithSeedTrait;
 use Tests\TestCase;
 
 class APIUserActiveTest extends TestCase
 {
 
-    use StorageDbPrepareForTestTrait;
+    use PrepareForTestWithSeedTrait;
 
     /**@test */
     public function test_a_product_can_be_liked(): void
@@ -23,16 +23,16 @@ class APIUserActiveTest extends TestCase
         $user = User::query()->first();
         $user->liked()->detach($productType_id);
         $route = route('back.api.products.likedToggle', $productType_id);
+        $jwt = $this->getJwt($user);
 
         $this->post($route)->assertUnauthorized();
 
         $this->withoutExceptionHandling();
 
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))->post($route)->assertOk();
+        $this->withHeader('Authorization', $jwt)->post($route)->assertOk();
         $this->assertTrue($user->liked()->where('productType_id', $productType_id)->exists());
 
-        $this->withHeader('Authorization', session('jwt'))->post($route)->assertOk();
+        $this->withHeader('Authorization', $jwt)->post($route)->assertOk();
         $this->assertFalse($user->liked()->where('productType_id', $productType_id)->exists());
     }
 
@@ -44,24 +44,24 @@ class APIUserActiveTest extends TestCase
         $product_id = Product::query()->first()->id;
         $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1];
         $route = route('back.api.products.commentStore', $product_id);
+        $jwt = $this->getJwt($user);
 
         $this->post($route, $data)->assertUnauthorized();
 
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))->post($route, $data);
+        $this->withHeader('Authorization', $jwt)->post($route, $data);
         $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
-        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertInvalid();
+        $this->withHeader('Authorization', $jwt)->post($route, $data)->assertInvalid();
         $user->ratingAndComments()->delete();
 
         $this->withoutExceptionHandling();
 
-        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->withHeader('Authorization', $jwt)->post($route, $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
 
         $product_id++;
         $route = route('back.api.products.commentStore', $product_id);
         $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1, 'message' => '1'];
-        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->withHeader('Authorization', $jwt)->post($route, $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
 
         $file = File::create('file.jpeg');
@@ -74,9 +74,9 @@ class APIUserActiveTest extends TestCase
         $product_id++;
         $route = route('back.api.products.commentStore', $product_id);
         $data = ['user_id' => $user->id, 'product_id' => $product_id, 'rating' => 1, 'message' => '1', 'comment_images' => [$img]];
-        $this->withHeader('Authorization', session('jwt'))->post($route, $data)->assertOk();
+        $this->withHeader('Authorization', $jwt)->post($route, $data)->assertOk();
         $this->assertTrue($user->ratingAndComments()->where('product_id', $product_id)->exists());
         $file_path = CommentImage::query()->latest('id')->first()->file_path;
-        $this->assertTrue(Storage::exists($file_path));
+        Storage::assertExists($file_path);
     }
 }

@@ -18,8 +18,8 @@ class ProductFactory extends Factory
         return [
             'title' => $this->faker->unique()->sentence(5),
             'description' => $this->faker->realText(),
-            'category_id' => Category::query()->take(1)->latest('id')->pluck('id')['0'],
-            'saler_id' => User::query()->take(1)->latest('id')->pluck('id')['0'],
+            'category_id' => Category::query()->take(1)->inRandomOrder()->pluck('id')['0'],
+            'saler_id' => User::query()->take(1)->inRandomOrder()->pluck('id')['0'],
         ];
     }
 }

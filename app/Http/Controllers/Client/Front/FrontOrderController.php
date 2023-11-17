@@ -24,10 +24,13 @@ class FrontOrderController extends Controller
     public function index(): View
     {
         $data['page'] = request('page', 1);
-        $orders = $this->httpClient->request('POST',
-            route('back.api.orders.index', '', false),
-            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])
-            ->getBody()->getContents();
+        $orders = $this->httpClient
+            ->setUri(route('back.api.orders.index', '', false))
+            ->setQuery($data)
+            ->setMethod('POST')
+            ->send()
+            ->getBody()
+            ->getContents();
         $orders = json_decode($orders, true);
 
         return view('client.order.index', compact('orders'));
@@ -42,12 +45,15 @@ class FrontOrderController extends Controller
     public function store(StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $payment_url = $this->httpClient->request('POST',
-            route('back.api.orders.store', '', false),
-            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]])
-            ->getBody()->getContents();
+        $pay_url = $this->httpClient
+            ->setUri(route('back.api.orders.store', '', false))
+            ->setQuery($data)
+            ->setMethod('POST')
+            ->send()
+            ->getBody()
+            ->getContents();
         session()->forget(['cart', 'filter', 'paginate']);
-        return redirect()->to($payment_url);
+        return redirect()->to($pay_url);
     }
 
     /**
@@ -58,10 +64,12 @@ class FrontOrderController extends Controller
      */
     public function show(int $order_id): View
     {
-        $order = $this->httpClient->request('POST',
-            route('back.api.orders.show', $order_id, false),
-            ['headers' => ['Authorization' => session('jwt')]])
-            ->getBody()->getContents();
+        $order = $this->httpClient
+            ->setUri(route('back.api.orders.show', $order_id, false))
+            ->setMethod('POST')
+            ->send()
+            ->getBody()
+            ->getContents();
         $order = json_decode($order, true);
         return view('client.order.show', compact('order'));
     }
@@ -74,9 +82,10 @@ class FrontOrderController extends Controller
      */
     public function update(int $order_id): RedirectResponse
     {
-        $this->httpClient->request('PATCH',
-            route('back.api.orders.update', $order_id, false),
-            ['headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setUri(route('back.api.orders.update', $order_id, false))
+            ->setMethod('PATCH')
+            ->send();
         return back();
     }
 
@@ -88,10 +97,11 @@ class FrontOrderController extends Controller
      */
     public function destroy(int $order_id): RedirectResponse
     {
-        $this->httpClient->request('DELETE',
-            route('back.api.orders.destroy', $order_id, false),
-            ['query' => ['due_to_payment' => request()->input('due_to_payment', false)],
-                'headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setUri(route('back.api.orders.destroy', $order_id, false))
+            ->setQuery(['due_to_pay' => request()->input('due_to_pay', false)])
+            ->setMethod('DELETE')
+            ->send();
         return back();
     }
 
@@ -103,9 +113,10 @@ class FrontOrderController extends Controller
      */
     public function destroyOrderPerformer(int $orderPerformer_id): RedirectResponse
     {
-        $this->httpClient->request('DELETE',
-            route('back.api.orders.destroyOrderPerformer', $orderPerformer_id, false),
-            ['headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setMethod('DELETE')
+            ->setUri(route('back.api.orders.destroyOrderPerformer', $orderPerformer_id, false))
+            ->send();
         return back();
     }
 
@@ -113,12 +124,15 @@ class FrontOrderController extends Controller
      * @param int $order_id
      * @return RedirectResponse
      */
-    public function payment(int $order_id): RedirectResponse
+    public function pay(int $order_id): RedirectResponse
     {
-        $payment_url = $this->httpClient->request('POST',
-            route('back.api.orders.payment', $order_id, false),
-            ['headers' => ['Authorization' => session('jwt')]])->getBody()->getContents();
-        return redirect()->to($payment_url);
+        $pay_url = $this->httpClient
+            ->setMethod('POST')
+            ->setUri(route('back.api.orders.pay', $order_id, false))
+            ->send()
+            ->getBody()
+            ->getContents();
+        return redirect()->to($pay_url);
     }
 
     /**
@@ -127,9 +141,10 @@ class FrontOrderController extends Controller
      */
     public function refund(int $order_id): RedirectResponse
     {
-        $this->httpClient->request('POST',
-            route('back.api.orders.refund', $order_id, false),
-            ['headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setMethod('POST')
+            ->setUri(route('back.api.orders.refund', $order_id, false))
+            ->send();
         return back();
     }
 }

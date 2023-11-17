@@ -2,15 +2,17 @@
 
 namespace Payment;
 
+use App\Events\OrderPaid;
+use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Models\User;
-use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
+use Tests\Feature\Trait\PrepareForTestWithSeedTrait;
 use Tests\TestCase;
 
 class PaymentTest extends TestCase
 {
 
-    use StorageDbPrepareForTestTrait;
+    use PrepareForTestWithSeedTrait;
 
     /**@test */
     public function test_a_order_can_be_paid(): void
@@ -18,73 +20,72 @@ class PaymentTest extends TestCase
         /** @var User $user */
         $user = User::query()->withWhereHas('orders')->first();
         $order = $user->orders->first();
-        $route = route('back.api.orders.payment', $order->id);
+        $route = route('back.api.orders.pay', $order->id);
+        $jwt = $this->getJwt($user);
 
         $this->post($route)->assertUnauthorized();
 
         $this->withoutExceptionHandling();
 
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))
+        $this->withHeader('Authorization', $jwt)
+            ->expectsEvents(OrderPaid::class)
             ->post($route)
-            ->assertOk();
+            ->assertOk()
+            ->assertContent(route('client.orders.index', '', false));
+        $this->assertNotNull($order->fresh()->pay_id);
+        $this->assertFalse($order->orderPerformers()->whereNot('status', OrderPerformer::STATUS_WAIT_DELIVERY)->exists());
     }
 
     /**@test */
     public function test_a_order_can_be_refund(): void
     {
+        $order = Order::query()->first();
         /** @var User $user */
-        $user = User::query()->withWhereHas('orders')->first();
-        $order = $user->orders->first();
-        $order->orderPerformers()->take(1)->delete();
+        $user = $order->user()->first();
         $route = route('back.api.orders.refund', $order->id);
+        $jwt = $this->getJwt($user);
+
         $this->post($route)->assertUnauthorized();
 
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))
+        $this->withHeader('Authorization', $jwt)
             ->post($route)
             ->assertOk();
+        $this->assertNull($order->fresh()->refund_id);
+
+        $this->withoutExceptionHandling();
+
+        $order->orderPerformers()->take(1)->delete();
+        $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_RECEIVED]);
+        $order->update(['pay_id' => uniqid('', true), 'status' => Order::STATUS_COMPLETED]);
+
+        $this->withHeader('Authorization', $jwt)
+            ->post($route)
+            ->assertOk();
+        $this->assertNotNull($order->fresh()->refund_id);
     }
 
     /**@test */
-    public function test_a_order_can_be_payout(): void
+    public function test_a_order_performer_can_be_payout(): void
     {
         $orderPerformer = OrderPerformer::query()->first();
         /** @var User $user */
         $user = $orderPerformer->saler()->first();
-        $another_orderPerformer = OrderPerformer::query()->firstWhere('saler_id', '!=', $user->id);
-
         $route = route('admin.orders.payout', $orderPerformer->id);
-        $another_route = route('admin.orders.payout', $another_orderPerformer->id);
-        $from = route('admin.orders.show', $orderPerformer->id);
-        $another_from = route('admin.orders.show', $another_orderPerformer->id);
 
         $this->post($route)->assertNotFound();
 
-        $user->role = User::ROLE_CLIENT;
-        $user->save();
-        $this->actingAs($user)->post($another_route)->assertNotFound();
-        session()->flush();
+        session(['user.role' => $user->role]);
+        $this->actingAs($user)->post($route)->assertForbidden();
 
-        $user->role = User::ROLE_SALER;
-        $user->save();
-        $this->actingAs($user)->post($another_route)->assertForbidden();
-        session()->flush();
+        $this->withoutExceptionHandling();
 
-        for ($i = 1; $i <= 2; $i++) {
-            $user->role = $i;
-            $user->save();
-            $this->actingAs($user)
-                ->from($from)
-                ->post($route)
-                ->assertRedirect($from);
-            session()->flush();
-        }
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        $orderPerformer->update(['status' => OrderPerformer::STATUS_RECEIVED, 'payout_id' => null]);
+        $orderPerformer->order()->update(['status' => Order::STATUS_COMPLETED]);
         $this->actingAs($user)
-            ->from($another_from)
-            ->post($another_route)
-            ->assertRedirect($another_from);
+            ->post($route)
+            ->assertRedirect();
+        $this->assertNotNull($orderPerformer->refresh()->payout_id);
+        $this->assertTrue($orderPerformer->status == OrderPerformer::STATUS_PAYOUT);
+        $orderPerformer->update(['status' => OrderPerformer::STATUS_RECEIVED, 'payout_id' => null]);
     }
 }

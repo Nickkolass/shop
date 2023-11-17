@@ -2,11 +2,9 @@
 
 namespace App\Providers;
 
-use App\Listeners\Payment\PaymentSubscriber;
-use App\Notifications\Auth\EmailVerificationNotificationQueue;
-use App\Notifications\Auth\WelcomeNotification;
+use App\Components\Payment\src\Listeners\PaymentSubscriber;
+use App\Listeners\Auth\AuthSubscriber;
 use App\Notifications\Order\OrderNotificationSubscriber;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -16,10 +14,6 @@ class EventServiceProvider extends ServiceProvider
      *
      */
     protected $listen = [
-        Registered::class => [
-            EmailVerificationNotificationQueue::class,
-            WelcomeNotification::class,
-        ],
     ];
 
     /**
@@ -28,6 +22,7 @@ class EventServiceProvider extends ServiceProvider
     protected $subscribe = [
         OrderNotificationSubscriber::class,
         PaymentSubscriber::class,
+        AuthSubscriber::class
     ];
 
     /**
@@ -45,7 +40,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return bool
      */
-    public function shouldDiscoverEvents()
+    public function shouldDiscoverEvents(): bool
     {
         return false;
     }

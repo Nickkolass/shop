@@ -6,10 +6,13 @@ use App\Models\Category;
 use App\Models\Property;
 use App\Models\PropertyValue;
 use App\Models\User;
+use Tests\Feature\Trait\PrepareForTestTrait;
 use Tests\TestCase;
 
 class PropertyTest extends TestCase
 {
+
+    use PrepareForTestTrait;
 
     /**@test */
     public function test_a_property_can_be_viewed_any_with_premissions(): void
@@ -20,16 +23,15 @@ class PropertyTest extends TestCase
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.property.index');
     }
 
@@ -38,21 +40,20 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        Category::factory()->create();
         $route = route('admin.properties.create');
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.property.create');
     }
 
@@ -61,26 +62,26 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $data = ['title' => 'asfas', 'category_ids' => [$category->id], 'propertyValues' => ['1', '2', '3']];
         $route = route('admin.properties.store');
 
         $this->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->post($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->post($route, $data);
         $this->assertModelExists($property = Property::query()->with('propertyValues')->firstWhere('title', $data['title']))
-            ->assertTrue($property->propertyValues->pluck('value')->diff($data['propertyValues'])->isEmpty());
+            ->assertEmpty($property->propertyValues->pluck('value')->diff($data['propertyValues']));
     }
 
     /**@test */
@@ -88,7 +89,8 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         $route = route('admin.properties.show', $property->id);
@@ -96,16 +98,15 @@ class PropertyTest extends TestCase
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.property.show');
     }
 
@@ -114,23 +115,23 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         $route = route('admin.properties.edit', $property->id);
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.property.edit');
     }
 
@@ -139,7 +140,8 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         PropertyValue::factory(4)->create();
@@ -148,19 +150,18 @@ class PropertyTest extends TestCase
         $this->patch($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->patch($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->patch($route, $data);
         $this->assertModelExists($property = Property::query()->with('propertyValues')->firstWhere('title', $data['title']))
-            ->assertTrue($property->propertyValues->pluck('value')->diff($data['propertyValues'])->isEmpty());
+            ->assertEmpty($property->propertyValues->pluck('value')->diff($data['propertyValues']));
     }
 
     /**@test */
@@ -168,7 +169,8 @@ class PropertyTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $property = Property::query()->create(['title' => 'sadfsdf']);
         $property->categories()->attach($category);
         PropertyValue::factory()->create();
@@ -176,16 +178,15 @@ class PropertyTest extends TestCase
         $this->delete($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->delete($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->delete($route)->assertRedirectToRoute('admin.properties.index');
         $this->assertModelMissing($property)
             ->assertFalse($property->propertyValues()->exists());

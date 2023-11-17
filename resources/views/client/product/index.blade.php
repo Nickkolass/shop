@@ -1,12 +1,12 @@
 @extends('client.layouts.main')
 @section('content')
 
-    <div class="page-heading {{$data['category']['title']}} header-text">
+    <div class="page-heading header-{{$data['category']['title']}}  header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-content">
-                        <h4>{{$data['category']['title_rus']}}</h4>
+                        <h4>{{$data['category']['title']}}</h4>
                         <h2>LUMOS</h2>
                     </div>
                 </div>
@@ -21,7 +21,7 @@
                 @foreach ($categories as $cat)
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="{{ route('client.products.filter', $cat['title']) }}">{{ $cat['title_rus'] }}</a>
+                           href="{{ route('client.products.filter', $cat['title']) }}">{{ $cat['title'] }}</a>
                     </li>
                 @endforeach
             </ul>

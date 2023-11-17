@@ -3,15 +3,20 @@
 namespace App\Components\HttpClient;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 
 interface HttpClientInterface
 {
+    public function send(): ResponseInterface;
+
+    public function setHeader(string $name, string $value): self;
+
     /**
-     * @param string $method
-     * @param UriInterface|string $uri
-     * @param array<mixed> $options
-     * @return ResponseInterface
+     * @param array<mixed> $query
+     * @return self
      */
-    public function request(string $method, UriInterface|string $uri, array $options): ResponseInterface;
+    public function setQuery(array $query): self;
+
+    public function setUri(string $uri): self;
+
+    public function setMethod(string $method): self;
 }

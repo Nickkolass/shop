@@ -34,8 +34,8 @@ class OrderPerformerProductService
             ->whereIn('id', $productTypesFromOrder->pluck('productType_id'))
             ->select('id', 'product_id', 'preview_image')
             ->with([
-                'product:id,title',
-                'category:categories.id,title_rus',
+                'product:products.id,products.title',
+                'category:categories.id,categories.title',
                 'optionValues' => function (Builder $q) {
                     /** @phpstan-ignore-next-line */
                     $q->select('value')->selectParentTitle();

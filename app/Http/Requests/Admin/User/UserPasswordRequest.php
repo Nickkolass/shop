@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Admin\User;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Password;
 
 class UserPasswordRequest extends FormRequest
@@ -16,8 +14,7 @@ class UserPasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        Gate::authorize('password', User::class);
-        return true;
+        return $this->user()->can('password', $this->route()->parameter('user'));
     }
 
     /**

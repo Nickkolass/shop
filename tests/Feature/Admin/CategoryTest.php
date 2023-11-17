@@ -5,31 +5,33 @@ namespace Tests\Feature\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Tests\Feature\Trait\PrepareForTestTrait;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
+
+    use PrepareForTestTrait;
 
     /**@test */
     public function test_a_category_can_be_viewed_any_with_premissions(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
-        Category::query()->create(['title' => 'sadfsdf']);
+        Category::factory()->create();
         $route = route('admin.categories.index');
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.category.index');
     }
 
@@ -38,22 +40,21 @@ class CategoryTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        Category::factory()->create();
         $route = route('admin.categories.create');
 
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.category.create');
     }
 
@@ -62,21 +63,20 @@ class CategoryTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $data = ['title' => 'xcvxc', 'title_rus' => 'cvxcv'];
+        $data = Category::factory()->raw();
         $route = route('admin.categories.store');
         $this->post($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->post($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->post($route, $data);
         $this->assertTrue(Category::query()->where('title', $data['title'])->exists());
     }
@@ -86,21 +86,21 @@ class CategoryTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $route = route('admin.categories.show', $category->id);
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.category.show');
     }
 
@@ -109,21 +109,21 @@ class CategoryTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         $route = route('admin.categories.edit', $category->id);
         $this->get($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->get($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->get($route)->assertViewIs('admin.category.edit');
     }
 
@@ -132,22 +132,22 @@ class CategoryTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
-        $data = ['title' => 'xcvxc', 'title_rus' => 'xcvxcv'];
+        /** @var Category $category */
+        $category = Category::factory()->create();
+        $data = Category::factory()->raw();
         $route = route('admin.categories.update', $category->id);
         $this->patch($route, $data)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->patch($route, $data)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->patch($route, $data);
         $this->assertTrue(Category::query()->where('title', $data['title'])->exists());
     }
@@ -155,7 +155,8 @@ class CategoryTest extends TestCase
     /**@test */
     public function test_a_category_can_be_deleted_with_premissions(): void
     {
-        $category = Category::query()->create(['title' => 'ads', 'title_rus' => 'dgsog']);
+        /** @var Category $category */
+        $category = Category::factory()->create();
         /** @var User $user */
         $user = User::factory()->has(Product::factory())->create();
         $route = route('admin.categories.destroy', $category->id);
@@ -163,16 +164,15 @@ class CategoryTest extends TestCase
         $this->delete($route)->assertNotFound();
 
         for ($i = 2; $i <= 3; $i++) {
-            $user->role = $i;
-            $user->save();
+            $user->update(['role' => $i]);
+            session(['user.role' => $i]);
             $this->actingAs($user)->delete($route)->assertNotFound();
-            session()->flush();
         }
 
         $this->withoutExceptionHandling();
 
-        $user->role = User::ROLE_ADMIN;
-        $user->save();
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
         $this->actingAs($user)->delete($route)->assertRedirectToRoute('admin.categories.index');
         $this->assertModelMissing($category)
             ->assertFalse($category->products()->exists());

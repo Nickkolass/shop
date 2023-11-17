@@ -34,7 +34,7 @@
                         <select name="tags[]" class="tags" multiple="multiple" style="width: 82%;" required>
                             @foreach($data['tags'] as $tag_id => $tag_title)
                                 <option
-                                    value="{{ $tag_id }}" @selected(session()->has('_old_input') ? in_array($tag_id, old('tags')) : $product->tags->contains($tag_id))>{{ $tag_title }}</option>
+                                    value="{{ $tag_id }}" @selected(session()->exists('_old_input') ? in_array($tag_id, old('tags')) : $product->tags->contains($tag_id))>{{ $tag_title }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -68,7 +68,7 @@
                                         style="width:500px">
                                     @foreach($values as $value)
                                         <option value="{{ $value->id }}"
-                                            @selected(session()->has('_old_input') ? in_array($value->id, old('optionValues.' . $option_title, [])) : $product->optionValues->contains($value->id))> {{$value->value}}
+                                            @selected(session()->exists('_old_input') ? in_array($value->id, old('optionValues.' . $option_title, [])) : $product->optionValues->contains($value->id))> {{$value->value}}
                                         </option>
                                     @endforeach
                                 </select>

@@ -1,3 +1,4 @@
+@php use App\Models\User; @endphp
 @extends(
     \Illuminate\Support\Facades\Gate::check('role', [User::class, User::ROLE_SALER])
     ? 'admin.layouts.main'
@@ -6,7 +7,7 @@
 
 @section('content')
     <!-- Content Header (Page header) -->
-    @can('role', [User::class, User::ROLE_CLIENT])
+    @cannot('role', [User::class, User::ROLE_SALER])
         <br><br><br><br><br><br>
     @else
         <div class="content-header">

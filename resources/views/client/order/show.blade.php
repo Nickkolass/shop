@@ -2,7 +2,7 @@
 @extends('client.layouts.main')
 @section('content')
 
-    <div class="page-heading orders header-text">
+    <div class="page-heading header-orders header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -131,7 +131,7 @@
                 @endif
             @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
                 <div class="mr-3">
-                    <form action="{{ route('client.orders.payment', $order['id']) }}" method="post">
+                    <form action="{{ route('client.orders.pay', $order['id']) }}" method="post">
                         @csrf
                         <input type="submit" class="btn btn-primary btn-lg" value="Оплатить">
                     </form>
@@ -139,7 +139,7 @@
                 <form action="{{route('client.orders.destroy', $order['id']) }}" method="post">
                     @csrf
                     @method('delete')
-                    <input type="hidden" name="due_to_payment" value="true">
+                    <input type="hidden" name="due_to_pay" value="true">
                     <input type="submit" class="btn btn-danger btn-lg" value="Отказаться">
                 </form>
             @elseif($order['refundable'])

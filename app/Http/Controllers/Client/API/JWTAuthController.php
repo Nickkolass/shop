@@ -28,8 +28,7 @@ class JWTAuthController extends Controller
         if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        /** @var string $token */
-        return $this->respondWithToken($token);
+        return $this->respondWithToken((string)$token);
     }
 
     /**

@@ -51,7 +51,7 @@ class OrderPerformer extends Model
      */
     public static function getStatuses(): array
     {
-        return ['Ожидает оплаты', 'Ожидает отправки', 'Отправлен', 'Получен', 'Оплачен', 'Отменен'];
+        return ['Ожидает оплаты', 'Ожидает отправки', 'Отправлен', 'Получен', 'Завершен', 'Отменен'];
     }
 
     public function getStatusTitleAttribute(): string

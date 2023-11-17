@@ -67,7 +67,7 @@
                             <div class="dropdown-menu">
                                 @foreach ($categories as $category)
                                     <a class="dropdown-item"
-                                       href="{{ route('client.products.filter', $category['title']) }}">{{ $category['title_rus'] }}</a>
+                                       href="{{ route('client.products.filter', $category['title']) }}">{{ $category['title'] }}</a>
                                 @endforeach
                             </div>
                         </div>

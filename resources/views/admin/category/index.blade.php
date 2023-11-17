@@ -34,7 +34,6 @@
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>title</th>
                                     <th>Наименование</th>
                                 </tr>
                                 </thead>
@@ -45,7 +44,6 @@
                                         <td>
                                             <a href="{{ route('admin.categories.show', $category->id) }}">{{ $category->title }}</a>
                                         </td>
-                                        <td>{{ $category->title_rus }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>

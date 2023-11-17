@@ -2,7 +2,7 @@
 @extends('client.layouts.main')
 @section('content')
 
-    <div class="page-heading orders header-text">
+    <div class="page-heading header-orders header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -46,7 +46,7 @@
                                         </div>
                                     </form>
                                 @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
-                                    <form action="{{ route('client.orders.payment', $order['id']) }}"
+                                    <form action="{{ route('client.orders.pay', $order['id']) }}"
                                           method="post">
                                         @csrf
                                         <input type="submit" class="btn-primary" value="Оплатить">

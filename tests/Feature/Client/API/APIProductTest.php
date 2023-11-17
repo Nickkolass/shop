@@ -5,13 +5,13 @@ namespace Client\API;
 use App\Models\Category;
 use App\Models\ProductType;
 use App\Models\User;
-use Tests\Feature\Trait\StorageDbPrepareForTestTrait;
+use Tests\Feature\Trait\PrepareForTestWithSeedTrait;
 use Tests\TestCase;
 
 class APIProductTest extends TestCase
 {
 
-    use StorageDbPrepareForTestTrait;
+    use PrepareForTestWithSeedTrait;
 
     /**@test */
     public function test_can_getting_data_for_cart_url(): void
@@ -33,6 +33,8 @@ class APIProductTest extends TestCase
     {
         $viewed = ProductType::query()->take(2)->pluck('id')->all();
         $route = route('back.api.products.index');
+        $user = User::query()->first();
+        $jwt = $this->getJwt($user);
 
         $this->withoutExceptionHandling();
 
@@ -45,50 +47,69 @@ class APIProductTest extends TestCase
         $res->assertJsonCount(2, 'viewed');
         $res->assertJsonMissing(['liked']);
 
-        $user = User::query()->first();
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))
+        $this->withHeader('Authorization', $jwt)
             ->post($route)
             ->assertOk()
             ->assertJsonMissing(['viewed'])
             ->assertJsonCount($user->liked()->count(), 'liked');
 
-        $this->withHeader('Authorization', session('jwt'))
+        $this->withHeader('Authorization', $jwt)
             ->post($route, ['viewed' => $viewed])
             ->assertOk()
             ->assertJsonCount(2, 'viewed')
             ->assertJsonCount($user->liked()->count(), 'liked');
-
     }
 
     /**@test */
     public function test_can_getting_data_for_products_filter_url(): void
     {
         $this->withoutExceptionHandling();
-        $route = route('back.api.products.filter', Category::query()->first()->title);
-
+        $route = route('back.api.products.filter', Category::query()->has('products')->first()->title);
 //        посещение страницы
-        $this->post($route)
+        $res = $this->post($route)
             ->assertOk()
             ->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category'])
-            ->assertJsonCount(8, 'product_types.data')
-            ->assertJsonCount(10, 'product_types.data.0');
+            ->getContent();
+
+        $res = json_decode((string)$res, true);
+        $this->assertNotEmpty($res['product_types']);
+        $this->assertNotEmpty($res['product_types']['data']);
+        $this->assertNotEmpty($res['paginate']);
+        $this->assertEmpty($res['filter']);
+        $this->assertNotEmpty($res['filterable']);
+        $this->assertNotEmpty($res['category']);
+        $this->assertTrue($res['product_types']['current_page'] == 1);
 
 //        пагинация
-        $data = ['paginate' => ['page' => 3]];
-        $this->post($route, $data)
+        $data = ['paginate' => ['page' => 2]];
+        $res = $this->post($route, $data)
             ->assertOk()
             ->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category'])
-            ->assertJsonCount(4, 'product_types.data')
-            ->assertJsonCount(10, 'product_types.data.0');
+            ->getContent();
+
+        $res = json_decode((string)$res, true);
+        $this->assertNotEmpty($res['product_types']);
+        $this->assertNotEmpty($res['paginate']);
+        $this->assertEmpty($res['filter']);
+        $this->assertNotEmpty($res['filterable']);
+        $this->assertNotEmpty($res['category']);
+        $this->assertTrue($res['product_types']['current_page'] == 2);
 
 //        фильтр
         $data = ['filter' => ['salers' => User::query()->take(5)->pluck('id')->all()], 'paginate' => ['perPage' => 4, 'orderBy' => 'ASC']];
-        $this->post($route, $data)
+        $res = $this->post($route, $data)
             ->assertOk()
             ->assertJsonStructure(['product_types', 'paginate', 'filter', 'filterable', 'category'])
-            ->assertJsonCount(4, 'product_types.data')
-            ->assertJsonCount(10, 'product_types.data.0');
+            ->getContent();
+
+        $res = json_decode((string)$res, true);
+        $this->assertNotEmpty($res['product_types']);
+        $this->assertNotEmpty($res['paginate']);
+        $this->assertNotEmpty($res['filter']);
+        $this->assertNotEmpty($res['filterable']);
+        $this->assertNotEmpty($res['category']);
+        $this->assertTrue($res['product_types']['current_page'] == 1);
+        $this->assertTrue($res['product_types']['per_page'] == 4);
     }
 
     /**@test */
@@ -101,8 +122,8 @@ class APIProductTest extends TestCase
         $this->withoutExceptionHandling();
 
         $user = User::query()->first();
-        $this->actingAs($user)->get(route('home'));
-        $this->withHeader('Authorization', session('jwt'))
+        $jwt = $this->getJwt($user);
+        $this->withHeader('Authorization', $jwt)
             ->post($route)
             ->assertOk()
             ->assertJsonCount($user->liked()->count());

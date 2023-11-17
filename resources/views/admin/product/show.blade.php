@@ -93,7 +93,7 @@
 
                                 <tr>
                                     <td>Категория</td>
-                                    <td>{{ $product->category->title_rus }}</td>
+                                    <td>{{ $product->category->title }}</td>
                                 </tr>
 
                                 <tr>

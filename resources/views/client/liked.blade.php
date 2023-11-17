@@ -1,7 +1,7 @@
 @extends('client.layouts.main')
 @section('content')
 
-    <div class="page-heading liked header-text">
+    <div class="page-heading header-liked header-text">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">

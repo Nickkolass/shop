@@ -17,7 +17,7 @@ class ProductCreateEditService
      */
     public function index(): array
     {
-        $data['categories'] = collect((array)Cache::get('categories'))->pluck('title_rus', 'id');
+        $data['categories'] = collect((array)Cache::get('categories'))->pluck('title', 'id');
         return $data;
     }
 

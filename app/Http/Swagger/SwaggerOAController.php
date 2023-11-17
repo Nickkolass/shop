@@ -113,7 +113,7 @@ use App\Http\Controllers\Controller;
  *     @OA\RequestBody(
  *         @OA\JsonContent(
  *             @OA\Property(property="total_price", type="integer", example=1000),
- *             @OA\Property(property="payment_id", type="null|string", example="123a-dasi-wa5i"),
+ *             @OA\Property(property="pay_id", type="null|string", example="123a-dasi-wa5i"),
  *             @OA\Property(property="payment", type="string", example="card"),
  *             @OA\Property(property="cart", type="object",
  *                 @OA\Property(property="662341", type="integer", example="2"),
@@ -223,7 +223,7 @@ use App\Http\Controllers\Controller;
  * ),
  *
  * @OA\Delete(
- *     path="/api/orders/delete{orderPerformer}",
+ *     path="/api/orders/delete/{orderPerformer}",
  *     summary="Отмена наряда заказчиком",
  *     tags={"orders"},
  *     security={{ "bearerAuth": {} }},
@@ -483,7 +483,6 @@ use App\Http\Controllers\Controller;
  *             @OA\Property(property="category", type="object",
  *                 @OA\Property(property="id", type="integer", example="1"),
  *                 @OA\Property(property="title", type="string", example="chokolate"),
- *                 @OA\Property(property="title_rus", type="string", example="Шоколад ручной работы"),
  *                 @OA\Property(property="created_at", format="date", example="2023-06-28T12:03:41.000000Z"),
  *                 @OA\Property(property="updated_at", format="date", example="2023-06-28T12:03:41.000000Z"),
  *             ),
@@ -613,7 +612,6 @@ use App\Http\Controllers\Controller;
  *                 @OA\Property(property="category", type="object",
  *                     @OA\Property(property="id", type="integer", example="1"),
  *                     @OA\Property(property="title", type="string", example="chokolate"),
- *                     @OA\Property(property="title_rus", type="string", example="Шоколад ручной работы"),
  *                 ),
  *                 @OA\Property(property="property_values", type="object",
  *                     @OA\Property(property="Высота", type="string", example="10 см"),

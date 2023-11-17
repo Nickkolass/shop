@@ -29,9 +29,10 @@ class FrontUserActiveController extends Controller
     {
         $prev_name = Route::getRoutes()->match(request()->create(url()->previousPath()))->getName();
         if ($prev_name == 'client.products.filter') session(['backFilter' => true]);
-        $this->httpClient->request('POST',
-            route('back.api.products.likedToggle', $product_type_id, false),
-            ['headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setUri(route('back.api.products.likedToggle', $product_type_id, false))
+            ->setMethod('POST')
+            ->send();
         return back();
     }
 
@@ -39,9 +40,11 @@ class FrontUserActiveController extends Controller
     {
         $data = $request->validated();
         if (!empty($data['comment_images'])) FrontService::imgEncode($data['comment_images']);
-        $this->httpClient->request('POST',
-            route('back.api.products.commentStore', $product_id, false),
-            ['query' => $data, 'headers' => ['Authorization' => session('jwt')]]);
+        $this->httpClient
+            ->setUri(route('back.api.products.commentStore', $product_id, false))
+            ->setQuery($data)
+            ->setMethod('POST')
+            ->send();
         return back();
     }
 }

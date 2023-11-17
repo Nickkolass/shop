@@ -11,7 +11,6 @@ use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\Tag;
 use App\Models\User;
-use App\Notifications\Auth\ResetPasswordNotificationQueue;
 use App\Policies\CategoryPolicy;
 use App\Policies\OptionPolicy;
 use App\Policies\OrderPerformerPolicy;

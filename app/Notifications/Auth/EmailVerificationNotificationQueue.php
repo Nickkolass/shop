@@ -2,11 +2,22 @@
 
 namespace App\Notifications\Auth;
 
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
-use Illuminate\Bus\Queueable;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EmailVerificationNotificationQueue extends SendEmailVerificationNotification implements ShouldQueue
+class EmailVerificationNotificationQueue implements ShouldQueue
 {
-    use Queueable;
+
+    public function __construct(public readonly Registered $event)
+    {
+    }
+
+    public function handle(): void
+    {
+        if ($this->event->user instanceof MustVerifyEmail && !$this->event->user->hasVerifiedEmail()) {
+            $this->event->user->sendEmailVerificationNotification();
+        }
+    }
 }

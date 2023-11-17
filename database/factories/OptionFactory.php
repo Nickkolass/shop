@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class OptionFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'title' => $this->faker->unique()->word(),
+        ];
+    }
+}

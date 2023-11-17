@@ -14,8 +14,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Client\Front\FrontOrderController;
 use App\Http\Controllers\Client\Front\FrontProductController;
 use App\Http\Controllers\Client\Front\FrontUserActiveController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Payment\PaymentController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -33,22 +31,20 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
-Route::get('/', HomeController::class)->name('home');
+Route::get('/', fn() => redirect()->route('client.products.index'))->name('home');
 
 Route::prefix('/users/{user}')->controller(UserController::class)->name('users.')->group(function () {
     Route::get('/password', 'passwordEdit')->name('password.edit');
     Route::patch('/password', 'passwordUpdate')->name('password.update');
-    Route::get('/card', 'cardEdit')->name('card.edit');
-    Route::patch('/card', 'cardUpdate')->name('card.update');
 });
 Route::resource('/users', UserController::class);
 
 Route::name('client.')->group(function () {
     Route::view('/about', 'client.about')->name('about');
     Route::prefix('/orders')->controller(FrontOrderController::class)->middleware(['role:' . User::ROLE_CLIENT, 'verified'])->name('orders.')->group(function () {
-        Route::post('/{order_id}/payment', 'payment')->name('payment');
+        Route::post('/{order_id}/pay', 'pay')->name('pay');
         Route::post('/{order_id}/refund', 'refund')->name('refund');
-        Route::delete('delete/{orderPerformer_id}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
+        Route::delete('/delete/{orderPerformer_id}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
     });
     Route::apiResource('/orders', FrontOrderController::class)->middleware(['role:' . User::ROLE_CLIENT, 'verified']);
     Route::controller(FrontUserActiveController::class)->group(function () {
@@ -76,7 +72,6 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     });
     Route::middleware('role:' . User::ROLE_SALER)->group(function () {
         Route::get('/', IndexController::class)->name('index');
-        Route::post('/orders/{order}/payout', [PaymentController::class, 'payout'])->name('orders.payout');
         Route::apiResource('orders', OrderPerformerController::class)->withTrashed(['index', 'show'])->except('store');
         Route::prefix('/products')->name('products.')->group(function () {
             Route::get('/create', [ProductCreateController::class, 'index'])->name('create');

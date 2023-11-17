@@ -2,20 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Database\Seeders\Components\SeederFactoryService;
-use Database\Seeders\Components\SeederProductService;
-use Database\Seeders\Components\SeederStorageService;
+use Database\Seeders\Services\SeederCompletionService;
+use Database\Seeders\Services\SeederFactoryService;
+use Database\Seeders\Services\SeederStorageService;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
 
     public function __construct(
-        private readonly SeederStorageService $storageService,
-        private readonly SeederFactoryService $factoryService,
-        private readonly SeederProductService $productService,
+        private readonly SeederStorageService    $storageService,
+        private readonly SeederFactoryService    $factoryService,
+        private readonly SeederCompletionService $completionService,
     )
     {
     }
@@ -27,24 +26,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::beginTransaction();
         $this->storageService->storagePreparation();
         $this->factoryService->factory();
-        $this->productService->completionsOfProducts();
-        $this->storageService->caching();
-
-        $users = User::query()
-            ->take(3)
-            ->pluck('id')
-            ->transform(function (int $id, int $i) {
-                $i++;
-                return [
-                    'id' => $id,
-                    'email' => $i . '@mail.ru',
-                    'password' => Hash::make((string)$i),
-                    'role' => $i,
-                ];
-            })
-            ->all();
-        User::query()->upsert($users, 'id');
+        $this->completionService->completionProducts();
+        if (!app()->environment('testing')) {
+            $this->completionService->completionUsers();
+            $this->storageService->caching();
+        }
+        DB::commit();
     }
 }
