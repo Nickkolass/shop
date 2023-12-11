@@ -36,7 +36,7 @@
                 </div><!-- /.container-fluid -->
             @endif
 
-            @include($widget)
+            {!! $widget !!}
 
         </div>
         <!-- /.container-fluid -->

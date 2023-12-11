@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Components\Disk\DiskClientInterface;
-use App\Components\Disk\Yandexdisk\YandexDiskClient;
+use App\Components\Disk\YandexDiskClient;
 use App\Components\HttpClient\GuzzleClient;
 use App\Components\HttpClient\HttpClientInterface;
 use App\Models\Category;

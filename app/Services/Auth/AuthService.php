@@ -70,6 +70,7 @@ class AuthService
     public function jwtInvalidate(): void
     {
         $this->httpClient
+            ->setJwt()
             ->setMethod('POST')
             ->setUri(route('back.api.auth.logout', '', false))
             ->send();

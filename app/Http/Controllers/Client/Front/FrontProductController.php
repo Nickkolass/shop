@@ -20,6 +20,7 @@ class FrontProductController extends Controller
         $data['viewed'] = array_slice(array_keys(session('viewed', [])), 0, 12);
 
         $data = $this->httpClient
+            ->setJwt()
             ->setUri(route('back.api.products.index', '', false))
             ->setQuery($data)
             ->setMethod('POST')
@@ -38,6 +39,7 @@ class FrontProductController extends Controller
         FrontService::scenarioGetProducts($query_params);
 
         $data = $this->httpClient
+            ->setJwt()
             ->setUri(route('back.api.products.filter', $category_title, false))
             ->setQuery($query_params)
             ->setMethod('POST')
@@ -54,6 +56,7 @@ class FrontProductController extends Controller
     public function show(int $product_type_id): View
     {
         $product_type = $this->httpClient
+            ->setJwt()
             ->setUri(route('back.api.products.show', $product_type_id, false))
             ->setMethod('POST')
             ->send()
@@ -73,6 +76,7 @@ class FrontProductController extends Controller
         $product_types = $total_price = null;
         if ($cart = session('cart')) {
             $product_types = $this->httpClient
+            ->setJwt()
                 ->setUri(route('back.api.cart', '', false))
                 ->setQuery(['cart' => $cart])
                 ->setMethod('POST')
@@ -91,6 +95,7 @@ class FrontProductController extends Controller
     public function liked(): View
     {
         $product_types = $this->httpClient
+            ->setJwt()
             ->setUri(route('back.api.products.liked', '', false))
             ->setMethod('POST')
             ->send()

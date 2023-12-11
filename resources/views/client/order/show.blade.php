@@ -131,8 +131,10 @@
                 @endif
             @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
                 <div class="mr-3">
-                    <form action="{{ route('client.orders.pay', $order['id']) }}" method="post">
+                    <form action="{{ route('client.orders.pay') }}" method="post">
                         @csrf
+                        <input type="hidden" name="order_id" value="{{$order['id']}}">
+                        <input type="hidden" name="price" value="{{$order['total_price']}}">
                         <input type="submit" class="btn btn-primary btn-lg" value="Оплатить">
                     </form>
                 </div>
@@ -146,6 +148,9 @@
                 <div class="mr-3">
                     <form action="{{ route('client.orders.refund', $order['id']) }}" method="post">
                         @csrf
+                        <input type="hidden" name="order_id" value="{{$order['id']}}">
+                        <input type="hidden" name="pay_id" value="{{$order['pay_id']}}">
+                        <input type="hidden" name="price" value="{{$order['total_price']}}">
                         <input type="submit" class="btn btn-primary btn-lg" value="Запросить возврат">
                     </form>
                 </div>

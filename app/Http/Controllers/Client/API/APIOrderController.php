@@ -11,6 +11,7 @@ use App\Models\OrderPerformer;
 use App\Services\Admin\OrderPerformer\OrderPerformerService;
 use App\Services\Client\API\Order\OrderDBService;
 use App\Services\Client\API\Order\OrderService;
+use Illuminate\Http\RedirectResponse;
 
 class APIOrderController extends Controller
 {
@@ -35,12 +36,15 @@ class APIOrderController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreRequest $request
-     * @return string $pay_url
+     * @return RedirectResponse
      */
-    public function store(StoreRequest $request): string
+    public function store(StoreRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        return $this->DBservice->store($data);
+        $this->DBservice->store($data);
+        return redirect()
+            ->with(['price' => $data['order']->total_price, 'order_id' => $data['order']->id])
+            ->route('back.api.orders.pay', $data['order']->id);
     }
 
     /**

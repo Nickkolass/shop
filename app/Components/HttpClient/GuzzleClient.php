@@ -23,7 +23,6 @@ class GuzzleClient extends AbstractHttpClient
      */
     public function send(): ResponseInterface
     {
-        $this->setJwt();
         $this->validateProps();
         $options = ['headers' => $this->headers, 'query' => $this->query];
         $res = $this->client->request($this->method, $this->uri, $options);
@@ -31,21 +30,14 @@ class GuzzleClient extends AbstractHttpClient
         return $res;
     }
 
-    public function setJwt(): void
-    {
-        /** @var string $jwt */
-        $jwt = request()->cookie('jwt');
-        if ($jwt) $this->setHeader('Authorization', $jwt);
-    }
-
-    public function validateProps(): void
+    private function validateProps(): void
     {
         if (!$this->uri || !$this->method) {
             throw new InvalidArgumentException('Неверный метод запроса или uri', 400);
         }
     }
 
-    public function unsetProps(): void
+    private function unsetProps(): void
     {
         unset($this->method, $this->uri, $this->headers, $this->query);
     }

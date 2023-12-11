@@ -2,7 +2,6 @@
 
 namespace App\Services\Client\API\Order;
 
-use App\Components\Payment\src\Services\PaymentService;
 use App\Events\OrderCanceled;
 use App\Events\OrderReceived;
 use App\Jobs\Client\Order\OrderStoredJob;
@@ -17,19 +16,16 @@ class OrderDBService
 {
     /**
      * @param array<mixed> $data
-     * @return string $pay_url
+     * @return void
      */
-    public function store(array $data): string
+    public function store(array &$data): void
     {
         DB::beginTransaction();
-        $this
-            ->countProductReduction($data['cart'])
+        $this->countProductReduction($data['cart'])
             ->orderStore($data)
             ->orderPerformerStore($data['order']);
-        $url = app(PaymentService::class)->pay($data['order']);
         dispatch(new OrderStoredJob($data['order']))->delay(600);
         DB::commit();
-        return $url;
     }
 
     /**

@@ -15,14 +15,11 @@ use Illuminate\Http\RedirectResponse;
 class UserController extends Controller
 {
 
-    public UserService $service;
-
-    public function __construct(UserService $service)
+    public function __construct(public readonly UserService $service)
     {
         $this->middleware('role:' . User::ROLE_CLIENT)->only(['edit', 'show', 'update', 'destroy', 'passwordEdit', 'passwordUpdate']);
         $this->middleware('role:' . User::ROLE_ADMIN)->only(['index', 'create', 'store']);
         $this->authorizeResource(User::class, 'user');
-        $this->service = $service;
     }
 
     /**

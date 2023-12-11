@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Components\Payment\src\Listeners\PaymentSubscriber;
 use App\Listeners\Auth\AuthSubscriber;
+use App\Listeners\Client\API\PaymentSubscriber;
 use App\Notifications\Order\OrderNotificationSubscriber;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 

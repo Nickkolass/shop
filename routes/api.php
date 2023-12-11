@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Client\API\APIOrderController;
+use App\Http\Controllers\Client\API\APIPaymentCallbackController;
+use App\Http\Controllers\Client\API\APIPaymentController;
 use App\Http\Controllers\Client\API\APIProductController;
 use App\Http\Controllers\Client\API\APIUserActiveController;
 use App\Http\Controllers\Client\API\JWTAuthController;
@@ -40,6 +42,11 @@ Route::name('back.api.')->group(function () {
         Route::delete('/{order}', 'destroy')->name('destroy');
         Route::delete('/delete/{orderPerformer}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
     });
+    Route::prefix('/orders/{order}')->controller(APIPaymentController::class)->name('orders.')->group(function () {
+        Route::post('/pay', 'pay')->name('pay');
+        Route::post('/refund', 'refund')->name('refund');
+    });
+    Route::post('/payment/callback', [APIPaymentCallbackController::class, 'callback'])->name('payment.callback');
 
     Route::prefix('/auth')->controller(JWTAuthController::class)->name('auth.')->group(function () {
         Route::post('/login', 'login')->name('login');

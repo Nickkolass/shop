@@ -35,10 +35,6 @@ return [
         'oauth_token' => env('YANDEX_DISK_OAUTH_TOKEN'),
     ],
 
-    'ngrok' => [
-        'auth_token' => env('NGROK_TOKEN'),
-    ],
-
     'guzzle' => [
         'base_uri' => env('GUZZLE_HOST', 'host.docker.internal') . ':' . env('APP_PORT', '8876'),
         'timeout' => '10.0',

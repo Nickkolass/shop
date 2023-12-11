@@ -9,6 +9,7 @@ interface HttpClientInterface
     public function send(): ResponseInterface;
 
     public function setHeader(string $name, string $value): self;
+    public function setJwt(): self;
 
     /**
      * @param array<mixed> $query

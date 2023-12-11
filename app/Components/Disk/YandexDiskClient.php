@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Components\Disk\Yandexdisk;
+namespace App\Components\Disk;
 
-use App\Components\Disk\DiskClientInterface;
 use Arhitector\Yandex\Disk;
 use Arhitector\Yandex\Disk\Resource\Closed;
 

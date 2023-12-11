@@ -38,4 +38,12 @@ abstract class AbstractHttpClient implements HttpClientInterface
         $this->method = $method;
         return $this;
     }
+
+    public function setJwt(): self
+    {
+        /** @var string $jwt */
+        $jwt = request()->cookie('jwt');
+        if ($jwt) $this->setHeader('Authorization', $jwt);
+        return $this;
+    }
 }

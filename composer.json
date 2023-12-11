@@ -17,8 +17,7 @@
         "league/flysystem-aws-s3-v3": "^3.16",
         "php-http/message-factory": "^1.1",
         "predis/predis": "^2.2",
-        "tymon/jwt-auth": "^2.0",
-        "yoomoney/yookassa-sdk-php": "^3.1"
+        "tymon/jwt-auth": "^2.0"
     },
     "require-dev": {
         "brianium/paratest": "6.x",

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\User;
+namespace App\Http\Requests\Admin\Payment;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserCardRequest extends FormRequest
+class PayoutRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,9 +18,7 @@ class UserCardRequest extends FormRequest
 
     public function prepareForValidation(): void
     {
-        $this->merge([
-            'card' => json_decode($this->input('data'), true)
-        ]);
+        $this->merge(['payout_token' => auth()->user()->card['payout_token']]);
     }
 
     /**
@@ -31,12 +29,9 @@ class UserCardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data' => 'string|required',
-            'card.payout_token' => 'string|required',
-            'card.first6' => 'required|digits:6',
-            'card.last4' => 'required|digits:4',
-            'card.card_type' => 'string|required',
-            'card.issuer_country' => 'string|required',
+            'order_id' => 'required|int',
+            'price' => 'required|int',
+            'payout_token' => 'required|string',
         ];
     }
 }
