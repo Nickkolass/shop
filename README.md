@@ -1,19 +1,18 @@
 ## Установка проекта
 
-Требуется наличие Ubuntu с установленными на него composer, git, docker.
+Требуется наличие Ubuntu с установленными на него composer, git, docker, а также развернутого приложения с платежным
+сервисом https://github.com/Nickkolass/Payment.git.
 
 В терминале Ubuntu перейти в нужную директорию и запустить команды:
 
 -     git clone https://github.com/Nickkolass/shop.git
 -     composer install
 -     cp .env.example .env
-- В проекте подключены сервисы TELEGRAM_LOG, YANDEX_SMTP, YANDEX_CLOUD, YANDEX_DISK, YOO_KASSA, NGROK. В целях
-  предоставления
+- В проекте подключены сервисы TELEGRAM_LOG, YANDEX_SMTP, YANDEX_CLOUD, YANDEX_DISK. В целях предоставления
   возможности просмотра функционала без соответствующих токенов, по умолчанию приложение настроено на использованием
   автономных средств. Логирование в телеграм отключено. Почтовая рассылка ставится в очередь и при ее запуске без
   подключения сервиса почты задание будет перемещено в failed. Хранилище используется локальное. Скачиваемые с ya.disk
-  файлы расшарены и при отсутствии токена используется публичная ссылка на файлы. Функционал платежной системы
-  выполнен через заглушку (без привязки банковской карты). Для активации сервисов необходимо:
+  файлы расшарены и при отсутствии токена используется публичная ссылка на файлы. Для активации сервисов необходимо:
     - TELEGRAM_LOG: в файле .env в поле TELEGRAM_LOGGER_CHAT_ID и TELEGRAM_LOGGER_BOT_TOKEN установить значения чата в
       telegram и токена приглашенного в него бота. В файле config/logging.php в поле channels.stack.channels добавить
       значение 'telegram'.
@@ -22,18 +21,6 @@
     - YANDEX_CLOUD: в файле .env в поле FILESYSTEM_DISK установить значение 'yandexcloud', в поля YANDEX_CLOUD_KEY,
       YANDEX_CLOUD_SECRET, YANDEX_CLOUD_BUCKET - соответствующие значения сервиса.
     - YANDEX_DISK: в файле .env в поле YANDEX_DISK_OAUTH_TOKEN установить значение токена для сервиса Yandex.disk
-    - YOO_KASSA:
-        - в файле .env в поле PAYMENT_CONNECTION установить значение 'yookassa', в поле NGROK_TOKEN установить значение
-          токена для сервиса ngrok
-        - выполнить команды
-            -     docker exec -it shop_app bash
-                -     php artisan ngrok:init
-                -     ./ngrok http host.docker.internal:8876
-        - в личном кабинете yookassa https://yookassa.ru/my/merchant/integration/http-notifications, а также
-          https://yookassa.ru/my/gate/integration/webhooks в полях "URL для уведомлений" установить значение, выведенное
-          в результате выполнения команд в терминале в поле "Forwarding" с добавлением "/api/orders/payment/callback",
-          например https://d93f-217-65-215-218.ngrok-free.app/api/orders/payment/callback. В графах "О каких событиях
-          уведомлять" выбрать все.
 -     docker compose up -d
 -     docker exec -it shop_app bash
     -     php artisan init

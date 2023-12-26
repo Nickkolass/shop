@@ -21,7 +21,7 @@ class APIPayRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge(['return_url' => route('client.orders.index')]);
+        $this->merge(['return_url' => route('client.orders.index', '', false)]);
     }
 
     /**

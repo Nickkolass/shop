@@ -24,9 +24,9 @@ class CallbackPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => 'required|string',
+            'event' => 'required|string',
             'order_id' => 'required|int',
-            'payment_id' => 'required|string',
-            'event' => 'requered|string',
         ];
     }
 }

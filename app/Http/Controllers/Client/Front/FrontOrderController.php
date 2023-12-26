@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Client\Front;
 
-use App\Components\HttpClient\HttpClientInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Order\StoreFrontRequest;
+use App\Services\Client\Front\FrontOrderService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class FrontOrderController extends Controller
 {
 
-    public function __construct(private readonly HttpClientInterface $httpClient)
+    public function __construct(private readonly FrontOrderService $service)
     {
     }
 
@@ -24,16 +24,7 @@ class FrontOrderController extends Controller
     public function index(): View
     {
         $data['page'] = request('page', 1);
-        $orders = $this->httpClient
-            ->setJwt()
-            ->setUri(route('back.api.orders.index', '', false))
-            ->setQuery($data)
-            ->setMethod('POST')
-            ->send()
-            ->getBody()
-            ->getContents();
-        $orders = json_decode($orders, true);
-
+        $orders = $this->service->index($data);
         return view('client.order.index', compact('orders'));
     }
 
@@ -46,14 +37,7 @@ class FrontOrderController extends Controller
     public function store(StoreFrontRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $pay_url = $this->httpClient
-            ->setUri(route('back.api.orders.store', '', false))
-            ->setQuery($data)
-            ->setMethod('POST')
-            ->send()
-            ->getBody()
-            ->getContents();
-        session()->forget(['cart', 'filter', 'paginate']);
+        $pay_url = $this->service->store($data);
         return redirect()->to($pay_url);
     }
 
@@ -65,14 +49,7 @@ class FrontOrderController extends Controller
      */
     public function show(int $order_id): View
     {
-        $order = $this->httpClient
-            ->setJwt()
-            ->setUri(route('back.api.orders.show', $order_id, false))
-            ->setMethod('POST')
-            ->send()
-            ->getBody()
-            ->getContents();
-        $order = json_decode($order, true);
+        $order = $this->service->show($order_id);
         return view('client.order.show', compact('order'));
     }
 
@@ -84,11 +61,7 @@ class FrontOrderController extends Controller
      */
     public function update(int $order_id): RedirectResponse
     {
-        $this->httpClient
-            ->setJwt()
-            ->setUri(route('back.api.orders.update', $order_id, false))
-            ->setMethod('PATCH')
-            ->send();
+        $this->service->update($order_id);
         return back();
     }
 
@@ -100,12 +73,7 @@ class FrontOrderController extends Controller
      */
     public function destroy(int $order_id): RedirectResponse
     {
-        $this->httpClient
-            ->setJwt()
-            ->setUri(route('back.api.orders.destroy', $order_id, false))
-            ->setQuery(['due_to_pay' => request()->input('due_to_pay', false)])
-            ->setMethod('DELETE')
-            ->send();
+        $this->service->destroy($order_id);
         return back();
     }
 
@@ -117,11 +85,7 @@ class FrontOrderController extends Controller
      */
     public function destroyOrderPerformer(int $orderPerformer_id): RedirectResponse
     {
-        $this->httpClient
-            ->setJwt()
-            ->setMethod('DELETE')
-            ->setUri(route('back.api.orders.destroyOrderPerformer', $orderPerformer_id, false))
-            ->send();
+        $this->service->destroyOrderPerformer($orderPerformer_id);
         return back();
     }
 }

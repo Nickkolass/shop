@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Client\API\Payment;
+namespace App\Services\Client\API;
 
 use App\Components\HttpClient\HttpClientInterface;
 use App\Models\Order;
@@ -21,12 +21,10 @@ class PaymentService
      */
     public function pay(array $data, Order $order): string
     {
-        Gate::authorize('pay', $order);
         return $this->httpClient
-            ->setJwt()
             ->setQuery($data)
             ->setMethod('POST')
-            ->setUri(route('payment.pay', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/pay')
             ->send()
             ->getBody()
             ->getContents();
@@ -35,32 +33,35 @@ class PaymentService
     /**
      * @param array{order_id: int, payout_token:string, price:int} $data
      * @param OrderPerformer $order
+     * @param bool $is_event
      * @return void
      */
-    public function payout(array $data, OrderPerformer $order): void
+    public function payout(array $data, OrderPerformer $order, bool $is_event = false): void
     {
-        Gate::authorize('payout', $order);
+        Gate::forUser($is_event ? $order->saler()->first('id') : auth('api')->user())
+            ->authorize('payout', $order);
         $this->httpClient
-            ->setJwt()
             ->setQuery($data)
             ->setMethod('POST')
-            ->setUri(route('payment.payout', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/payout')
             ->send();
     }
 
     /**
      * @param array{order_id: int, pay_id:string, price:int} $data
      * @param Order $order
+     * @param bool $is_event
      * @return void
      */
-    public function refund(array $data, Order $order): void
+    public function refund(array $data, Order $order, bool $is_event = false): void
     {
-        Gate::authorize('refund', $order);
+        dump(2);
+        Gate::forUser($is_event ? $order->user()->first() : auth('api')->user())
+            ->authorize('refund', $order);
         $this->httpClient
-            ->setJwt()
             ->setQuery($data)
             ->setMethod('POST')
-            ->setUri(route('payment.refund', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/refund')
             ->send();
     }
 }

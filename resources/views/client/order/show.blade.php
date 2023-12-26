@@ -131,7 +131,7 @@
                 @endif
             @elseif($order['status'] == Order::STATUS_WAIT_PAYMENT)
                 <div class="mr-3">
-                    <form action="{{ route('client.orders.pay') }}" method="post">
+                    <form action="{{ route('client.orders.pay', $order['id']) }}" method="post">
                         @csrf
                         <input type="hidden" name="order_id" value="{{$order['id']}}">
                         <input type="hidden" name="price" value="{{$order['total_price']}}">

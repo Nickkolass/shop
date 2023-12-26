@@ -120,8 +120,8 @@ class OrderPolicy
         return
             !$order->refund_id
             && $order->pay_id
-            && ($user->id == $order->user_id || ($user->isAdmin() && app()->environment('local')))
             && ($order->status == Order::STATUS_COMPLETED || ($order->trashed() && $order->status == Order::STATUS_CANCELED))
+            && ($user->id == $order->user_id || ($user->isAdmin() && app()->environment('local')))
             && $order->orderPerformers()->onlyTrashed()->exists();
     }
 }

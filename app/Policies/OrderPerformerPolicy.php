@@ -96,8 +96,8 @@ class OrderPerformerPolicy
         return
             !$orderPerformer->payout_id
             && !$orderPerformer->trashed()
-            && ($user->id == $orderPerformer->saler_id || ($user->isAdmin() && app()->environment('local')))
             && $orderPerformer->status == OrderPerformer::STATUS_RECEIVED
+            && ($user->id == $orderPerformer->saler_id || ($user->isAdmin() && app()->environment('local')))
             && ($orderPerformer->order->status ?? $orderPerformer->order()->pluck('status')[0]) == Order::STATUS_COMPLETED;
     }
 }

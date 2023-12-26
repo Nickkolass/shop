@@ -15,14 +15,14 @@ class FrontPaymentController extends Controller
     {
     }
 
-    public function pay(FrontPayRequest $request): RedirectResponse
+    public function pay(FrontPayRequest $request, int $order_id): RedirectResponse
     {
         $data = $request->validated();
         $pay_url = $this->paymentService->pay($data);
         return redirect()->to($pay_url);
     }
 
-    public function refund(FrontRefundRequest $request): RedirectResponse
+    public function refund(FrontRefundRequest $request, int $order_id): RedirectResponse
     {
         $data = $request->validated();
         $this->paymentService->refund($data);

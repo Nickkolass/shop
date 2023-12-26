@@ -6,7 +6,7 @@ use App\Events\OrderCanceled;
 use App\Events\OrderPerformerCanceled;
 use App\Events\OrderPerformerReceived;
 use App\Events\OrderReceived;
-use App\Services\Client\API\Payment\PaymentService;
+use App\Services\Client\API\PaymentService;
 use Illuminate\Events\Dispatcher;
 
 class PaymentSubscriber
@@ -21,9 +21,9 @@ class PaymentSubscriber
         $data = [
             'order_id' => $event->order->id,
             'pay_id' => $event->order->pay_id,
-            'price' => $event->order->total_price,
+            'price' => $event->order->orderPerformers->whereNotNull('deleted_at')->sum('total_price'),
         ];
-        $this->paymentService->refund($data, $event->order);
+        if(!empty($data['price'])) $this->paymentService->refund($data, $event->order, true);
     }
 
     public function handleOrderPerformerReceived(OrderPerformerReceived $event): void
@@ -33,7 +33,7 @@ class PaymentSubscriber
             'payout_token' => $event->order->saler->card['payout_token'],
             'price' => $event->order->total_price,
         ];
-        $this->paymentService->payout($data, $event->order);
+        $this->paymentService->payout($data, $event->order, true);
     }
 
     public function handleOrderCanceled(OrderCanceled $event): void
@@ -43,7 +43,7 @@ class PaymentSubscriber
             'pay_id' => $event->order->pay_id,
             'price' => $event->order->total_price,
         ];
-        $this->paymentService->refund($data, $event->order);
+        $this->paymentService->refund($data, $event->order, true);
     }
 
     public function handleOrderPerformerCanceled(OrderPerformerCanceled $event): void

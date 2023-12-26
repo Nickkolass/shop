@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Payment\APIPayRequest;
 use App\Http\Requests\Client\Payment\APIRefundRequest;
 use App\Models\Order;
-use App\Services\Client\API\Payment\PaymentService;
+use App\Services\Client\API\PaymentService;
 
 class APIPaymentController extends Controller
 {

@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.1.2",
         "arhitector/yandex": "dev-master",
-        "darkaonline/l5-swagger": "^8.5",
         "grkamil/laravel-telegram-logging": "^1.10",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
@@ -29,7 +28,8 @@
         "nunomaduro/larastan": "^2.6",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^1.0",
+        "darkaonline/l5-swagger": "^8.5"
     },
     "autoload": {
         "psr-4": {

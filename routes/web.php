@@ -38,17 +38,15 @@ Route::get('/', fn() => redirect()->route('client.products.index'))->name('home'
 Route::prefix('/users/{user}')->name('users.')->group(function () {
     Route::get('/password', [UserController::class, 'passwordEdit'])->name('password.edit');
     Route::patch('/password', [UserController::class, 'passwordUpdate'])->name('password.update');
-    Route::get('/card/edit', [PaymentController::class, 'cardEdit'])->name('card.edit');
-    Route::patch('/card', [PaymentController::class, 'cardUpdate'])->name('card.update');
 });
 Route::resource('/users', UserController::class);
 
 Route::name('client.')->group(function () {
     Route::view('/about', 'client.about')->name('about');
     Route::prefix('/orders')->middleware(['role:' . User::ROLE_CLIENT, 'verified'])->name('orders.')->group(function () {
-        Route::post('/pay', [FrontPaymentController::class, 'pay'])->name('pay');
-        Route::post('/refund', [FrontPaymentController::class, 'refund'])->name('refund');
-        Route::delete('/delete/{orderPerformer_id}', [FrontOrderController::class, 'destroyOrderPerformer'])->name('destroyOrderPerformer');
+        Route::post('{order}/pay', [FrontPaymentController::class, 'pay'])->name('pay');
+        Route::post('{order}/refund', [FrontPaymentController::class, 'refund'])->name('refund');
+        Route::delete('/delete/{orderPerformer}', [FrontOrderController::class, 'destroyOrderPerformer'])->name('destroyOrderPerformer');
     });
     Route::apiResource('/orders', FrontOrderController::class)->middleware(['role:' . User::ROLE_CLIENT, 'verified']);
     Route::controller(FrontUserActiveController::class)->group(function () {
@@ -76,7 +74,11 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     });
     Route::middleware('role:' . User::ROLE_SALER)->group(function () {
         Route::get('/', IndexController::class)->name('index');
-        Route::post('/payment/{order}/payout', [PaymentController::class, 'payout'])->name('payout');
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('/users/{user}/card/edit', 'cardEdit')->name('users.card.edit');
+            Route::patch('/users/{user}/card', 'cardUpdate')->name('users.card.update');
+            Route::post('/orders/{order}/payout', 'payout')->name('orders.payout');
+        });
         Route::apiResource('orders', OrderPerformerController::class)->withTrashed(['index', 'show'])->except('store');
         Route::prefix('/products')->name('products.')->group(function () {
             Route::get('/create', [ProductCreateController::class, 'index'])->name('create');

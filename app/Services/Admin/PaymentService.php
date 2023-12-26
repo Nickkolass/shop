@@ -5,7 +5,7 @@ namespace App\Services\Admin;
 use App\Components\HttpClient\HttpClientInterface;
 use App\Models\User;
 
-class AdminPaymentService
+class PaymentService
 {
 
     public function __construct(private readonly HttpClientInterface $httpClient)
@@ -16,12 +16,11 @@ class AdminPaymentService
     {
         $data = [
             '_token' => csrf_token(),
-            'route' => route('users.card.update', $user->id),
+            'return_url' => route('admin.users.card.update', $user->id),
         ];
         return $this->httpClient
-            ->setJwt()
             ->setQuery($data)
-            ->setUri(route('payment.card.edit', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/card/widget')
             ->setMethod('POST')
             ->send()
             ->getBody()
@@ -30,23 +29,22 @@ class AdminPaymentService
 
     /**
      * @param array<mixed> $data
-     * @return string
+     * @return bool
      */
-    public function cardValidate(array $data): string
+    public function cardValidate(array $data): bool
     {
-        return $this->httpClient
-            ->setJwt()
+        $code = $this->httpClient
             ->setQuery($data)
-            ->setUri(route('payment.card.validate', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/card/validate')
             ->setMethod('POST')
             ->send()
-            ->getBody()
-            ->getContents();
+            ->getStatusCode();
+        return $code == 200;
     }
 
     public function cardUpdate(User $user, string $card): void
     {
-        $user->update(['card' => json_decode($card, true)['data']]);
+        $user->update(['card' => json_decode($card, true)]);
     }
 
     /**
@@ -56,9 +54,8 @@ class AdminPaymentService
     public function payout(array $data): void
     {
         $this->httpClient
-            ->setJwt()
             ->setQuery($data)
-            ->setUri(route('payment.payout', '', false))
+            ->setUri('host.docker.internal:8877/api/payment/payout')
             ->setMethod('POST')
             ->send();
     }

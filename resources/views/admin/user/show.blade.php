@@ -106,7 +106,7 @@
                                 пароль</a>
                         </div>
                         <div class="mr-3">
-                            <a href="{{ route('users.card.edit', $user->id) }}" class="btn btn-primary">Привязать
+                            <a href="{{ route('admin.users.card.edit', $user->id) }}" class="btn btn-primary">Привязать
                                 карту</a>
                         </div>
                         <div class="mr-3">

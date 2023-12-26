@@ -6,14 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Payment\PayoutRequest;
 use App\Models\OrderPerformer;
 use App\Models\User;
-use App\Services\Admin\AdminPaymentService;
+use App\Services\Admin\PaymentService;
 use Illuminate\Contracts\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PaymentController extends Controller
 {
 
-    public function __construct(public readonly AdminPaymentService $paymentService)
+    public function __construct(public readonly PaymentService $paymentService)
     {
     }
 
@@ -27,9 +27,13 @@ class PaymentController extends Controller
     public function cardUpdate(User $user): RedirectResponse
     {
         $this->authorize('card', $user);
-        $card = $this->paymentService->cardValidate(['data' => request()->input('data')]);
-        $this->paymentService->cardUpdate($user, $card);
-        return redirect()->route('users.show', $user->id);
+        $data = request()->input('data');
+        $is_valid = $this->paymentService->cardValidate(['data' => $data]);
+        if($is_valid){
+            $this->paymentService->cardUpdate($user, $data);
+            return redirect()->route('users.show', $user->id);
+        }
+        return back();
     }
 
     public function payout(OrderPerformer $order, PayoutRequest $request): RedirectResponse

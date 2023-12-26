@@ -43,8 +43,8 @@ class APIOrderController extends Controller
         $data = $request->validated();
         $this->DBservice->store($data);
         return redirect()
-            ->with(['price' => $data['order']->total_price, 'order_id' => $data['order']->id])
-            ->route('back.api.orders.pay', $data['order']->id);
+            ->route('back.api.orders.pay', $data['order']->id)
+            ->with(['price' => $data['order']->total_price, 'order_id' => $data['order']->id]);
     }
 
     /**

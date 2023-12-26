@@ -89,7 +89,7 @@ class APIOrderTest extends TestCase
         $this->expectsJobs(OrderStoredJob::class)
             ->withHeader('Authorization', $jwt)
             ->post($route, $data)
-            ->assertOk();
+            ->assertRedirect();
         $count = collect((array)$data['productTypes'])->pluck('saler_id')->unique()->count();
         $order = $user->orders()->withcount('orderPerformers')->firstWhere('total_price', $data['total_price']);
         $this->assertModelExists($order)
