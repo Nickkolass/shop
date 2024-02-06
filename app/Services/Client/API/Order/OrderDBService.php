@@ -2,7 +2,6 @@
 
 namespace App\Services\Client\API\Order;
 
-use App\Components\Payment\src\Services\PaymentService;
 use App\Events\OrderCanceled;
 use App\Events\OrderReceived;
 use App\Jobs\Client\Order\OrderStoredJob;
@@ -17,19 +16,16 @@ class OrderDBService
 {
     /**
      * @param array<mixed> $data
-     * @return string $pay_url
+     * @return void
      */
-    public function store(array $data): string
+    public function store(array &$data): void
     {
         DB::beginTransaction();
-        $this
-            ->countProductReduction($data['cart'])
+        $this->countProductReduction($data['cart'])
             ->orderStore($data)
             ->orderPerformerStore($data['order']);
-        $url = app(PaymentService::class)->pay($data['order']);
         dispatch(new OrderStoredJob($data['order']))->delay(600);
         DB::commit();
-        return $url;
     }
 
     /**
@@ -109,7 +105,7 @@ class OrderDBService
     public function update(Order $order): void
     {
         DB::beginTransaction();
-        $order->newQuery()->increment('status');
+        $order->increment('status');
         $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_RECEIVED]);
         event(new OrderReceived($order));
         DB::commit();
@@ -119,7 +115,7 @@ class OrderDBService
     {
         $order->load('orderPerformers:id,order_id,productTypes,status');
         DB::beginTransaction();
-        $orderPerformer_deleted_ids = $this->countProductRestoration($order)->orderDelete($order, $due_to_pay);
+        $orderPerformer_deleted_ids = $this->countProductRestoration($order)->orderDelete($order);
         if (!$due_to_pay) event(new OrderCanceled($order, $orderPerformer_deleted_ids));
         DB::commit();
     }
@@ -150,29 +146,16 @@ class OrderDBService
 
     /**
      * @param Order $order
-     * @param bool $due_to_pay
-     * @return null|array<int> $orderPerformer_deleted_ids
+     * @return array<int> $orderPerformer_deleted_ids
      */
-    private function orderDelete(Order $order, bool $due_to_pay): ?array
+    private function orderDelete(Order $order): array
     {
-        if ($due_to_pay) {
-            $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_CANCELED, 'deleted_at' => now()]);
-            $order->update(['status' => Order::STATUS_CANCELED, 'deleted_at' => now()]);
-            return null;
-        } else {
-            $delete_ids = $order
-                ->orderPerformers
-                ->where('status', OrderPerformer::STATUS_WAIT_DELIVERY)
-                ->pluck('id')
-                ->all();
-            $order->orderPerformers()->whereIn('id', $delete_ids)->update(['status' => OrderPerformer::STATUS_CANCELED, 'deleted_at' => now()]);
-            Order::query()
-                ->take(1)
-                ->where('id', $order->id)
-                ->doesntHave('orderPerformers')
-                ->update(['status' => Order::STATUS_CANCELED, 'deleted_at' => now()]);
-
-            return $delete_ids;
-        }
+        $order->orderPerformers()->update(['status' => OrderPerformer::STATUS_CANCELED, 'deleted_at' => now()]);
+        $order->update(['status' => Order::STATUS_CANCELED, 'deleted_at' => now()]);
+        return $order
+            ->orderPerformers
+            ->where('status', OrderPerformer::STATUS_WAIT_DELIVERY)
+            ->pluck('id')
+            ->all();
     }
 }

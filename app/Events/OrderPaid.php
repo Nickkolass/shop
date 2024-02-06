@@ -13,7 +13,7 @@ class OrderPaid
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Order $order, public readonly string $pay_id)
+    public function __construct(public Order $order)
     {
         $this->order
             ->load([

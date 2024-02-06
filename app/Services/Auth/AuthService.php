@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Transport\Protokol\Http\HttpClientInterface;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -70,8 +70,9 @@ class AuthService
     public function jwtInvalidate(): void
     {
         $this->httpClient
+            ->setJwt()
             ->setMethod('POST')
             ->setUri(route('back.api.auth.logout', '', false))
-            ->send();
+            ->publish();
     }
 }

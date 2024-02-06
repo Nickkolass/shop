@@ -77,7 +77,7 @@
                                                             <input type="submit" class="btn-primary"
                                                                    value="Подтвердить отправку">
                                                         </div>
-                                                        <form>
+                                                    </form>
                                                 @else
                                                     {{$order->getStatusTitleAttribute()}}
                                                 @endif

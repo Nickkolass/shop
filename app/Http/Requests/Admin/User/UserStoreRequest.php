@@ -17,12 +17,8 @@ class UserStoreRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<mixed>
-     */
-    public function rules(): array
+    /** @return array<mixed> */
+    public static function getRules(): array
     {
         $password_rule = url()->previousPath() == '/users/create' ? ['required', 'nullable'] : ['nullable', 'required'];
         return [
@@ -41,8 +37,18 @@ class UserStoreRequest extends FormRequest
             'INN' => 'nullable|integer|unique:users',
             'registredOffice' => 'nullable|string',
         ];
-
     }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<mixed>
+     */
+    public function rules(): array
+    {
+        return self::getRules();
+    }
+
 
     /** @return array<string, string> */
     public function messages(): array

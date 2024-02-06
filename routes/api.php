@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Client\API\APIOrderController;
+use App\Http\Controllers\Client\API\APIPaymentCallbackController;
+use App\Http\Controllers\Client\API\APIPaymentController;
 use App\Http\Controllers\Client\API\APIProductController;
 use App\Http\Controllers\Client\API\APIUserActiveController;
 use App\Http\Controllers\Client\API\JWTAuthController;
@@ -32,14 +34,21 @@ Route::name('back.api.')->group(function () {
         });
     });
 
-    Route::prefix('/orders')->controller(APIOrderController::class)->name('orders.')->middleware(['jwt.auth', 'verified'])->group(function () {
-        Route::post('/', 'index')->name('index');
-        Route::post('/store', 'store')->name('store');
-        Route::post('/{order}', 'show')->withTrashed()->name('show');
-        Route::patch('/{order}', 'update')->name('update');
-        Route::delete('/{order}', 'destroy')->name('destroy');
-        Route::delete('/delete/{orderPerformer}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
+    Route::prefix('/orders')->name('orders.')->middleware(['jwt.auth', 'verified'])->group(function () {
+        Route::controller(APIOrderController::class)->group(function () {
+            Route::post('/', 'index')->name('index');
+            Route::post('/store', 'store')->name('store');
+            Route::post('/{order}', 'show')->withTrashed()->name('show');
+            Route::patch('/{order}', 'update')->name('update');
+            Route::delete('/{order}', 'destroy')->name('destroy');
+            Route::delete('/delete/{orderPerformer}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
+        });
+        Route::controller(APIPaymentController::class)->group(function () {
+            Route::post('/{order}/pay', 'pay')->name('pay');
+            Route::post('/{order}/refund', 'refund')->name('refund')->withTrashed();
+        });
     });
+    Route::post('/payment/callback', [APIPaymentCallbackController::class, 'callback'])->middleware('payment.callback')->name('payment.callback');
 
     Route::prefix('/auth')->controller(JWTAuthController::class)->name('auth.')->group(function () {
         Route::post('/login', 'login')->name('login');

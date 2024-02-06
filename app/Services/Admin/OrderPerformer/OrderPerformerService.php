@@ -46,7 +46,7 @@ class OrderPerformerService
 
     public function update(OrderPerformer $order): void
     {
-        $order->newQuery()->increment('status');
+        $order->increment('status');
     }
 
     public function delete(OrderPerformer $order, bool $canceler_is_client = false): void

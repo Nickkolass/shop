@@ -67,9 +67,9 @@ class OrderPolicy
     public function delete(User $user, Order $order): bool
     {
         return !$order->refund_id
-                && ($user->id == $order->user_id || $user->isAdmin())
-                && ($order->status == Order::STATUS_WAIT_PAYMENT || $order->status == Order::STATUS_PAID)
-                && !$order->orderPerformers()->where('status', OrderPerformer::STATUS_SENT)->exists();
+            && ($user->id == $order->user_id || $user->isAdmin())
+            && ($order->status == Order::STATUS_WAIT_PAYMENT || $order->status == Order::STATUS_PAID)
+            && !$order->orderPerformers()->where('status', OrderPerformer::STATUS_SENT)->exists();
     }
 
     /**
@@ -120,8 +120,8 @@ class OrderPolicy
         return
             !$order->refund_id
             && $order->pay_id
-            && ($user->id == $order->user_id || ($user->isAdmin() && app()->environment('local')))
             && ($order->status == Order::STATUS_COMPLETED || ($order->trashed() && $order->status == Order::STATUS_CANCELED))
+            && ($user->id == $order->user_id || ($user->isAdmin() && app()->environment('local')))
             && $order->orderPerformers()->onlyTrashed()->exists();
     }
 }

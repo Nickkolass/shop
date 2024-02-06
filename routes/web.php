@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\IndexController;
 use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\OrderPerformerController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Product\ProductCreateController;
 use App\Http\Controllers\Admin\Product\ProductEditController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Client\Front\FrontOrderController;
+use App\Http\Controllers\Client\Front\FrontPaymentController;
 use App\Http\Controllers\Client\Front\FrontProductController;
 use App\Http\Controllers\Client\Front\FrontUserActiveController;
 use App\Models\User;
@@ -33,18 +35,18 @@ Auth::routes(['verify' => true]);
 
 Route::get('/', fn() => redirect()->route('client.products.index'))->name('home');
 
-Route::prefix('/users/{user}')->controller(UserController::class)->name('users.')->group(function () {
-    Route::get('/password', 'passwordEdit')->name('password.edit');
-    Route::patch('/password', 'passwordUpdate')->name('password.update');
+Route::prefix('/users/{user}')->name('users.')->group(function () {
+    Route::get('/password', [UserController::class, 'passwordEdit'])->name('password.edit');
+    Route::patch('/password', [UserController::class, 'passwordUpdate'])->name('password.update');
 });
 Route::resource('/users', UserController::class);
 
 Route::name('client.')->group(function () {
     Route::view('/about', 'client.about')->name('about');
-    Route::prefix('/orders')->controller(FrontOrderController::class)->middleware(['role:' . User::ROLE_CLIENT, 'verified'])->name('orders.')->group(function () {
-        Route::post('/{order_id}/pay', 'pay')->name('pay');
-        Route::post('/{order_id}/refund', 'refund')->name('refund');
-        Route::delete('/delete/{orderPerformer_id}', 'destroyOrderPerformer')->name('destroyOrderPerformer');
+    Route::prefix('/orders')->middleware(['role:' . User::ROLE_CLIENT, 'verified'])->name('orders.')->group(function () {
+        Route::post('{order}/pay', [FrontPaymentController::class, 'pay'])->name('pay');
+        Route::post('{order}/refund', [FrontPaymentController::class, 'refund'])->name('refund');
+        Route::delete('/delete/{orderPerformer}', [FrontOrderController::class, 'destroyOrderPerformer'])->name('destroyOrderPerformer');
     });
     Route::apiResource('/orders', FrontOrderController::class)->middleware(['role:' . User::ROLE_CLIENT, 'verified']);
     Route::controller(FrontUserActiveController::class)->group(function () {
@@ -72,6 +74,11 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     });
     Route::middleware('role:' . User::ROLE_SALER)->group(function () {
         Route::get('/', IndexController::class)->name('index');
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('/users/{user}/card/edit', 'cardEdit')->name('users.card.edit');
+            Route::patch('/users/{user}/card', 'cardUpdate')->name('users.card.update');
+            Route::post('/orders/{order}/payout', 'payout')->name('orders.payout');
+        });
         Route::apiResource('orders', OrderPerformerController::class)->withTrashed(['index', 'show'])->except('store');
         Route::prefix('/products')->name('products.')->group(function () {
             Route::get('/create', [ProductCreateController::class, 'index'])->name('create');

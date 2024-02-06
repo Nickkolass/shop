@@ -238,17 +238,21 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "return_url": {
+                                        "type": "string",
+                                        "example": "http://localhost:8876/orders"
+                                    },
+                                    "delivery": {
+                                        "type": "string",
+                                        "example": "Post. 120100, г. Moscow, Victory st., 1"
+                                    },
+                                    "offer": {
+                                        "type": "boolean",
+                                        "example": "true"
+                                    },
                                     "total_price": {
                                         "type": "integer",
                                         "example": 1000
-                                    },
-                                    "pay_id": {
-                                        "type": "null|string",
-                                        "example": "123a-dasi-wa5i"
-                                    },
-                                    "payment": {
-                                        "type": "string",
-                                        "example": "card"
                                     },
                                     "cart": {
                                         "properties": {
@@ -271,7 +275,19 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "ok"
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "example": "https://yoomoney.ru/qwerty123"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -506,6 +522,19 @@
                     "products"
                 ],
                 "summary": "главная страница",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "bearer token",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "example": "ey..."
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -799,6 +828,17 @@
                         "description": "title категории",
                         "required": true,
                         "example": "chokolate"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "bearer token",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "example": "ey..."
                     }
                 ],
                 "requestBody": {
@@ -1451,6 +1491,17 @@
                         "description": "ID типа продукта",
                         "required": true,
                         "example": 1
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "bearer token",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "example": "ey..."
                     }
                 ],
                 "responses": {
@@ -1759,10 +1810,10 @@
                 ]
             }
         },
-        "/api/orders/{order}/payment": {
+        "/api/orders/{order}/pay": {
             "post": {
                 "tags": [
-                    "orders"
+                    "payment"
                 ],
                 "summary": "Оплата заказа",
                 "parameters": [
@@ -1802,7 +1853,7 @@
         "/api/orders/{order}/refund": {
             "post": {
                 "tags": [
-                    "orders"
+                    "payment"
                 ],
                 "summary": "Возврат денежных средств",
                 "parameters": [
@@ -1826,16 +1877,32 @@
                 ]
             }
         },
-        "/api/orders/payment/callback": {
+        "/api/payment/callback": {
             "post": {
                 "tags": [
-                    "orders"
+                    "payment"
                 ],
                 "summary": "Для входящих уведомлений от платежной системы",
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {}
+                            "schema": {
+                                "properties": {
+                                    "event": {
+                                        "type": "string",
+                                        "example": "pay"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "example": "qwer-1234-qwer"
+                                    },
+                                    "order_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
                 },

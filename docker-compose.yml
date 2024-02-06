@@ -8,7 +8,7 @@ services:
             - ./:/var/www
             - ./_docker/nginx/conf.d:/etc/nginx/conf.d
         ports:
-            - '8876:80'
+            - ${APP_PORT}:80
         depends_on:
             - app
         container_name: shop_nginx
@@ -56,7 +56,20 @@ services:
         depends_on:
             - app
         ports:
-            - '6379:6379'
+            - 6379:${REDIS_PORT}
         volumes:
-            - ../RedisData/data:/data
+            - ../CacheData/data:/data
         container_name: shop_redis
+
+    rabbitmq:
+        restart: always
+        image: rabbitmq:3.12.12-management
+        depends_on:
+            - app
+        ports:
+            - 5672:${RABBITMQ_PORT}
+            - 15672:${RABBITMQ_ADMIN_PORT}
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+        container_name: shop_rabbitmq

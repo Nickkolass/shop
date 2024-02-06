@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.1.2",
         "arhitector/yandex": "dev-master",
-        "darkaonline/l5-swagger": "^8.5",
         "grkamil/laravel-telegram-logging": "^1.10",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
@@ -15,10 +14,10 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.1",
         "league/flysystem-aws-s3-v3": "^3.16",
+        "php-amqplib/php-amqplib": "^3.6",
         "php-http/message-factory": "^1.1",
         "predis/predis": "^2.2",
-        "tymon/jwt-auth": "^2.0",
-        "yoomoney/yookassa-sdk-php": "^3.1"
+        "tymon/jwt-auth": "^2.0"
     },
     "require-dev": {
         "brianium/paratest": "6.x",
@@ -30,7 +29,8 @@
         "nunomaduro/larastan": "^2.6",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^1.0",
+        "darkaonline/l5-swagger": "^8.5"
     },
     "autoload": {
         "psr-4": {

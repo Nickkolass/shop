@@ -89,19 +89,24 @@ class OrderPerformerTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $this->actingAs($user)->patch($route)->assertRedirect();
-        $this->assertTrue(($order->status + 1) == $order->refresh()->status);
-
-        session(['user.role' => User::ROLE_ADMIN]);
-        $user->update(['role' => User::ROLE_ADMIN]);
-        $order->update(['status' => OrderPerformer::STATUS_SENT]);
         $this->actingAs($user)
             ->patch($route)
             ->assertRedirect();
-        $this->assertTrue(($order->status + 1) == $order->refresh()->status);
+        $this->assertEquals(($order->status + 1), $order->refresh()->status);
 
-        $this->actingAs($user)->patch($another_route)->assertRedirect();
-        $this->assertTrue(($another_order->status + 1) == $another_order->refresh()->status);
+        session(['user.role' => User::ROLE_ADMIN]);
+        $user->update(['role' => User::ROLE_ADMIN]);
+        $order->decrement('status');
+        $order->refresh();
+        $this->actingAs($user)
+            ->patch($route)
+            ->assertRedirect();
+        $this->assertEquals(($order->status + 1), $order->refresh()->status);
+
+        $this->actingAs($user)
+            ->patch($another_route)
+            ->assertRedirect();
+        $this->assertEquals(($another_order->status + 1), $another_order->refresh()->status);
     }
 
     /**@test */

@@ -224,8 +224,8 @@ class ProductTest extends TestCase
                 ->get()
                 ->each(function (ProductType $productType) {
                     $this->assertModelExists($productType);
-                    /** @phpstan-ignore-next-line */
                     /** @noinspection PhpUndefinedFieldInspection */
+                    /** @phpstan-ignore-next-line */
                     $this->assertTrue($productType->product_images_exists && $productType->option_values_exists);
                     Storage::assertExists($productType->preview_image);
                 });

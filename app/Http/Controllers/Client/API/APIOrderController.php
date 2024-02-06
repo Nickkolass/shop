@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Client\API;
 
+use App\Dto\PaymentDto;
+use App\Enum\PaymentEventEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Order\StoreRequest;
 use App\Http\Resources\Order\OrdersCollection;
@@ -11,6 +13,7 @@ use App\Models\OrderPerformer;
 use App\Services\Admin\OrderPerformer\OrderPerformerService;
 use App\Services\Client\API\Order\OrderDBService;
 use App\Services\Client\API\Order\OrderService;
+use App\Services\Client\API\Payment\PaymentService;
 
 class APIOrderController extends Controller
 {
@@ -35,12 +38,23 @@ class APIOrderController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreRequest $request
-     * @return string $pay_url
+     * @return string
      */
     public function store(StoreRequest $request): string
     {
         $data = $request->validated();
-        return $this->DBservice->store($data);
+        $this->DBservice->store($data);
+        if (!config('consumers.payment.manual_payment')) {
+            $paymentDto = new PaymentDto(
+                payment_type: PaymentEventEnum::PAYMENT_EVENT_PAY,
+                order_id: $data['order']->id,
+                price: $data['order']->total_price,
+                return_url: $data['return_url'],
+            );
+            $data['return_url'] = app(PaymentService::class)->pay($paymentDto);
+        }
+        return $data['return_url'];
+
     }
 
     /**
