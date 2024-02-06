@@ -12,7 +12,7 @@ use App\Jobs\Client\Order\OrderStoredJob;
 use App\Models\Order;
 use App\Models\OrderPerformer;
 use App\Notifications\Order\OrderNotificationSubscriber;
-use App\Services\Client\API\PaymentService;
+use App\Services\Client\API\Payment\PaymentService;
 use Illuminate\Events\CallQueuedListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -72,8 +72,10 @@ class OrderEventTest extends TestCase
         $orders = Order::query()->has('orderPerformers', count: 2)->withCount('orderPerformers')->take(2)->get();
         /** @var Order $order */
         $order = $orders->pop();
+        $order->update(['pay_id' => uniqid()]);
         /** @var Order $another_order */
         $another_order = $orders->pop();
+        $another_order->update(['pay_id' => uniqid()]);
         $another_order->orderPerformers()->take(1)->delete();
         $another_order->setAttribute('order_performers_count', $another_order->order_performers_count - 1);
 
@@ -126,9 +128,11 @@ class OrderEventTest extends TestCase
             ->get();
         /** @var Order $order */
         $order = $orders->first();
+        $order->update(['pay_id' => uniqid()]);
         /** @var Order $another_order */
         $another_order = $orders->last();
         $another_order->orderPerformers()->delete();
+        $another_order->update(['pay_id' => uniqid()]);
 
         // при отказе от неоплаченного заказа событие не запускается
         // отказ от оплаченного заказа при отправке отдельных нарядов

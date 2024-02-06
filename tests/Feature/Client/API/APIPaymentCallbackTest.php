@@ -2,11 +2,10 @@
 
 namespace Client\API;
 
+use App\Enum\PaymentEventEnum;
 use App\Events\OrderPaid;
 use App\Models\Order;
 use App\Models\OrderPerformer;
-use App\Models\User;
-use Illuminate\Support\Str;
 use Tests\Feature\Trait\PrepareForTestWithSeedTrait;
 use Tests\TestCase;
 
@@ -24,8 +23,8 @@ class APIPaymentCallbackTest extends TestCase
             ->where('status', Order::STATUS_WAIT_PAYMENT)
             ->first();
         $data = [
-            'id' => Str::random(20),
-            'event' => 'pay',
+            'id' => uniqid(),
+            'event' => PaymentEventEnum::PAYMENT_EVENT_PAY,
             'order_id' => $order->id,
         ];
         $this->withoutExceptionHandling();
@@ -46,15 +45,14 @@ class APIPaymentCallbackTest extends TestCase
         $route = route('back.api.payment.callback');
         $order = Order::query()->first();
         $data = [
-            'id' => Str::random(20),
-            'event' => 'refund',
+            'id' => uniqid(),
+            'event' => PaymentEventEnum::PAYMENT_EVENT_REFUND,
             'order_id' => $order->id,
         ];
         $this->withoutExceptionHandling();
 
         $this->post($route, $data)->assertOk();
-        $order->refresh();
-        $this->assertEquals($order->refund_id, $data['id']);
+        $this->assertEquals($order->fresh()->refund_id, $data['id']);
     }
 
     /**@test */
@@ -63,8 +61,8 @@ class APIPaymentCallbackTest extends TestCase
         $route = route('back.api.payment.callback');
         $order = OrderPerformer::query()->first();
         $data = [
-            'id' => Str::random(20),
-            'event' => 'payout',
+            'id' => uniqid(),
+            'event' => PaymentEventEnum::PAYMENT_EVENT_PAYOUT,
             'order_id' => $order->id,
         ];
         $this->withoutExceptionHandling();

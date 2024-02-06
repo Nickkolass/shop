@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Transport\Protokol\Http\HttpClientInterface;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -73,6 +73,6 @@ class AuthService
             ->setJwt()
             ->setMethod('POST')
             ->setUri(route('back.api.auth.logout', '', false))
-            ->send();
+            ->publish();
     }
 }

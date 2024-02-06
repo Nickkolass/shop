@@ -2,7 +2,6 @@
 
 namespace App\Notifications\Auth;
 
-use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Queue\ShouldQueue;

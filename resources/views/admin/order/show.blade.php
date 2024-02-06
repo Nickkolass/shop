@@ -115,8 +115,6 @@
                     @elsecan('payout', $order)
                         <form action="{{route('admin.orders.payout', $order->id) }}" method="post">
                             @csrf
-                            <input type="hidden" name="order_id" value="{{$order->id}}">
-                            <input type="hidden" name="price" value="{{$order->total_price}}">
                             <input type="submit" class="btn btn-primary" value="Запросить выплату">
                         </form>
                     @endif

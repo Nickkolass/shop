@@ -45,7 +45,7 @@ Route::name('back.api.')->group(function () {
         });
         Route::controller(APIPaymentController::class)->group(function () {
             Route::post('/{order}/pay', 'pay')->name('pay');
-            Route::post('/{order}/refund', 'refund')->name('refund');
+            Route::post('/{order}/refund', 'refund')->name('refund')->withTrashed();
         });
     });
     Route::post('/payment/callback', [APIPaymentCallbackController::class, 'callback'])->middleware('payment.callback')->name('payment.callback');

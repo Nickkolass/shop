@@ -2,42 +2,33 @@
 
 namespace App\Services\Client\Front;
 
-use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Transport\Protokol\Http\HttpClientInterface;
 
 class FrontPaymentService
 {
 
-    public function __construct(private readonly HttpClientInterface $httpClient)
+    public function __construct(private readonly HttpClientInterface $transportService)
     {
     }
 
-    /**
-     * @param array{order_id: int, price: int} $data
-     * @return string
-     */
-    public function pay(array $data): string
+    public function pay(int $order_id): string
     {
-        return $this->httpClient
+        return $this->transportService
             ->setJwt()
-            ->setQuery($data)
+            ->setQuery(['return_url' => route('client.orders.index')])
             ->setMethod('POST')
-            ->setUri(route('back.api.orders.pay', $data['order_id'], false))
+            ->setUri(route('back.api.orders.pay', $order_id, false))
             ->send()
             ->getBody()
             ->getContents();
     }
 
-    /**
-     * @param array{order_id: int, pay_id:string, price:int} $data
-     * @return void
-     */
-    public function refund(array $data): void
+    public function refund(int $order_id): void
     {
-        $this->httpClient
+        $this->transportService
             ->setJwt()
-            ->setQuery($data)
             ->setMethod('POST')
-            ->setUri(route('back.api.orders.refund', $data['order_id'], false))
-            ->send();
+            ->setUri(route('back.api.orders.refund', $order_id, false))
+            ->publish();
     }
 }

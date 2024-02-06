@@ -21,7 +21,10 @@ class StoreFrontRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge(['cart' => session('cart')]);
+        $this->merge([
+            'cart' => session('cart'),
+            'return_url' => route('client.orders.index'),
+        ]);
     }
 
     /**
@@ -32,6 +35,7 @@ class StoreFrontRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'return_url' => 'required|string|url',
             'delivery' => 'required|string',
             'offer' => 'required|string',
             'total_price' => 'required|string',

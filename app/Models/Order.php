@@ -34,7 +34,6 @@ class Order extends Model
     protected $guarded = false;
     protected $casts = [
         'productTypes' => 'array',
-        'refund_id' => 'array',
     ];
     const STATUS_WAIT_PAYMENT = 0;
     const STATUS_PAID = 1;

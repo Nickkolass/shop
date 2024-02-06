@@ -73,9 +73,9 @@ class ProductType extends Model
     public function scopeSort(Builder $b, string $orderBy): void
     {
         if ($orderBy == 'rating') {
-            $b->orderBy(function (Builder $q) {
+            $b->orderByDesc(function (Builder $q) {
                 $q->from('products')
-                    ->whereColumn('productTypes.product_id', '=', 'products.id')
+                    ->whereColumn('product_id', '=', 'products.id')
                     ->selectRaw('AVG(rating)');
             });
         } elseif ($orderBy == 'latest') $b->latest();

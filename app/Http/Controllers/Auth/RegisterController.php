@@ -76,7 +76,7 @@ class RegisterController extends Controller
      */
     protected function validator(array $data): \Illuminate\Validation\Validator
     {
-        return Validator::make($data, (new UserStoreRequest)->rules());
+        return Validator::make($data, UserStoreRequest::getRules());
     }
 
 }

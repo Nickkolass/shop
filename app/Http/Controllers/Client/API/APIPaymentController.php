@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Client\API;
 
+use App\Dto\PaymentDto;
+use App\Enum\PaymentEventEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\Payment\APIPayRequest;
-use App\Http\Requests\Client\Payment\APIRefundRequest;
 use App\Models\Order;
-use App\Services\Client\API\PaymentService;
+use App\Services\Client\API\Payment\PaymentService;
 
 class APIPaymentController extends Controller
 {
@@ -15,15 +15,25 @@ class APIPaymentController extends Controller
     {
     }
 
-    public function pay(APIPayRequest $request, Order $order): string
+    public function pay(Order $order): string
     {
-        $data = $request->validated();
-        return $this->paymentService->pay($data, $order);
+        $paymentDto = new PaymentDto(
+            payment_type: PaymentEventEnum::PAYMENT_EVENT_PAY,
+            order_id: $order->id,
+            price: $order->total_price,
+            return_url: request()->input('return_url'),
+        );
+        return $this->paymentService->pay($paymentDto);
     }
 
-    public function refund(APIRefundRequest $request, Order $order): void
+    public function refund(Order $order): void
     {
-        $data = $request->validated();
-        $this->paymentService->refund($data, $order);
+        $paymentDto = new PaymentDto(
+            payment_type: PaymentEventEnum::PAYMENT_EVENT_REFUND,
+            order_id: $order->id,
+            price: $order->orderPerformers()->onlyTrashed()->sum('total_price'),
+            pay_id: $order->pay_id,
+        );
+        $this->paymentService->refund($paymentDto, $order);
     }
 }

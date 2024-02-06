@@ -112,9 +112,10 @@ use App\Http\Controllers\Controller;
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
+ *             @OA\Property(property="return_url", type="string", example="http://localhost:8876/orders"),
+ *             @OA\Property(property="delivery", type="string", example="Post. 120100, г. Moscow, Victory st., 1"),
+ *             @OA\Property(property="offer", type="bool", example="true"),
  *             @OA\Property(property="total_price", type="integer", example=1000),
- *             @OA\Property(property="pay_id", type="null|string", example="123a-dasi-wa5i"),
- *             @OA\Property(property="payment", type="string", example="card"),
  *             @OA\Property(property="cart", type="object",
  *                 @OA\Property(property="662341", type="integer", example="2"),
  *                 @OA\Property(property="115521", type="integer", example="3"),
@@ -125,9 +126,11 @@ use App\Http\Controllers\Controller;
  *     @OA\Response(
  *         response=200,
  *         description="ok",
+ *         @OA\JsonContent(
+ *             @OA\Property(example="https://yoomoney.ru/qwerty123"),
+ *         ),
  *     ),
  * ),
- *
  *
  * @OA\Post(
  *     path="/api/orders/{order}",
@@ -247,6 +250,18 @@ use App\Http\Controllers\Controller;
  *     summary="главная страница",
  *     tags={"products"},
  *
+ *     @OA\Parameter(
+ *         name="Authorization",
+ *         in="header",
+ *         description="bearer token",
+ *         required=false,
+ *         example="ey...",
+ *         @OA\Schema(
+ *             type="string",
+ *             nullable=true,
+ *         ),
+ *     ),
+ *
  *     @OA\RequestBody(
  *         @OA\JsonContent(
  *             @OA\Property(property="viewed", type="object", example={1, 2}),
@@ -349,7 +364,24 @@ use App\Http\Controllers\Controller;
  *         example="chokolate",
  *     ),
  *
+ *     @OA\Parameter(
+ *         name="Authorization",
+ *         in="header",
+ *         description="bearer token",
+ *         required=false,
+ *         example="ey...",
+ *         @OA\Schema(
+ *             type="string",
+ *             nullable=true,
+ *         ),
+ *     ),
+ *
  *     @OA\RequestBody(
+ *         @OA\Header(
+ *             header="Authorization",
+ *             description="bearer token",
+ *             required=true,
+ *         ),
  *         @OA\JsonContent(
  *             @OA\Property(property="filter", type="object",
  *                 @OA\Property(property="tags", type="object", example={1,2}),
@@ -574,6 +606,18 @@ use App\Http\Controllers\Controller;
  *         example=1,
  *     ),
  *
+ *     @OA\Parameter(
+ *         name="Authorization",
+ *         in="header",
+ *         description="bearer token",
+ *         required=false,
+ *         example="ey...",
+ *         @OA\Schema(
+ *             type="string",
+ *             nullable=true,
+ *         ),
+ *     ),
+ *
  *     @OA\Response(
  *         response=200,
  *         description="ok",
@@ -682,9 +726,9 @@ use App\Http\Controllers\Controller;
  * ),
  *
  * @OA\Post(
- *     path="/api/orders/{order}/payment",
+ *     path="/api/orders/{order}/pay",
  *     summary="Оплата заказа",
- *     tags={"orders"},
+ *     tags={"payment"},
  *     security={{ "bearerAuth": {} }},
  *
  *     @OA\Parameter(
@@ -707,7 +751,7 @@ use App\Http\Controllers\Controller;
  * @OA\Post(
  *     path="/api/orders/{order}/refund",
  *     summary="Возврат денежных средств",
- *     tags={"orders"},
+ *     tags={"payment"},
  *     security={{ "bearerAuth": {} }},
  *
  *     @OA\Parameter(
@@ -725,12 +769,16 @@ use App\Http\Controllers\Controller;
  * )
  *
  * @OA\Post(
- *     path="/api/orders/payment/callback",
+ *     path="/api/payment/callback",
  *     summary="Для входящих уведомлений от платежной системы",
- *     tags={"orders"},
+ *     tags={"payment"},
  *
  *     @OA\RequestBody(
- *         @OA\JsonContent(),
+ *         @OA\JsonContent(
+ *             @OA\Property(property="event", type="string", example="pay"),
+ *             @OA\Property(property="id", type="string", example="qwer-1234-qwer"),
+ *             @OA\Property(property="order_id", type="integer", example="1"),
+ *         ),
  *     ),
  *
  *     @OA\Response(

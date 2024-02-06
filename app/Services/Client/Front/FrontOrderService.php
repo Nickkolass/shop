@@ -2,7 +2,7 @@
 
 namespace App\Services\Client\Front;
 
-use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Transport\Protokol\Http\HttpClientInterface;
 
 class FrontOrderService
 {
@@ -11,6 +11,10 @@ class FrontOrderService
     {
     }
 
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
     public function index(array $data): array
     {
         $orders = $this->httpClient
@@ -25,6 +29,10 @@ class FrontOrderService
 
     }
 
+    /**
+     * @param array<mixed> $data
+     * @return string
+     */
     public function store(array $data): string
     {
         $pay_url = $this->httpClient
@@ -39,6 +47,10 @@ class FrontOrderService
         return $pay_url;
     }
 
+    /**
+     * @param int $order_id
+     * @return array<mixed>
+     */
     public function show(int $order_id): array
     {
         $order = $this->httpClient
@@ -57,7 +69,7 @@ class FrontOrderService
             ->setJwt()
             ->setUri(route('back.api.orders.update', $order_id, false))
             ->setMethod('PATCH')
-            ->send();
+            ->publish();
     }
 
     public function destroy(int $order_id): void
@@ -67,7 +79,7 @@ class FrontOrderService
             ->setUri(route('back.api.orders.destroy', $order_id, false))
             ->setQuery(['due_to_pay' => request()->input('due_to_pay', false)])
             ->setMethod('DELETE')
-            ->send();
+            ->publish();
     }
 
     public function destroyOrderPerformer(int $orderPerformer_id): void
@@ -76,6 +88,6 @@ class FrontOrderService
             ->setJwt()
             ->setMethod('DELETE')
             ->setUri(route('back.api.orders.destroyOrderPerformer', $orderPerformer_id, false))
-            ->send();
+            ->publish();
     }
 }

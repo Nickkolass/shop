@@ -77,7 +77,7 @@ class APIOrderTest extends TestCase
     {
         $user = User::query()->first();
         $data = Order::factory()->raw();
-        $data['user_id'] = $user->id;
+        $data['return_url'] = fake()->url();
         foreach ($data['productTypes'] as $productType) $data['cart'][$productType['productType_id']] = $productType['amount'];
         $route = route('back.api.orders.store');
         $jwt = $this->getJwt($user);
@@ -86,10 +86,12 @@ class APIOrderTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $this->expectsJobs(OrderStoredJob::class)
+        $res = $this->expectsJobs(OrderStoredJob::class)
             ->withHeader('Authorization', $jwt)
             ->post($route, $data)
-            ->assertRedirect();
+            ->assertOk()
+            ->getContent();
+        $this->assertStringStartsWith('http', (string)$res);
         $count = collect((array)$data['productTypes'])->pluck('saler_id')->unique()->count();
         $order = $user->orders()->withcount('orderPerformers')->firstWhere('total_price', $data['total_price']);
         $this->assertModelExists($order)

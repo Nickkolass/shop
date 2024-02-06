@@ -4,8 +4,7 @@ namespace App\Providers;
 
 use App\Components\Disk\DiskClientInterface;
 use App\Components\Disk\YandexDiskClient;
-use App\Components\HttpClient\GuzzleClient;
-use App\Components\HttpClient\HttpClientInterface;
+use App\Components\Transport\TransportServiceProvider;
 use App\Models\Category;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
-        $this->app->bind(HttpClientInterface::class, GuzzleClient::class);
+        $this->app->register(TransportServiceProvider::class);
         $this->app->bind(DiskClientInterface::class, YandexDiskClient::class);
     }
 
@@ -39,4 +38,13 @@ class AppServiceProvider extends ServiceProvider
             View::share('categories', cache()->rememberForever('categories', fn() => Category::all()->toArray()));
         }
     }
+
+    public function provides(): array
+    {
+        return [
+            TransportServiceProvider::class,
+            DiskClientInterface::class,
+        ];
+    }
+
 }
